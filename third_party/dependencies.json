@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "milestone": "P1",
+  "vendored_libraries": [],
+  "host_tools_verified": {
+    "cmake": "3.28.1",
+    "ninja": "1.11.1",
+    "gcc_mingw": "8.1.0 (x86_64-posix-seh)",
+    "git": "2.51.0.windows.2"
+  },
+  "mcu_compiler_detected": "GNU Tools for STM32 13.3.rel1, GCC 13.3.1",
+  "planned_mcu_dependencies": [
+    { "name": "STM32CubeH7 HAL and CMSIS", "source": "https://github.com/STMicroelectronics/STM32CubeH7", "version": null, "status": "select and lock in P2", "license": "verify component LICENSE files when pinning" },
+    { "name": "ThreadX", "source": "https://github.com/eclipse-threadx/threadx", "version": null, "status": "select compatible Cortex-M7 port and lock in P2", "license": "verify selected source LICENSE when pinning" }
+  ]
+}

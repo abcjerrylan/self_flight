@@ -1,0 +1,42 @@
+cmake_minimum_required(VERSION 3.22)
+
+set(SELF_FLIGHT_TARGET "host" CACHE STRING "Build target: host or mcu")
+set_property(CACHE SELF_FLIGHT_TARGET PROPERTY STRINGS host mcu)
+if(SELF_FLIGHT_TARGET STREQUAL "mcu")
+    message(FATAL_ERROR "MCU firmware is not available at P1. Complete the real H743 CubeMX generation and integration described in boards/micoair743v2_aio35/README.md (P2).")
+elseif(NOT SELF_FLIGHT_TARGET STREQUAL "host")
+    message(FATAL_ERROR "Unknown SELF_FLIGHT_TARGET='${SELF_FLIGHT_TARGET}'")
+endif()
+if(CMAKE_TOOLCHAIN_FILE)
+    message(FATAL_ERROR "The host build does not accept a cross-compilation toolchain file. Use a clean native build directory.")
+endif()
+
+project(self_flight VERSION 0.1.0 LANGUAGES C CXX)
+if(CMAKE_CROSSCOMPILING OR CMAKE_CXX_COMPILER MATCHES "arm-none-eabi")
+    message(FATAL_ERROR "The host target requires a native compiler.")
+endif()
+set(CMAKE_C_STANDARD 11)
+set(CMAKE_C_STANDARD_REQUIRED ON)
+set(CMAKE_C_EXTENSIONS OFF)
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
+add_library(flight_core STATIC
+    flight/core/src/math.cpp
+    flight/core/src/time.cpp
+)
+add_library(self_flight::core ALIAS flight_core)
+target_include_directories(flight_core PUBLIC flight/core/include)
+target_compile_features(flight_core PUBLIC cxx_std_17)
+if(MSVC)
+    target_compile_options(flight_core PRIVATE /W4 /WX /fp:precise)
+else()
+    target_compile_options(flight_core PRIVATE -Wall -Wextra -Wpedantic -Werror)
+endif()
+
+include(CTest)
+if(BUILD_TESTING)
+    add_subdirectory(tests/host)
+endif()

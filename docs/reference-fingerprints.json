@@ -1,0 +1,19 @@
+{
+  "date": "2026-10-03",
+  "reference_head": "237b4a2f3baf26fd32f59fe67f3e4ec90c8201d1",
+  "scope": "12 sampled files; pre/post SHA-256 values matched",
+  "files": [
+    { "file": "AGENTS.md", "sha256": "02b5dc9aeebbaf12d5c9ec3ecbf5c2ddf1f5b20be454ce3331c6dbd46295e460" },
+    { "file": "docs/project-structure.md", "sha256": "933936cd74d6d46b98820064f4b97ef83b0a6c0f658514ff37026ffc2bdc60f0" },
+    { "file": "docs/startup.md", "sha256": "b80f0b0f1e7e617d6020ed21c1a19b08620efeb34daf9d00e6a6176ee6d33ccd" },
+    { "file": "docs/thread.md", "sha256": "2cceb42a68a6f3b5f82765c7fddb1687e811c55090360ae4b74d31d81a410921" },
+    { "file": "docs/api/bsp-spi.md", "sha256": "db31fb49cc447a2c22c76d45c95dac41da68f0154234f2641b9f50c346c7a971" },
+    { "file": "docs/api/bsp-dma.md", "sha256": "cb1b6ef74871d09bcdded4b835efe19fc5c61289c38433dbb4e59f7cd8ae8f6b" },
+    { "file": "docs/api/bsp-dwt.md", "sha256": "182bbd466f9f095a51bfa100cd03cffc3cc673630672cbd65cfbf06b413adf14" },
+    { "file": "CMakeLists.txt", "sha256": "9941e8d7273b04cb1a790e79fb264ac544fff0af857f823ec1e5ce7825b8660c" },
+    { "file": "app/app.cpp", "sha256": "a1c0c120923ec1f09e1cb7e05693c0fd09614259864fa9b22c65ce5af12c0069" },
+    { "file": "boards/h723_mc02/Core/Src/app_threadx.c", "sha256": "493ae3a2285ae236a12617d7953f88dd8120590b37eb931f0e0a1ad5982e0b37" },
+    { "file": "pnx_bsp/spi/include/bsp_spi.hpp", "sha256": "e73c9ee9a1f0a4e2fa0e859138c7a5b8b25e5420eb51b96b7636464248428477" },
+    { "file": "pnx_devices/imu/bmi088/src/bmi088.cpp", "sha256": "91da3361debb086c1945cc2ce6ad4d39ee39bb6b9e3b20fc9b9268bf405cf823" }
+  ]
+}

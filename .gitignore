@@ -1,0 +1,8 @@
+/build/
+/CMakeUserPresets.json
+/.cache/
+/.vscode/
+/.idea/
+*.user
+*.log
+__pycache__/
