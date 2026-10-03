@@ -27,6 +27,16 @@ $content = [regex]::Replace($content, '(?s)(/\* USER CODE BEGIN Includes \*/).*?
 $content = [regex]::Replace($content, '(?s)(/\* USER CODE BEGIN App_ThreadX_Init \*/).*?(/\* USER CODE END App_ThreadX_Init \*/)', '$1' + "`n  (void)memory_ptr;`n  ret = app_start();`n  " + '$2')
 [IO.File]::WriteAllText($appPath, $content)
 
+# PC2_C/PC3_C need their digital connection to PC2/PC3, even after ROM boot.
+$spiPath = Join-Path $generated 'Core/Src/stm32h7xx_hal_msp.c'
+$content = [IO.File]::ReadAllText($spiPath)
+$switches = @'
+    HAL_SYSCFG_AnalogSwitchConfig(SYSCFG_SWITCH_PC2, SYSCFG_SWITCH_PC2_CLOSE);
+    HAL_SYSCFG_AnalogSwitchConfig(SYSCFG_SWITCH_PC3, SYSCFG_SWITCH_PC3_CLOSE);
+'@
+$content = [regex]::Replace($content, '(?s)(/\* USER CODE BEGIN SPI2_MspInit 1 \*/).*?(/\* USER CODE END SPI2_MspInit 1 \*/)', '$1' + "`n$switches`n    " + '$2')
+[IO.File]::WriteAllText($spiPath, $content)
+
 # USBX only needs the generated startup thread and CDC activation callbacks.
 $usbPath = Join-Path $generated 'USBX/App/app_usbx_device.c'
 $content = [IO.File]::ReadAllText($usbPath)
@@ -53,6 +63,8 @@ $content = [regex]::Replace($content, '(?s)(/\* USER CODE BEGIN USBD_CDC_ACM_Dea
 
 $iocPath = Join-Path $generated 'micoair743v2_aio35.ioc'
 $content = [IO.File]::ReadAllText($iocPath)
+$content = [regex]::Replace($content, '(?m)^RCC.SPI123ClockSelection=.*\r?\n', '')
+$content = $content.Replace(',SPI123ClockSelection', '')
 $content = [regex]::Replace($content, '(?m)^ProjectManager.CustomerFirmwarePackage=.*', 'ProjectManager.CustomerFirmwarePackage=')
 $content = [regex]::Replace($content, '(?m)^ProjectManager.DefaultFWLocation=.*', 'ProjectManager.DefaultFWLocation=true')
 $content = [regex]::Replace($content, '(?m)^ProjectManager.LastFirmware=.*', 'ProjectManager.LastFirmware=false')

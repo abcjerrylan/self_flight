@@ -40,6 +40,8 @@ add_library(stm32_hal STATIC
     "${HAL}/Src/stm32h7xx_hal_rcc_ex.c"
     "${HAL}/Src/stm32h7xx_hal_tim.c"
     "${HAL}/Src/stm32h7xx_hal_tim_ex.c"
+    "${HAL}/Src/stm32h7xx_hal_spi.c"
+    "${HAL}/Src/stm32h7xx_hal_spi_ex.c"
     "${HAL}/Src/stm32h7xx_hal_pcd.c"
     "${HAL}/Src/stm32h7xx_hal_pcd_ex.c"
     "${HAL}/Src/stm32h7xx_ll_usb.c"
@@ -72,11 +74,13 @@ add_executable(self_flight
     "${GEN}/USBX/App/ux_device_descriptors.c"
     "${PROJECT_SOURCE_DIR}/app/app.cpp"
     "${PROJECT_SOURCE_DIR}/platform/stm32h7/platform.cpp"
+    "${PROJECT_SOURCE_DIR}/flight/services/imu.cpp"
 )
 set_target_properties(self_flight PROPERTIES SUFFIX ".elf" RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}")
-target_include_directories(self_flight PRIVATE "${PROJECT_SOURCE_DIR}/app" "${PROJECT_SOURCE_DIR}/platform/stm32h7")
+target_include_directories(self_flight PRIVATE "${PROJECT_SOURCE_DIR}/app" "${PROJECT_SOURCE_DIR}/platform/stm32h7"
+    "${PROJECT_SOURCE_DIR}/flight/services" "${CMAKE_CURRENT_SOURCE_DIR}")
 target_compile_options(self_flight PRIVATE $<$<COMPILE_LANGUAGE:CXX>:-Wall;-Wextra;-Wpedantic;-Werror>)
-target_link_libraries(self_flight PRIVATE self_flight::core usbx stm32_hal threadx m)
+target_link_libraries(self_flight PRIVATE self_flight::core bmi088 usbx stm32_hal threadx m)
 set(LINKER_SCRIPT "${GEN}/STM32CubeIDE/STM32H743VIHX_FLASH.ld")
 target_link_options(self_flight PRIVATE
     "-T${LINKER_SCRIPT}"

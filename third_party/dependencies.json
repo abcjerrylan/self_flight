@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "milestone": "P2A software",
+  "milestone": "P2B sampling and IMU calibration verified",
   "host_tools_verified": {
     "cmake": "3.28.1",
     "ninja": "1.11.1",
@@ -24,8 +24,16 @@
       "source": "https://www.st.com/en/embedded-software/stm32cubeh7.html",
       "archive": "stm32cube_fw_h7_v1121.zip",
       "sha256": "04572eba14ac3ef0efbc93055ed966254bd900d22b5edc51bb135ecfb40616df",
-      "paths": ["Drivers/STM32H7xx_HAL_Driver", "Drivers/CMSIS"],
-      "license_files": ["Drivers/STM32H7xx_HAL_Driver/LICENSE.txt", "Drivers/CMSIS/LICENSE.txt", "Drivers/CMSIS/Device/ST/STM32H7xx/LICENSE.txt", "third_party/licenses/STM32CubeH7-Package_license.html"]
+      "paths": [
+        "Drivers/STM32H7xx_HAL_Driver",
+        "Drivers/CMSIS"
+      ],
+      "license_files": [
+        "Drivers/STM32H7xx_HAL_Driver/LICENSE.txt",
+        "Drivers/CMSIS/LICENSE.txt",
+        "Drivers/CMSIS/Device/ST/STM32H7xx/LICENSE.txt",
+        "third_party/licenses/STM32CubeH7-Package_license.html"
+      ]
     },
     {
       "name": "ThreadX from X-CUBE-AZRTOS-H7",
@@ -35,9 +43,15 @@
       "source": "https://www.st.com/en/embedded-software/x-cube-azrtos-h7.html",
       "archive": "STMicroelectronics.X-CUBE-AZRTOS-H7.3.4.0.pack",
       "sha256": "c7b84c83e0e1dc70a5f235f036bcc4f5dd8b02d733af05f3cafe5885ca83cf15",
-      "paths": ["Middlewares/ST/threadx"],
+      "paths": [
+        "Middlewares/ST/threadx"
+      ],
       "license": "Microsoft Software License Terms for Microsoft Azure RTOS; preserve the actual bundled terms",
-      "license_files": ["Middlewares/ST/threadx/LICENSE.txt", "Middlewares/ST/threadx/LICENSED-HARDWARE.txt", "third_party/licenses/X-CUBE-AZRTOS-H7-Package_License.md"]
+      "license_files": [
+        "Middlewares/ST/threadx/LICENSE.txt",
+        "Middlewares/ST/threadx/LICENSED-HARDWARE.txt",
+        "third_party/licenses/X-CUBE-AZRTOS-H7-Package_License.md"
+      ]
     },
     {
       "name": "USBX from X-CUBE-AZRTOS-H7",
@@ -47,11 +61,17 @@
       "source": "https://www.st.com/en/embedded-software/x-cube-azrtos-h7.html",
       "archive": "STMicroelectronics.X-CUBE-AZRTOS-H7.3.4.0.pack",
       "sha256": "c7b84c83e0e1dc70a5f235f036bcc4f5dd8b02d733af05f3cafe5885ca83cf15",
-      "paths": ["Middlewares/ST/usbx"],
+      "paths": [
+        "Middlewares/ST/usbx"
+      ],
       "license": "Microsoft Software License Terms for Microsoft Azure RTOS; preserve the actual bundled terms",
-      "license_files": ["Middlewares/ST/usbx/LICENSE.txt", "Middlewares/ST/usbx/LICENSED-HARDWARE.txt", "third_party/licenses/X-CUBE-AZRTOS-H7-Package_License.md"]
+      "license_files": [
+        "Middlewares/ST/usbx/LICENSE.txt",
+        "Middlewares/ST/usbx/LICENSED-HARDWARE.txt",
+        "third_party/licenses/X-CUBE-AZRTOS-H7-Package_License.md"
+      ]
     }
   ],
-  "vendor_changes": "None: all 406 vendored files byte-match the locked installed official packages. CubeMX application hooks and build integration are separate.",
+  "vendor_changes": "None: all 411 vendored files byte-match the locked installed official packages. CubeMX application hooks and build integration are separate.",
   "vendor_file_hashes": "third_party/vendor-fingerprints.json"
 }

@@ -57,6 +57,18 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
+#define BMI088_A_DRDY_Pin GPIO_PIN_14
+#define BMI088_A_DRDY_GPIO_Port GPIOC
+#define BMI088_A_DRDY_EXTI_IRQn EXTI15_10_IRQn
+#define BMI270_CS_Pin GPIO_PIN_15
+#define BMI270_CS_GPIO_Port GPIOA
+#define BMI088_G_DRDY_Pin GPIO_PIN_15
+#define BMI088_G_DRDY_GPIO_Port GPIOC
+#define BMI088_G_DRDY_EXTI_IRQn EXTI15_10_IRQn
+#define BMI088_G_CS_Pin GPIO_PIN_5
+#define BMI088_G_CS_GPIO_Port GPIOD
+#define BMI088_A_CS_Pin GPIO_PIN_4
+#define BMI088_A_CS_GPIO_Port GPIOD
 
 /* USER CODE BEGIN Private defines */
 

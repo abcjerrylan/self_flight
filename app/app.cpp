@@ -1,31 +1,97 @@
 #include "app.h"
 #include "platform.hpp"
+#include "imu.hpp"
 #include "tx_api.h"
 #include <cstdio>
+#include <cmath>
 
 namespace {
-TX_THREAD startup_thread;
+TX_THREAD log_thread;
 alignas(8) unsigned char stack[4096];
 
 void run(ULONG) {
-    platform::start_timer();
-    auto previous = platform::time_us();
-    for (unsigned long sequence = 0;; ++sequence) {
-        tx_thread_sleep(TX_TIMER_TICKS_PER_SECOND);
-        const auto now = platform::time_us();
-        char line[128];
-        std::snprintf(line, sizeof(line), "self_flight USB seq=%lu cpu=%lu t=%lu.%06lus tick=%lu dt_us=%lu\r\n",
-                      sequence, static_cast<unsigned long>(platform::cpu_hz()),
-                      static_cast<unsigned long>(now / 1000000),
-                      static_cast<unsigned long>(now % 1000000), tx_time_get(),
-                      static_cast<unsigned long>(now - previous));
-        platform::write(line);
-        previous = now;
+    using namespace self_flight;
+    ULONG last_status = tx_time_get();
+    char batch[512]{};
+    unsigned used = 0, count = 0;
+    auto flush = [&] {
+        if (used && !platform::write(batch)) imu::drop_logs(count);
+        used = count = 0;
+        batch[0] = '\0';
+    };
+    for (;;) {
+        imu::Record record;
+        if (imu::take_record(record, used ? TX_NO_WAIT : 4)) {
+            char line[160];
+            // Decimal microseconds via seconds/remainder: nano printf need not support %llu.
+            const auto length = std::snprintf(line, sizeof(line),
+                "IMU,%c,%lu,%lu%06lu,%lu%06lu,%lu%06lu,%d,%d,%d,%lu,%u\r\n",
+                record.sensor == bmi088::Sensor::Accel ? 'A' : 'G',
+                static_cast<unsigned long>(record.sequence),
+                static_cast<unsigned long>(record.measured_us / 1000000), static_cast<unsigned long>(record.measured_us % 1000000),
+                static_cast<unsigned long>(record.started_us / 1000000), static_cast<unsigned long>(record.started_us % 1000000),
+                static_cast<unsigned long>(record.available_us / 1000000), static_cast<unsigned long>(record.available_us % 1000000),
+                record.raw.x, record.raw.y, record.raw.z, static_cast<unsigned long>(record.raw.sensor_time), record.valid);
+            if (length <= 0 || static_cast<unsigned>(length) >= sizeof(line)) {
+                imu::drop_logs(1);
+                continue;
+            }
+            if (used + static_cast<unsigned>(length) >= sizeof(batch)) flush();
+            for (int i = 0; i < length; ++i) batch[used++] = line[i];
+            batch[used] = '\0';
+            ++count;
+        } else flush();
+        if (tx_time_get() - last_status >= TX_TIMER_TICKS_PER_SECOND) {
+            flush();
+            last_status = tx_time_get();
+            const auto status = imu::snapshot();
+            char line[384];
+            std::snprintf(line, sizeof(line),
+                "# BMI088 init=%u err=%u aid=%02x gid=%02x src=%u reg=%02x expect=%02x got=%02x cpu=%lu tick=%lu\r\n"
+                "# STATS a=%lu g=%lu missed=%lu/%lu spierr=%lu/%lu overlap=%lu/%lu stale=%lu/%lu latmax=%lu/%lu readmax=%lu/%lu logdrop=%lu wait=%lu valid=%u/%u\r\n",
+                status.initialized, static_cast<unsigned>(status.info.error), status.info.accel_id,
+                status.info.gyro_id, static_cast<unsigned>(status.info.sensor), status.info.reg,
+                status.info.expected, status.info.observed, static_cast<unsigned long>(platform::cpu_hz()), last_status,
+                static_cast<unsigned long>(status.stats[0].events), static_cast<unsigned long>(status.stats[1].events),
+                static_cast<unsigned long>(status.stats[0].missed), static_cast<unsigned long>(status.stats[1].missed),
+                static_cast<unsigned long>(status.stats[0].errors), static_cast<unsigned long>(status.stats[1].errors),
+                static_cast<unsigned long>(status.stats[0].overlaps), static_cast<unsigned long>(status.stats[1].overlaps),
+                static_cast<unsigned long>(status.stats[0].stale), static_cast<unsigned long>(status.stats[1].stale),
+                static_cast<unsigned long>(status.stats[0].maximum_latency_us), static_cast<unsigned long>(status.stats[1].maximum_latency_us),
+                static_cast<unsigned long>(status.stats[0].maximum_read_us), static_cast<unsigned long>(status.stats[1].maximum_read_us),
+                static_cast<unsigned long>(status.dropped_logs), static_cast<unsigned long>(status.wait_timeouts),
+                status.sample.accel.metadata.valid, status.sample.gyro.metadata.valid);
+            platform::write(line);
+            const auto micro = [](float value) { return std::lround(value*1000000.0F); };
+            const auto& c = status.calibration;
+            std::snprintf(line,sizeof(line),
+                "# CAL gyro=%u accel=%u quality=%u err=%u a=%lu g=%lu restart=%lu bias_u=%ld/%ld/%ld accel_bias_u=%ld/%ld/%ld scale_u=%ld/%ld/%ld var_n=%ld temp_mc=%ld temp_valid=%u\r\n",
+                status.gyro_calibrated,status.accel_calibrated,static_cast<unsigned>(c.quality),
+                static_cast<unsigned>(status.calibration_error),
+                static_cast<unsigned long>(status.calibration_samples[0]),static_cast<unsigned long>(status.calibration_samples[1]),
+                static_cast<unsigned long>(status.calibration_restarts),
+                micro(c.gyro_bias_rad_s.x),micro(c.gyro_bias_rad_s.y),micro(c.gyro_bias_rad_s.z),
+                micro(c.accel_bias_m_s2.x),micro(c.accel_bias_m_s2.y),micro(c.accel_bias_m_s2.z),
+                micro(c.accel_scale.x),micro(c.accel_scale.y),micro(c.accel_scale.z),
+                std::lround(c.stationary_gyro_variance*1000000000.0F),std::lround(c.temperature_c*1000.0F),c.temperature_valid);
+            platform::write(line);
+            const auto& a = status.sample.accel;
+            const auto& g = status.sample.gyro;
+            std::snprintf(line,sizeof(line),
+                "# CORR a_seq=%lu ax_u=%ld ay_u=%ld az_u=%ld g_seq=%lu gx_u=%ld gy_u=%ld gz_u=%ld valid=%u/%u\r\n",
+                static_cast<unsigned long>(a.metadata.sequence),micro(a.value.x),micro(a.value.y),micro(a.value.z),
+                static_cast<unsigned long>(g.metadata.sequence),micro(g.value.x),micro(g.value.y),micro(g.value.z),
+                a.metadata.valid,g.metadata.valid);
+            platform::write(line);
+        }
     }
 }
 }
 
 unsigned int app_start(void) {
-    return tx_thread_create(&startup_thread, const_cast<char*>("startup"), run, 0,
-                            stack, sizeof(stack), 10, 10, TX_NO_TIME_SLICE, TX_AUTO_START);
+    platform::start_timer();
+    const auto status = self_flight::imu::start();
+    if (status != TX_SUCCESS) return status;
+    return tx_thread_create(&log_thread, const_cast<char*>("usb_log"), run, 0,
+                            stack, sizeof(stack), 15, 15, TX_NO_TIME_SLICE, TX_AUTO_START);
 }

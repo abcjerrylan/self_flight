@@ -55,3 +55,6 @@ checked 操作返回 bool，失败时保持输出原值，也支持输入/输出
 所有 metadata 默认 invalid；PilotCommand 默认 failsafe；FlightStatus 默认 Boot；电机输出为零且许可 false。校准默认 Unknown，比例为单位值不代表已完成标定。
 
 P1 不含状态机、校准计算、消息同步或序列连续性检查。序号未来按 uint32 模运算处理回绕，并明确重启代次，不能简单用无符号大小判定新旧。结构体不直接序列化为日志/Flash：后续定义稳定编码、字节序、版本和校验，避免 padding 和 ABI 差异。
+
+
+P2B已增加原创标定计算：传感器SI轴上先扣偏置/乘比例，再执行安装旋转。完整quality仅在加计参数通过且启动gyro静止窗口通过后为Accepted；gyro_calibrated/accel_calibrated区分两路状态。原始metadata.valid与标定质量独立。身份tag仅代表固定板型/器件配置，不能唯一识别物理单板；Flash参数服务尚未实现。详见imu-calibration.md。

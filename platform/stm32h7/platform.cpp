@@ -3,14 +3,31 @@
 #include "usb_log.h"
 #include "ux_api.h"
 #include "ux_device_class_cdc_acm.h"
+#include "imu.hpp"
 #include <cstring>
 
 extern "C" {
 extern TIM_HandleTypeDef htim2;
+extern SPI_HandleTypeDef hspi2;
 }
 
 namespace {
 UX_SLAVE_CLASS_CDC_ACM* volatile usb = nullptr;
+bool spi_transfer(void*, self_flight::bmi088::Sensor sensor, const std::uint8_t* tx,
+                  std::uint8_t* rx, std::size_t count) {
+    const auto pin = sensor == self_flight::bmi088::Sensor::Accel ? BMI088_A_CS_Pin : BMI088_G_CS_Pin;
+    HAL_GPIO_WritePin(GPIOD, pin, GPIO_PIN_RESET);
+    const auto status = HAL_SPI_TransmitReceive(&hspi2, const_cast<std::uint8_t*>(tx), rx,
+                                                static_cast<std::uint16_t>(count), 2);
+    HAL_GPIO_WritePin(GPIOD, pin, GPIO_PIN_SET);
+    return status == HAL_OK;
+}
+void delay_ms(void*, unsigned ms) { tx_thread_sleep(ms + 1); }
+}
+
+extern "C" void HAL_GPIO_EXTI_Callback(std::uint16_t pin) {
+    if (pin == BMI088_A_DRDY_Pin) self_flight::imu::drdy(self_flight::bmi088::Sensor::Accel);
+    if (pin == BMI088_G_DRDY_Pin) self_flight::imu::drdy(self_flight::bmi088::Sensor::Gyro);
 }
 
 void usb_log_attach(void* instance) {
@@ -23,6 +40,9 @@ void usb_log_attach(void* instance) {
 }
 
 namespace platform {
+CriticalSection::CriticalSection() : interrupts(__get_PRIMASK()) { __disable_irq(); }
+CriticalSection::~CriticalSection() { __set_PRIMASK(interrupts); }
+self_flight::bmi088::Bus imu_bus() { return {nullptr, spi_transfer, delay_ms}; }
 void start_timer() {
     if (HAL_TIM_Base_Start(&htim2) != HAL_OK) Error_Handler();
 }
@@ -30,6 +50,7 @@ void start_timer() {
 std::uint32_t cpu_hz() { return HAL_RCC_GetSysClockFreq(); }
 
 std::uint64_t time_us() {
+    const CriticalSection lock;
     static std::uint32_t previous = 0;
     static std::uint64_t high = 0;
     const auto count = __HAL_TIM_GET_COUNTER(&htim2);
@@ -38,9 +59,9 @@ std::uint64_t time_us() {
     return high + count;
 }
 
-void write(const char* text) {
+bool write(const char* text) {
     auto* device = usb;
-    if (!device || !device->ux_slave_class_cdc_acm_data_dtr_state) return;
+    if (!device || !device->ux_slave_class_cdc_acm_data_dtr_state) return false;
     ULONG sent = 0;
     auto* data = const_cast<UCHAR*>(reinterpret_cast<const UCHAR*>(text));
     if (ux_device_class_cdc_acm_write(device, data, std::strlen(text), &sent) != UX_SUCCESS) {
@@ -51,6 +72,8 @@ void write(const char* text) {
             usb = nullptr; // Resume on USB reconnection after a failed transfer.
         }
         tx_interrupt_control(interrupts);
+        return false;
     }
+    return sent == std::strlen(text);
 }
 }

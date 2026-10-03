@@ -1,0 +1,243 @@
+{
+  "date": "2026-10-03",
+  "firmware_state": "on-board static correction, motion rejection and stationary recovery verified",
+  "board": "User MicoAir743v2-AIO-35A; model identities do not uniquely bind this physical unit",
+  "calibration": {
+    "accel_bias_m_s2": [
+      -0.0192642212,
+      0.0747108459,
+      0.0111150742
+    ],
+    "accel_scale": [
+      1.00083685,
+      0.998527408,
+      1.00272143
+    ],
+    "schema_version": 1,
+    "board_identity": 1949447477,
+    "sensor_identity": 2961706782,
+    "axes": "sensor",
+    "gyro_bias_rad_s": [
+      -0.00109723292,
+      0.00161263777,
+      0.000778613496
+    ],
+    "stationary_gyro_variance": 2.40179779e-05,
+    "measured_us": 2031980781,
+    "quality": "Accepted",
+    "temperature_valid": false
+  },
+  "samples": {
+    "x-plus": {
+      "file": "build/calibration/body-x-plus.csv",
+      "sha256": "634e22cffbb4d62a5ec86fa6cf84cec83bb767ffa1507d1a416aa33139cd210e",
+      "rows_accel": 6432,
+      "rows_gyro": 7997,
+      "body_mean_m_s2": [
+        9.746401322262322,
+        0.19670756373049608,
+        -0.22626489891792412
+      ],
+      "corrected_force_mean_m_s2": 9.81077104805684
+    },
+    "x-minus": {
+      "file": "build/calibration/body-x-minus.csv",
+      "sha256": "69221264fea12b7ea016819e8fbc4da804123fda8fa3670a792174131f3f0e11",
+      "rows_accel": 6432,
+      "rows_gyro": 7998,
+      "body_mean_m_s2": [
+        -9.895823403204734,
+        -0.03962772258075316,
+        0.12629413757324218
+      ],
+      "corrected_force_mean_m_s2": 9.807903749636019
+    },
+    "y-plus": {
+      "file": "build/calibration/body-y-plus.csv",
+      "sha256": "6ee51df287e8fd60fb1fc9eae43220f39e914f6d2f0653e8725e4639eea8a108",
+      "rows_accel": 6434,
+      "rows_gyro": 7998,
+      "body_mean_m_s2": [
+        -0.5441392611924855,
+        9.817714530954785,
+        -0.05371268998022438
+      ],
+      "corrected_force_mean_m_s2": 9.818034992725975
+    },
+    "y-minus": {
+      "file": "build/calibration/body-y-minus.csv",
+      "sha256": "90073d06d99665d7e1750e488dcae0585adfed271e30b2ec0fd1c8f75b738bb6",
+      "rows_accel": 6437,
+      "rows_gyro": 7998,
+      "body_mean_m_s2": [
+        -0.2644720626473112,
+        -9.779185862438231,
+        -0.2258464522691993
+      ],
+      "corrected_force_mean_m_s2": 9.811002867539836
+    },
+    "z-plus": {
+      "file": "build/calibration/body-z-plus.csv",
+      "sha256": "9ade8ac953b288f0882a92e7ee43a4ff2dba6a060f51397ede1df049b32186b5",
+      "rows_accel": 6432,
+      "rows_gyro": 7998,
+      "body_mean_m_s2": [
+        0.13946559679970813,
+        0.09779599094675548,
+        9.768920106580364
+      ],
+      "corrected_force_mean_m_s2": 9.809381406701966
+    },
+    "z-minus": {
+      "file": "build/calibration/body-z-minus.csv",
+      "sha256": "8c95cb38842d01b3c4e92b40337633ddd1fac0bbec3e938b27f8e7a0aacfefae",
+      "rows_accel": 6433,
+      "rows_gyro": 7998,
+      "body_mean_m_s2": [
+        -0.26406708203337526,
+        -0.01223822993796331,
+        -9.791150028518494
+      ],
+      "corrected_force_mean_m_s2": 9.80861436532153
+    }
+  },
+  "onboard_static_holdout": {
+    "cal_status": {
+      "gyro": "1",
+      "accel": "1",
+      "quality": "2",
+      "err": "0",
+      "a": "2416",
+      "g": "2998",
+      "restart": "0",
+      "bias_u": "-701/1319/889",
+      "accel_bias_u": "-19264/74711/11115",
+      "scale_u": "1000837/998527/1002721",
+      "var_n": "23550",
+      "temp_mc": "30375",
+      "temp_valid": "1"
+    },
+    "corrected_summary": {
+      "A": {
+        "rows": 16082,
+        "valid": 16082,
+        "invalid": 0,
+        "sequence_gaps": 0,
+        "duplicates": 0,
+        "backward": 0,
+        "event_rate_hz": 803.5833992991969,
+        "dt_us_min": 1237,
+        "dt_us_max": 1253,
+        "latency_us_max": 80,
+        "read_us_max": 56,
+        "body_mean_si": [
+          -0.18402654936090512,
+          0.03464992052907919,
+          -9.803117445795957
+        ],
+        "body_stddev_si": [
+          0.03171255079648875,
+          0.025931219526138756,
+          0.03261648305299218
+        ],
+        "mean_force_norm_m_s2": 9.804991379812279
+      },
+      "G": {
+        "rows": 19990,
+        "valid": 19990,
+        "invalid": 0,
+        "sequence_gaps": 0,
+        "duplicates": 0,
+        "backward": 0,
+        "event_rate_hz": 998.8620697857241,
+        "dt_us_min": 947,
+        "dt_us_max": 1055,
+        "latency_us_max": 88,
+        "read_us_max": 41,
+        "body_mean_si": [
+          -0.0004914166425865321,
+          0.0003998087771439082,
+          -5.780106227989629e-05
+        ],
+        "body_stddev_si": [
+          0.004903595063865102,
+          0.003980829141518573,
+          0.004352349794963206
+        ]
+      }
+    },
+    "onboard_correction_check": {
+      "matched_rows": {
+        "A": 20,
+        "G": 20
+      },
+      "maximum_absolute_error_micro": {
+        "A": 1.0172764137387276,
+        "G": 0.7355639683048878
+      },
+      "bias_source": "onboard logged micro-units; quantization within 0.5 micro-unit"
+    }
+  },
+  "motion_test": {
+    "reject_first": {
+      "gyro": "0",
+      "accel": "1",
+      "quality": "0",
+      "err": "4",
+      "a": "0",
+      "g": "0",
+      "restart": "36823",
+      "bias_u": "0/0/0",
+      "accel_bias_u": "-19264/74711/11115",
+      "scale_u": "1000837/998527/1002721",
+      "var_n": "0",
+      "temp_mc": "0",
+      "temp_valid": "0"
+    },
+    "reject_last": {
+      "gyro": "0",
+      "accel": "1",
+      "quality": "0",
+      "err": "1",
+      "a": "1",
+      "g": "0",
+      "restart": "43866",
+      "bias_u": "0/0/0",
+      "accel_bias_u": "-19264/74711/11115",
+      "scale_u": "1000837/998527/1002721",
+      "var_n": "0",
+      "temp_mc": "0",
+      "temp_valid": "0"
+    },
+    "recovery_first": {
+      "gyro": "0",
+      "accel": "1",
+      "quality": "0",
+      "err": "1",
+      "a": "1375",
+      "g": "1709",
+      "restart": "102320",
+      "bias_u": "0/0/0",
+      "accel_bias_u": "-19264/74711/11115",
+      "scale_u": "1000837/998527/1002721",
+      "var_n": "0",
+      "temp_mc": "0",
+      "temp_valid": "0"
+    },
+    "recovery_last": {
+      "gyro": "1",
+      "accel": "1",
+      "quality": "2",
+      "err": "0",
+      "a": "2413",
+      "g": "2999",
+      "restart": "102320",
+      "bias_u": "-840/1375/799",
+      "accel_bias_u": "-19264/74711/11115",
+      "scale_u": "1000837/998527/1002721",
+      "var_n": "24916",
+      "temp_mc": "32125",
+      "temp_valid": "1"
+    }
+  }
+}

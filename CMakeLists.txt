@@ -30,10 +30,19 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 add_library(flight_core STATIC
     flight/core/src/math.cpp
     flight/core/src/time.cpp
+    flight/core/src/calibration.cpp
 )
 add_library(self_flight::core ALIAS flight_core)
 target_include_directories(flight_core PUBLIC flight/core/include)
 target_compile_features(flight_core PUBLIC cxx_std_17)
+add_library(bmi088 STATIC drivers/bmi088.cpp)
+target_include_directories(bmi088 PUBLIC drivers)
+target_link_libraries(bmi088 PUBLIC self_flight::core)
+if(MSVC)
+    target_compile_options(bmi088 PRIVATE /W4 /WX)
+else()
+    target_compile_options(bmi088 PRIVATE -Wall -Wextra -Wpedantic -Werror)
+endif()
 if(MSVC)
     target_compile_options(flight_core PRIVATE /W4 /WX /fp:precise)
 else()

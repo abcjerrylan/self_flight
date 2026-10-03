@@ -1,6 +1,6 @@
-# MicoAir743v2-AIO-35A：P2A 板级启动
+# MicoAir743v2-AIO-35A：P2A/P2B 板级启动与采样
 
-P2A 的软件生成与 Debug/Release 编译链接已完成。日志已改为板上 USB 虚拟串口，USART1 留给其他用途；COM51 枚举、每秒日志和 DTR 控制已实测通过，其余实机项目待验证。
+P2A/P2B 软件与 Debug/Release 构建已完成。USB 虚拟串口输出 BMI088 原始样本和每秒诊断，USART1 留给其他用途；ID、两路采样速率和20秒连续记录已实测通过。加计/陀螺三轴方向也已基本实测通过，详情见验证记录。
 
 ## 当前配置
 
@@ -18,21 +18,21 @@ P2A 的软件生成与 Debug/Release 编译链接已完成。日志已改为板�
 | 电机脚 | PE14 / PE13 / PE11 / PE9：普通 GPIO、低电平、下拉；未启用 TIM1 |
 | Flash / 主 RAM | 0x08000000 / 2 MB；AXI SRAM 0x24000000 / 512 KB；初始 MSP 0x24080000 |
 
-保留 CubeMX 生成的 MPU 基线，当前不启用 I/D Cache，也不使用 DMA。DMA 可达性、缓冲区和 Cache 配置随 P2B 实际采样方案接入。
+保留 CubeMX 生成的 MPU 基线，当前不启用 I/D Cache，也不使用 DMA。P2B 使用短 SPI 阻塞传输，不需要 DMA/Cache 配置。
 
 引脚依据：[官方 AIO-35A 手册](https://micoair.cn/zh/docs/flight-controller/micoair743-aio-series/micoair743v2-aio-35a-manual)。实物版号尚未确认。
 
-后续资源保留：BMI088 SPI2 PD3/PC2/PC3，两路 CS PD5/PD4、DRDY PC15/PC14；RC USART6 PC6/PC7；SPL06 I²C2 PB10/PB11。这些外围尚未生成或实现。
+BMI088 已接入：SPI2 PD3/PC2_C/PC3_C，6MHz mode3；PD4/PD5 accel/gyro CS，PC14/PC15 DRDY。PC2_C/PC3_C 数字开关显式闭合，PA15 的 BMI270 CS 保持高。配置见 [P2B说明](../../docs/p2b-imu.md)。RC USART6 PC6/PC7、SPL06 I²C2 PB10/PB11 仍只保留资源，未实现。
 
 ## 启动代码
 
-CubeMX `main.c` 完成 MPU、HAL、时钟、GPIO、TIM2 和 USB PCD 初始化，然后进入 ThreadX。`App_ThreadX_Init` 的 USER CODE 块调用 `app_start()`，创建一个 4096 字节静态栈的线程，优先级 10。
+CubeMX `main.c` 完成 MPU、HAL、公共外设时钟、GPIO、SPI2、TIM2 和 USB PCD 初始化，然后进入 ThreadX。`App_ThreadX_Init` 的 USER CODE 块调用 `app_start()`，先启动 TIM2，再创建采样线程（优先级5）和 USB 日志线程（优先级15），两者静态栈均4096字节。
 
-线程启动 TIM2，每秒输出设备名、`seq`、CPU 配置频率、自 TIM2 启动以来的秒/微秒、RTOS tick 与 `dt_us`。USB 发送后再 sleep，因此相邻日志的 `dt_us` 包含发送时间，不是精确周期任务。
+DRDY ISR 只记录事件时间和序号；采样线程独占SPI2，读取原始值和可用时间；USB线程从256条固定队列取日志、合并发送，每秒追加诊断。采样线程不等待USB发送。
 
-USBX 使用静态 32 KB 应用池，其中分配 16 KB 系统堆和启动线程栈；启动线程设置 RX/TX FIFO（128/64/64/16 words）、绑定 STM32 DCD 并启动 PCD。USBX 与 ThreadX 均配置 1000 Hz。只在 CDC 已激活且电脑设置 DTR 时同步发送，最多等待 100 ms；未连接或未打开串口时直接跳过，不等待电脑。传输异常后中止当前发送，重插 USB 恢复日志。当前只有低频启动线程发送，不在 ISR 或快速控制线程中调用。
+USBX 使用静态 32 KB 应用池，其中分配 16 KB 系统堆和启动线程栈；启动线程设置 RX/TX FIFO（128/64/64/16 words）、绑定 STM32 DCD 并启动 PCD。USBX 与 ThreadX 均配置 1000 Hz。只在 CDC 已激活且电脑设置 DTR 时同步发送，最多等待 100 ms；未连接或未打开串口时直接跳过，不等待电脑。传输异常后中止当前发送，重插 USB 恢复日志。发送只在低优先级USB线程中进行，不在 ISR 或采样线程中调用；未发送的日志计入logdrop。
 
-`platform::time_us()` 比较本次与上次 TIM2 计数，回绕时给高 32 位加一。当前只有启动线程调用，每秒读取一次；不能在多个线程/ISR 中并发调用，也不能超过一次回绕周期（约 71.6 分钟）不读取。P2B 的中断采样时间戳需要调整这个所有权。
+`platform::time_us()` 比较本次与上次 TIM2 计数，回绕时给高 32 位加一。P2B 使用短 PRIMASK 临界区保护高低位扩展，恢复进入前的屏蔽状态，可由线程和ISR调用；不能超过一次回绕周期（约71.6分钟）不读取。实机回绕仍待验证。
 
 ## 构建与重新生成
 
@@ -58,10 +58,12 @@ CubeMX 6.15 的 CLI CMake 模板会生成绝对路径，并在 Windows 下把 sy
 
 1. 无需焊 SWD。按住 BOOT0 按钮再插入 USB 数据线，按[官方 USB 下载教程](https://micoair.cn/zh/docs/flight-controller/flight-controller-firmware-tutorial-ardupilot-px4-betaflight-inav)进入 DFU。CubeProgrammer 选择 USB 连接，下载本次生成的 `build/mcu-debug/self_flight.hex`，并校验。HEX 自带目标地址，不给它另填应用偏移。
 2. 下载完成后断开 USB，松开 BOOT0，正常重插，让当前应用启动。设备管理器的“端口（COM 和 LPT）”应出现 USB Serial Device (COMx)。Windows 的 CDC ACM 使用[系统 Usbser 驱动](https://learn.microsoft.com/en-us/windows-hardware/drivers/usbcon/usb-driver-installation-based-on-compatible-ids)。DFU 下载和应用虚拟串口是同一 USB 接口的不同启动模式。
-3. 关闭 CubeProgrammer，串口终端打开新 COMx，选择 115200 / 8N1，**启用 DTR**。这里的波特率只是虚拟串口参数，没有 UART 引脚传输。预期每秒一行：
+3. 关闭 CubeProgrammer，串口终端打开新 COMx，选择 115200 / 8N1，**启用 DTR**。这里的波特率只是虚拟串口参数，没有 UART 引脚传输。P2B 预期逐样本CSV，并每秒追加两行诊断：
 
    ```text
-   self_flight USB seq=10 cpu=400000000 t=11.000123s tick=11000 dt_us=1000010
+   IMU,G,10,1000123,1000133,1000153,0,1,-2,0,1
+   # BMI088 init=1 err=0 aid=1e gid=0f src=0 reg=02 expect=00 got=00 cpu=400000000 tick=1000
+   # STATS a=800 g=1000 missed=0/0 spierr=0/0 overlap=0/0 stale=0/0 latmax=50/50 readmax=30/30 logdrop=0 wait=0 valid=1/1
    ```
 
    示例只表达格式，不是实测值。打开较晚时 `seq` 已递增，不保证从 0 开始。如果仍显示 STM32 BOOTLOADER，则没有进入应用模式；若有 COM 但没日志，先检查 DTR，发生发送超时后重插 USB。
@@ -69,4 +71,4 @@ CubeMX 6.15 的 CLI CMake 模板会生成绝对路径，并在 Windows 下把 sy
 4. 检查正常枚举、打开/关闭串口、USB 重插和每秒输出。验证不打开串口时程序继续运行，暂停读取时发送最多等待 100 ms。检查 tick 与秒时间持续增加；比较数十秒时间增量与独立参考时间，并连续运行至少 75 分钟观察 TIM2 回绕后时间不倒退。有调试器后可核对 RCC、TIM2 PSC/ARR 和 SysTick reload。
 5. 验证复位能重新启动、四路电机脚没有脉冲，USART1 对应外设不受日志占用。记录测试条件和实际误差后，才把 P2A 实机验证标记通过。
 
-完成后进入 P2B：BMI088 的 ID、配置、DRDY 与带时间戳的原始数据。当前没有 IMU 驱动和电机协议输出。
+P2B 已实现并实测 BMI088 的 ID、配置、DRDY 与原始数据时间戳；详细采集、回放和方向验收见 [P2B说明](../../docs/p2b-imu.md)。当前没有电机协议输出。

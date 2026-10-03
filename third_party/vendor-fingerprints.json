@@ -200,6 +200,14 @@
       "sha256": "27c198869e9a02d059427189d0897130172c10d64a8c993cb57ee9231ebd44cf"
     },
     {
+      "file": "Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_spi_ex.h",
+      "sha256": "44d854991d118840677da5ce86d88b1e555fe811808354522ad2f198ac4fa66c"
+    },
+    {
+      "file": "Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_spi.h",
+      "sha256": "9ea983fd0e3148a3291b2aa56b1d01709374a3a3845d6b592b3d3356b71f6cb5"
+    },
+    {
       "file": "Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_tim_ex.h",
       "sha256": "c6e76b135cc6bff07ad4b84a76d7eedb3a63ddba472131595c4655ac37ed7196"
     },
@@ -250,6 +258,10 @@
     {
       "file": "Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_ll_rcc.h",
       "sha256": "811ac8f472d426f2d7542d1e5987f1771035637bbdf69d9197f02cd52bb9f2e9"
+    },
+    {
+      "file": "Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_ll_spi.h",
+      "sha256": "637d0822e248429fd87182786f1e727860dc52645440405642e08f5df13bf565"
     },
     {
       "file": "Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_ll_system.h",
@@ -338,6 +350,14 @@
     {
       "file": "Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_rcc.c",
       "sha256": "99c51eaf3e01a9040e3080b2d0f537fd546e63792b571f74fc39bdc481d82116"
+    },
+    {
+      "file": "Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_spi_ex.c",
+      "sha256": "d7262bb17d9c4949ff4be52cb287ab823415ea59019ed89a4750d6c5c1997988"
+    },
+    {
+      "file": "Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_spi.c",
+      "sha256": "862a531faa657484a7af61412387f146587e4430cbfdcf104749f48683ab419c"
     },
     {
       "file": "Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_tim_ex.c",
