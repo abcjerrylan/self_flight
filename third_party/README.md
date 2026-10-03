@@ -1,15 +1,13 @@
-# 依赖来源与锁定策略
+# 依赖来源与锁定
 
-P1 **没有引入或下载第三方源码**。核心与测试为本轮原创实现；标准库、CMake/CTest/Ninja/编译器属于基础工具。没有参考工程 include/link/submodule 依赖。
+P1 核心没有第三方库。P2A 从本机已安装的官方包通过 CubeMX 生成并复制 HAL/CMSIS/ThreadX/USBX，未复制 PNX 的依赖，也没有自动下载或升级。
 
-`dependencies.json` 记录本轮工具版本与 P2 待选依赖，不把未选择版本写成已锁定。工具路径由本机 PATH 或私有 preset 提供，共享工程不保存 Windows 绝对路径。
+锁定 **CubeMX 6.15.0、STM32CubeH7 V1.12.1、X-CUBE-AZRTOS-H7 3.4.0 / ThreadX、USBX 6.4.0、ARM GCC 13.3.1**。版本、官方来源与两份官方归档 SHA-256 见 [dependencies.json](dependencies.json)。HAL 为 1.11.5，CMSIS Device 为 1.10.6；Core 头文件的版本宏为 5.3。
 
-P2 在实际验证兼容组合后：
+厂商源码位于 `boards/micoair743v2_aio35/generated/micoair743v2_aio35/Drivers` 和 `Middlewares`，共 406 个文件，与所选官方包逐项字节一致，摘要见 [vendor-fingerprints.json](vendor-fingerprints.json)。没有修改厂商源码。独立检出可直接构建 MCU，正常构建不需要固件安装目录或网络。
 
-1. 锁定 CubeMX 版本、STM32CubeH7 完整包版本、HAL/CMSIS 子版本或提交，以及与包匹配的 ThreadX 版本/提交和 M7 端口。
-2. 优先取得厂商官方归档和官方 Git 指定提交，不使用浮动 master/latest。下载文件记录 SHA-256，Git 依赖记录完整 commit。
-3. 记录获取步骤、目标目录、完整包/子目录关系、每个组件实际 LICENSE 和必要改动。ST 包内不同组件可能使用不同许可，不能统一猜测。
-4. 选择把完整必要源纳入版本管理或建立校验的获取脚本；无论哪种，独立检出必须能按文档构建，不能引用本机厂商安装目录中的源码。
-5. 不复制 PNX 中的依赖，不让 host 自动获取 MCU 组件，构建不自动升级已锁定项。
+需要重新生成时，在 CubeMX 中安装指定版本的 STM32CubeH7 和 X-CUBE-AZRTOS-H7 包，依其安装流程接受许可，核对归档摘要，然后使用 [板级生成脚本](../boards/micoair743v2_aio35/README.md)。不使用浮动 latest/master；没有需要构建时自动获取的源码。
 
-原创核心目前不引用 DSP、Eigen、开源姿态实现或测试框架；简单原生测试足以覆盖 P1。整体仓库对外发布许可尚未选择，本轮不发布。
+保留各组件实际 LICENSE、ThreadX/USBX LICENSED-HARDWARE，以及 `licenses/` 中两份完整包的条款。不同组件许可不同；此旧 Azure RTOS 包中的 ThreadX/USBX 使用 Microsoft Azure RTOS 条款，不能按当前其他发行版统一写成 MIT。源码原有版权声明均保留。
+
+仅新增原创平台/启动/构建接入。整体项目原创部分的开源许可尚未选择，本轮没有提交、推送或发布这些修改。

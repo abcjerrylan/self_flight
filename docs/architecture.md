@@ -2,7 +2,7 @@
 
 ## 当前有效实现
 
-`flight/core` 是纯 C++17 静态库：数学和时间检查已有实现，飞控数据对象已有定义。控制器、状态机和硬件服务尚未实现，不能从结构体名称推导出这些功能已经完成。
+`flight/core` 是纯 C++17 静态库：数学和时间检查已有实现，飞控数据对象已有定义。P2A 已加入真实 H743 启动、ThreadX、TIM2 时间和 USB CDC ACM 日志；控制器、状态机与 IMU 服务尚未实现。
 
 依赖方向为 `app → services → core/drivers → platform → board/HAL`。core 独立，不包含 HAL、ThreadX、板型或引脚，不获取硬件时间、不动态分配内存。业务算法未来在 `flight/core` 下增量扩展。
 
@@ -12,13 +12,15 @@
 
 顶层先选择 host/mcu，再进入 CMake `project`。host 不设置工具链、不查找板目录、不获取 MCU 依赖。源文件显式列出，没有递归 glob 或外部路径注入。
 
-当前使用同一 `flight_core` 源码创建静态库，再链接原生测试。`BUILD_TESTING=OFF` 可以只构建库。未知目标、host 传入工具链、ARM 编译器用于 host 和尚未实现的 mcu 都应明确失败。
+使用同一 `flight_core` 源码创建静态库，分别链接原生测试或 MCU 固件。host 的 `BUILD_TESTING=OFF` 可以只构建库。未知目标、host 传入工具链或 ARM 编译器用于 host 应明确失败。
 
-后续真实 MCU 工程落地时，保留核心目标，在独立板级集成中加载 CubeMX 代码和锁定依赖。需要在首次 `project` 前选定 ARM 工具链，不能在原生 build 目录切换工具链；使用独立 `build/mcu-<board>`。
+MCU 板级集成加载真实 CubeMX 代码和锁定依赖。首次 `project` 前选定 ARM 工具链，使用独立 `build/mcu-debug` 与 `build/mcu-release`，不在原生 build 目录切换工具链。
 
 ## 运行契约
 
-板级计时器扩展为 64 位单调微秒，由采样服务传入 core。平台负责计数回绕和并发，core 只检查已经扩展的时间。控制器未来显式使用 `dt`，不把 RTOS tick 或固定 sleep 当作真实采样间隔。
+TIM2 扩展为 64 位微秒，P2A 只有启动线程读取，每秒检查一次回绕；不能并发调用或漏过完整回绕周期。P2B 在接入 ISR 采样时再实现其时间戳所有权。core 只检查已经扩展的时间。控制器未来显式使用 `dt`，不把 RTOS tick 或固定 sleep 当作真实采样间隔。
+
+USB 日志由当前低频启动线程同步发送，打开串口并设置 DTR 后才输出，每次发送最多等待 100 ms。没有等待电脑连接的启动循环，也没有额外日志队列。异常发送中止后需重插 USB；发送不用于 ISR 或未来快速控制线程。USBX 与 ThreadX 时基均为 1000 Hz。
 
 ISR 仅记录时间/状态与通知；后续快速线程拥有 IMU 采样与控制链路。样本流、最新状态和日志分开设计；`data.hpp` 的对象不是线程安全消息容器，需要 service 层提供一致发布与读取。
 

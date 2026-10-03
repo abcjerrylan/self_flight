@@ -1,0 +1,1631 @@
+{
+  "schema_version": 1,
+  "root": "boards/micoair743v2_aio35/generated/micoair743v2_aio35",
+  "provenance": "All vendored files byte-match installed official STM32CubeH7 V1.12.1 or X-CUBE-AZRTOS-H7 3.4.0 archives",
+  "files": [
+    {
+      "file": "Drivers/CMSIS/Device/ST/STM32H7xx/Include/stm32h743xx.h",
+      "sha256": "b9463dc0f4316851b411469d08a6f275062fc7324397d3d0a09edfb58cab2df1"
+    },
+    {
+      "file": "Drivers/CMSIS/Device/ST/STM32H7xx/Include/stm32h7xx.h",
+      "sha256": "9bad4fffca7a09b179e6be9d55204eff634cda7e2cec620a79002f6f4d0e0bcf"
+    },
+    {
+      "file": "Drivers/CMSIS/Device/ST/STM32H7xx/Include/system_stm32h7xx.h",
+      "sha256": "edbd2ae253530241ca82470fde1db4de1b0ba856590d69b17d3342b952c1fcba"
+    },
+    {
+      "file": "Drivers/CMSIS/Device/ST/STM32H7xx/LICENSE.txt",
+      "sha256": "135fb2d86e9ecdf6824cc3bba21c72b8e380c07b055fbebb6b995463eb609baf"
+    },
+    {
+      "file": "Drivers/CMSIS/Include/cmsis_armcc.h",
+      "sha256": "5a80286d68d0b4478895a222da683c8ca561d3bcf6392aaaea225d4a117c843e"
+    },
+    {
+      "file": "Drivers/CMSIS/Include/cmsis_armclang_ltm.h",
+      "sha256": "e8f040e9ef61e466cc751677ab3c413a463cb74d1fc33fb6dfd94225bd93c8c1"
+    },
+    {
+      "file": "Drivers/CMSIS/Include/cmsis_armclang.h",
+      "sha256": "e24f4bd1548b94e0ad424f4f13f59a4db4ca5aad7b644d10a893a330775d3003"
+    },
+    {
+      "file": "Drivers/CMSIS/Include/cmsis_compiler.h",
+      "sha256": "b51963d271c1571ca3463654c76aa7ea50c4eac5d0a2710df10414ac64d9e0f8"
+    },
+    {
+      "file": "Drivers/CMSIS/Include/cmsis_gcc.h",
+      "sha256": "1fba3e120e5c0a439e0982bd37fae04bd033dbd14187428214462a1707c56252"
+    },
+    {
+      "file": "Drivers/CMSIS/Include/cmsis_iccarm.h",
+      "sha256": "820bcd68b0a92f97abf5cdde6413e5e842fb286e0514be2c1be1547bb2dd2e7d"
+    },
+    {
+      "file": "Drivers/CMSIS/Include/cmsis_version.h",
+      "sha256": "1b2c47a90e9ae741c8fd4d0f323495327b25ff5d555a6c7afd6749a65ba1bb8e"
+    },
+    {
+      "file": "Drivers/CMSIS/Include/core_armv81mml.h",
+      "sha256": "b4bc83a6ff10fd2fb7e4c0abefdbd447eb7f78f3db898ca9aac5676307e2b862"
+    },
+    {
+      "file": "Drivers/CMSIS/Include/core_armv8mbl.h",
+      "sha256": "74b92c994af7355e222b45a0342754840b7221b611ef95bd206345879cc2caaa"
+    },
+    {
+      "file": "Drivers/CMSIS/Include/core_armv8mml.h",
+      "sha256": "77255f30508cf0d225f8b72207e28bf81353f8b353e8b120132c6db7e9bead9e"
+    },
+    {
+      "file": "Drivers/CMSIS/Include/core_cm0.h",
+      "sha256": "52e8826259be4fcb10d0de2d3655c24d52436e54cd1509f3beb1a31a45524f38"
+    },
+    {
+      "file": "Drivers/CMSIS/Include/core_cm0plus.h",
+      "sha256": "36e9aec815eef944241e5fed7085845346de6bcb5ba30561f956356b393ba5f0"
+    },
+    {
+      "file": "Drivers/CMSIS/Include/core_cm1.h",
+      "sha256": "944bf0c4f940eef30a632cd99d5dcfe8270e8a8431eb98c0f081bcf4f61f728e"
+    },
+    {
+      "file": "Drivers/CMSIS/Include/core_cm23.h",
+      "sha256": "f04d3e5f385b0ff219a75f6648acabf7debb779a72f0628573b64dac5ad49fdc"
+    },
+    {
+      "file": "Drivers/CMSIS/Include/core_cm3.h",
+      "sha256": "0191499015f3af7b37ce83092df29d1d63dbba9fa5f31b6d2341a2e850b20cb4"
+    },
+    {
+      "file": "Drivers/CMSIS/Include/core_cm33.h",
+      "sha256": "3566c5bf835091b1cc46baf6e9b6ce94d83dd0885e0db122f43e901e9326945a"
+    },
+    {
+      "file": "Drivers/CMSIS/Include/core_cm35p.h",
+      "sha256": "1f6da4c033261293acb8f0a7da42a0e9b6ab392c9462cc26f5e3e35d4db4e2d3"
+    },
+    {
+      "file": "Drivers/CMSIS/Include/core_cm4.h",
+      "sha256": "53d609b900c262650fcaf5a48eabd0fa299c3ac4d1426eb0f20e2aab053f8abb"
+    },
+    {
+      "file": "Drivers/CMSIS/Include/core_cm7.h",
+      "sha256": "34d91327a5f1b251c54fa6bb532d9f5ec0423bf3b7f2b679c8f7b3df95af0fc8"
+    },
+    {
+      "file": "Drivers/CMSIS/Include/core_sc000.h",
+      "sha256": "cc9037b32401824436d251de860799fcdbab3cf69e2321438c8f446f3f342526"
+    },
+    {
+      "file": "Drivers/CMSIS/Include/core_sc300.h",
+      "sha256": "e6a78d85b3ca77e35dc512e32e535028a46e156adab8629360fa4b7fe6731827"
+    },
+    {
+      "file": "Drivers/CMSIS/Include/mpu_armv7.h",
+      "sha256": "c9ad7cc99ba0481365550ae997c63cde9732d067d9ec0de28b0d6ac39280656d"
+    },
+    {
+      "file": "Drivers/CMSIS/Include/mpu_armv8.h",
+      "sha256": "53f9e848af62ea8704f463992e4d65c7c79fc72cfd8fab6fa14adc73478b0afd"
+    },
+    {
+      "file": "Drivers/CMSIS/Include/tz_context.h",
+      "sha256": "45565c8cb04c653aabaf3cceddfc848b6a0de28c20d4f7e3d475a992c7eee788"
+    },
+    {
+      "file": "Drivers/CMSIS/LICENSE.txt",
+      "sha256": "b40930bbcf80744c86c46a12bc9da056641d722716c378f5659b9e555ef833e1"
+    },
+    {
+      "file": "Drivers/STM32H7xx_HAL_Driver/Inc/Legacy/stm32_hal_legacy.h",
+      "sha256": "7fff96faed90c81364225132389b1865f67ceac8e65381b60459264c4136ee6e"
+    },
+    {
+      "file": "Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_cortex.h",
+      "sha256": "8b61853cb8eb65dabf5181e9f4a2effb3be70974800f6ddc38ae62f0310e78ae"
+    },
+    {
+      "file": "Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_def.h",
+      "sha256": "f7e6ad2cff1b770393ad76961fbb220bef0a52593e9035746e7961137061ebfc"
+    },
+    {
+      "file": "Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_dma_ex.h",
+      "sha256": "bc906d5cf9ed149185aa77a80a793e50aa4b2c7e0606f88df1a4b8900a8a26fa"
+    },
+    {
+      "file": "Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_dma.h",
+      "sha256": "564d6d26015155743f4990a354d26124d5d434673813c75df5da9572e4ac2eae"
+    },
+    {
+      "file": "Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_exti.h",
+      "sha256": "24a13bdf1e9010068e8bb123c28421f4e009c86ab949ca5df86a7065a96f0498"
+    },
+    {
+      "file": "Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_flash_ex.h",
+      "sha256": "a5634068e887b72f39c9f18816d5ca4534b1c0103c9847db5067dd866fa42ba6"
+    },
+    {
+      "file": "Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_flash.h",
+      "sha256": "96340bb9572f6c53554323795b3aa8c86962d14b0596dab550322f34dfccba7c"
+    },
+    {
+      "file": "Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_gpio_ex.h",
+      "sha256": "81b441ab0ef72718230fc3b259a120c57e253018863d9aa9e50f4f6456c866f3"
+    },
+    {
+      "file": "Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_gpio.h",
+      "sha256": "75c7e634ec0b5fa2ad6ef90b9b010a4dbac1cdd9876daf80cab2253774c092bb"
+    },
+    {
+      "file": "Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_hsem.h",
+      "sha256": "9375fc3023cde3f3ccf0a77a21d571d63acbe47f23149c2f226972cecdffdc6f"
+    },
+    {
+      "file": "Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_i2c_ex.h",
+      "sha256": "445dcca6512f91fa60903605c52f19c2792e3d00e6eba9db3a234901a9dd8c40"
+    },
+    {
+      "file": "Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_i2c.h",
+      "sha256": "6741b4870c9e870e3293996b968419b7edbd2c3477183e44663086ec6f069398"
+    },
+    {
+      "file": "Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_mdma.h",
+      "sha256": "580b7f7d97482fe435f5c3c4086f017a090ba186201db2af7c68567094e868e8"
+    },
+    {
+      "file": "Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_pcd_ex.h",
+      "sha256": "b063cfb05de32e8c0b573edd1231eae3f27e6e7cd5e57508346ee7b4c0763726"
+    },
+    {
+      "file": "Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_pcd.h",
+      "sha256": "70f865192e52b3d001a4ea32e0e95dd06fc449ac393fe8ab2a51b730a64c3824"
+    },
+    {
+      "file": "Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_pwr_ex.h",
+      "sha256": "76ec9d62421667db5a499309f50c8145d086d76b5529a7ece37331fe5de05842"
+    },
+    {
+      "file": "Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_pwr.h",
+      "sha256": "65a883328691a724d5163403e5e7db38d5a1e8ec11f7bdcf5620329bf779cdfa"
+    },
+    {
+      "file": "Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_rcc_ex.h",
+      "sha256": "cbebc9c87db8acada7da2fd06994a998528d447960ec62737fd65cace4fd34bf"
+    },
+    {
+      "file": "Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_rcc.h",
+      "sha256": "27c198869e9a02d059427189d0897130172c10d64a8c993cb57ee9231ebd44cf"
+    },
+    {
+      "file": "Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_tim_ex.h",
+      "sha256": "c6e76b135cc6bff07ad4b84a76d7eedb3a63ddba472131595c4655ac37ed7196"
+    },
+    {
+      "file": "Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_tim.h",
+      "sha256": "90eaea9d79e3e69afa3d1ef8758a07ef8809eab28e6502e46d15201f8ffa7c38"
+    },
+    {
+      "file": "Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal.h",
+      "sha256": "97aeb9e9e0c3acde0c91d025e89c7972b9ad13ab3cb735d40ad852dc395f6980"
+    },
+    {
+      "file": "Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_ll_bus.h",
+      "sha256": "0eb42ffbba51192ec0efd6463759a5fda060637ff4d694274df16b4763c882a5"
+    },
+    {
+      "file": "Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_ll_cortex.h",
+      "sha256": "e6781bfcc812a315006a5ea9ed0f0eb7db19beb095bce5136c345e0af4caed1c"
+    },
+    {
+      "file": "Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_ll_crs.h",
+      "sha256": "cb7133e48358f5cd50119c8b88c4a59634dad521f489448e04602c9efd9d2972"
+    },
+    {
+      "file": "Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_ll_dma.h",
+      "sha256": "3cf0adf0da04435eb89743523a7f9e6a23a18fd6133afed7c808acef9ee0aa76"
+    },
+    {
+      "file": "Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_ll_dmamux.h",
+      "sha256": "74cdd7b811aa394274ba645d05ae410d417f0e3836d91194e58156960d68a2ea"
+    },
+    {
+      "file": "Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_ll_exti.h",
+      "sha256": "6eee9e7ba6b688c5c848e8f318b7adc293347a4697a888cfaadc9a2cd654cc5b"
+    },
+    {
+      "file": "Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_ll_gpio.h",
+      "sha256": "3a84cb663d59954ce2a057ee58793890579b4ef15af37c8f043190b0a82c9093"
+    },
+    {
+      "file": "Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_ll_hsem.h",
+      "sha256": "7e2cc95c8dcd6b326801026d0398a46b903c94e4c3befd650a227e9a351606c2"
+    },
+    {
+      "file": "Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_ll_pwr.h",
+      "sha256": "fd20ad8efbceb8ad7169e92a365385759fc1331157a94399d9e8328e32c8a564"
+    },
+    {
+      "file": "Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_ll_rcc.h",
+      "sha256": "811ac8f472d426f2d7542d1e5987f1771035637bbdf69d9197f02cd52bb9f2e9"
+    },
+    {
+      "file": "Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_ll_system.h",
+      "sha256": "b8fa6b6b051d961eea8b74d62b1f70849ab029b112d99c3d4955400392d78462"
+    },
+    {
+      "file": "Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_ll_tim.h",
+      "sha256": "c4547de1d0e4825dc91d40bd4e9af5cc4d5eff16357c1601fc9127c8aea3f7c3"
+    },
+    {
+      "file": "Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_ll_usb.h",
+      "sha256": "1214fcc2d4046842942f3e74c0219d24be038184a2a5c395519d30f11da4e97d"
+    },
+    {
+      "file": "Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_ll_utils.h",
+      "sha256": "02f36cc8124209b5045c10a4063a7e5f4f92fb1eeb1d29f1104d94cffcbde2a5"
+    },
+    {
+      "file": "Drivers/STM32H7xx_HAL_Driver/LICENSE.txt",
+      "sha256": "d5a162f3eaf2b7b6762f00700017cae5695ebbdce7932fead8316448baafd9c1"
+    },
+    {
+      "file": "Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_cortex.c",
+      "sha256": "9df95c02feab163763ac752c17c07f0a10f6bd7d303f659e950dd8b6b4cce2c9"
+    },
+    {
+      "file": "Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_dma_ex.c",
+      "sha256": "a8bc1642a339acba8aaa7be9101854ab36319efcf2a3ba299760451af31585d1"
+    },
+    {
+      "file": "Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_dma.c",
+      "sha256": "e1b72f89360c46185e557e9ae3ad9c0b36978130dbf010ac54a089a850a9d2cf"
+    },
+    {
+      "file": "Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_exti.c",
+      "sha256": "90865afce1c097a4760b197f1c23f602edab2cfd75f19c1d56a14f02e5042411"
+    },
+    {
+      "file": "Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_flash_ex.c",
+      "sha256": "aea2f7cf88a97ff6e9eb6afd542ee9aa1f1be2946db834625df176f2a383497f"
+    },
+    {
+      "file": "Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_flash.c",
+      "sha256": "f5d7fae3a1dce51e81c099a48a39c2076ee79932a7d369a76a2dd1d5b0e8103f"
+    },
+    {
+      "file": "Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_gpio.c",
+      "sha256": "e8cb800d746479f9b768e6845dfd2c84867a0b264101afb21f5ad799e3a65ae2"
+    },
+    {
+      "file": "Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_hsem.c",
+      "sha256": "9878195481869a883edb4c2c4e5f62b7f5764ffbb517bd38a2fae4e2150f8eb0"
+    },
+    {
+      "file": "Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_i2c_ex.c",
+      "sha256": "a6c182468b914f37b8f74e2d3ba0f8d4d6cbf59efe3bf99d9739007a1d7f37d5"
+    },
+    {
+      "file": "Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_i2c.c",
+      "sha256": "c627ab3ee0f7d2989ffaa9e078ebda279b8be1b16a98362b51e804e63c8346e4"
+    },
+    {
+      "file": "Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_mdma.c",
+      "sha256": "674d7a273d208509e2941cb88d9419f549cbdfd35d4aa81b2da135bf1c1a30ad"
+    },
+    {
+      "file": "Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_pcd_ex.c",
+      "sha256": "b824518dee8baf4c19feab85b2951e25031808760ddf8fab31c6797770fbeffd"
+    },
+    {
+      "file": "Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_pcd.c",
+      "sha256": "f1c48624654428a73a196bcd83b7b8477a0b6cebb1a229088090982f957823fa"
+    },
+    {
+      "file": "Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_pwr_ex.c",
+      "sha256": "15469705b458ee696d3ca241ea85ec371c2463a5ac629ab9078d2912dab19c8c"
+    },
+    {
+      "file": "Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_pwr.c",
+      "sha256": "87dc25ff1b0a58773eeed5a87de133167cfe4306bf54aa884889a61d8a5bd7f4"
+    },
+    {
+      "file": "Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_rcc_ex.c",
+      "sha256": "ba3ffa42989a60a93e8de7f148cde4fa22c6853223d00d5d9954ad370c6012fe"
+    },
+    {
+      "file": "Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_rcc.c",
+      "sha256": "99c51eaf3e01a9040e3080b2d0f537fd546e63792b571f74fc39bdc481d82116"
+    },
+    {
+      "file": "Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_tim_ex.c",
+      "sha256": "f00d3730972ebc50ced69c9c40bfb2d5e2bbc2026e33818bc97cf2048dc47837"
+    },
+    {
+      "file": "Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_tim.c",
+      "sha256": "a629504942e13c443324ebf9efa301a003ce2880c57b7aeb59bff5a643ec829f"
+    },
+    {
+      "file": "Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal.c",
+      "sha256": "3e46894e1870c682b6362c0536d5a5ded6cf5541f54559e5cc591e90352f0bfc"
+    },
+    {
+      "file": "Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_ll_usb.c",
+      "sha256": "e18900b0d91d79d8eea02d60eec865ea0eada440a053354c81b709c33f5e890a"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/inc/tx_api.h",
+      "sha256": "caeeff32828c61bf08913527ce0414614f460b8510d632cfc755551c79ce880a"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/inc/tx_block_pool.h",
+      "sha256": "8e409bdcf0f8003e9742553cd22a16a9409dd60294598d73b165b4afc49ca425"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/inc/tx_byte_pool.h",
+      "sha256": "3f9aa2cc4f37592a9bd79880e27d240523523342307663a226755ddea5586e99"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/inc/tx_event_flags.h",
+      "sha256": "2e1ac9af4745f0dfc97744643f5673fa146c2796ce5245837cfc512d55c0e3ca"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/inc/tx_initialize.h",
+      "sha256": "6ca881c81357d258460c17e56917d350818b5daa3b1a8880f2424913c8585dcd"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/inc/tx_mutex.h",
+      "sha256": "33b16766fd7d28bd3591146b98deb29a63e9f89f1a9c80a2fea9cd3387abbb57"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/inc/tx_queue.h",
+      "sha256": "898b833ba525f63276102be8b0937e27797a0275ec8433524dfa5707da804aa3"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/inc/tx_semaphore.h",
+      "sha256": "fadddd7883c05edb2a3f067e65c3f501f84a8c3743fda56e4acda5da0db99e3a"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/inc/tx_thread.h",
+      "sha256": "4c6b15a733a014a212842072cd0fc339a56788693a44c9e1e76f9b5c8be14f5b"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/inc/tx_timer.h",
+      "sha256": "30ca3c3df3c645f707c18003f63de0277c5eb8f68fea4c45fb3083826fd751c4"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/inc/tx_trace.h",
+      "sha256": "0312fe35c120d57560a40148455cc827dff66c269622eaca50ae56ff90d6422e"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/inc/tx_user_sample.h",
+      "sha256": "d0d3e8b832b70269c80c5dd5f973e5f89af63319960f6ef27b12141c871fa83a"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/tx_block_allocate.c",
+      "sha256": "e3eb20e7992b17f5c209f864c0d6a6608648e62144e756f5a1d68107469df607"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/tx_block_pool_cleanup.c",
+      "sha256": "6de99ae7f13f1be75622b0aae34911b5b575633a22786f8041b88b4a56212f5f"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/tx_block_pool_create.c",
+      "sha256": "3fbad667c9f58dd02eafd3045fd56293d662c859212816339cfe247361eef138"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/tx_block_pool_delete.c",
+      "sha256": "4da7f5c77c0bd7552106e06bcb2039e30a6586a3c78fac5a6a3834c7aac786f3"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/tx_block_pool_info_get.c",
+      "sha256": "960f1c7bec981493a0311f42be75b8fce1d5952100b04b9c9fb78fe61d29500b"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/tx_block_pool_initialize.c",
+      "sha256": "bda02c4af0ca45e23419436ddb52738173c7eb64c70f7b9ba74be7794ff5abb9"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/tx_block_pool_prioritize.c",
+      "sha256": "599c9f71e5815dabbad5ad51c45d6d5d91a8f73522953bdd4fe4111399e37342"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/tx_block_release.c",
+      "sha256": "ccb254c7cf900a094c82100040ed7e8d5d8f9b63f083257bd0f024ffe342936a"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/tx_byte_allocate.c",
+      "sha256": "5cd56df79f65699cd35c14ea816f4a5c6d1886c86f8110ae8b8cc5286925200f"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/tx_byte_pool_cleanup.c",
+      "sha256": "351949ab3a417c5ee737b22e21b3289f330aeaff60462235f8f499cd4c02413a"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/tx_byte_pool_create.c",
+      "sha256": "159db5b49cb01570fed79ac45d8b0220aa6f6f3738c0e476a9853fb93f3e209f"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/tx_byte_pool_delete.c",
+      "sha256": "e78a60a8897e476577332aa1cfd0e1638f586865e23d305bf5d4c88cb5176759"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/tx_byte_pool_info_get.c",
+      "sha256": "5b56ba6860fa3236ff1fe51cd2071cc095d5f45954327f5d64ba7eb45c6bea96"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/tx_byte_pool_initialize.c",
+      "sha256": "bf6f8f096b72a654af255bbc6505bdf858d17861f5213006f6ccb8113a60e4f8"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/tx_byte_pool_prioritize.c",
+      "sha256": "7dc089ee66532121bcfd7744b99ee8e7bdd1fee34505a22f3a0311974e38b5a4"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/tx_byte_pool_search.c",
+      "sha256": "f09a66ac4c94728bde25b2a14bea47738cfdd6e0b5db90783e41174f8e361a0a"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/tx_byte_release.c",
+      "sha256": "a5ed2f834ea4a2082ca32585d8acac0b32996b4fef70b1a61470865174f0bd21"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/tx_event_flags_cleanup.c",
+      "sha256": "a0701d16f589ccb3a6391a649027917ae120c919b4ea2c1dfd6e36667b30a9c2"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/tx_event_flags_create.c",
+      "sha256": "109670a2c142a80162df1b4957d25967ddea017f5b09b5ffac1cfb1e0142dbdf"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/tx_event_flags_delete.c",
+      "sha256": "9f8f47b78b785631038fc99f987c6a59f0008d1da0d5cdc82afcc4082ba56c07"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/tx_event_flags_get.c",
+      "sha256": "d433bde6d7fba6c5650ecc844c57c0b9f3fa93e98d394ea3ed88e8bd36051a7d"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/tx_event_flags_info_get.c",
+      "sha256": "92629cc3976bf28e0e427cfa2d00114b3ae9951455c6cb9792350445ff8cab6f"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/tx_event_flags_initialize.c",
+      "sha256": "97e8b8fb28aadd0f7cf20a3fc886a34599ef4209adf3e044e553ad49230feb2d"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/tx_event_flags_set_notify.c",
+      "sha256": "3009cb7eec3c952f2d626eacae36f399ffa7b5c2573b9f4793063fd5f5f93a21"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/tx_event_flags_set.c",
+      "sha256": "1b1559f8faa6964309eb25b53b6b96f6d38e7133db587ebdb963adc7420c39f6"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/tx_initialize_high_level.c",
+      "sha256": "148fb6e93585ac95ee6af5e7769185ad00fdb5bd60d39fcc5e442613210651fc"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/tx_initialize_kernel_enter.c",
+      "sha256": "d778af3dd092606a33b00561b73fc1bf5890a7a93563a6052c5481f90c6cac5e"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/tx_initialize_kernel_setup.c",
+      "sha256": "881b5bf20c67dbac2797822f5ba836dceb21ff7d69cb084d331221fe79a8ad12"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/tx_mutex_cleanup.c",
+      "sha256": "2f7b8670b04b2aa4c49a649296480fc582dde57d31fa908dbad05e1d968e2762"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/tx_mutex_create.c",
+      "sha256": "fb928d37773196b7315f48f9b8c9951e832c3fdcdaf0ff5b8a49ff745703a490"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/tx_mutex_delete.c",
+      "sha256": "e47b50b5fcf71d52ea627b0612a8d0488c3171a49510eaea9f38a34847fe9d2a"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/tx_mutex_get.c",
+      "sha256": "0ca11c9059317faa568de5ea8019dd1bbcfc11e8e6177f04beb3d5b45e263aa0"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/tx_mutex_info_get.c",
+      "sha256": "c017fcbc7979c1ca2032e5d657319504657a1fd85546409cefb74ef0376132d2"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/tx_mutex_initialize.c",
+      "sha256": "1df521ac5b50ea435260920263924157e4c21819b7ac182d55a211ffa9444377"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/tx_mutex_prioritize.c",
+      "sha256": "1a1edcfd970712d79f3b24ef7e49451bf4d364a291cdcaaaa72e10e643844ecf"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/tx_mutex_priority_change.c",
+      "sha256": "9705aae1223cdb4a16783b12a44476f5965e7b687840be9cbfcd407c6fe4dbcd"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/tx_mutex_put.c",
+      "sha256": "471960ac80b706c8709b8d0d51f9072907038f8de90e80363c60d5b01cde8021"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/tx_queue_cleanup.c",
+      "sha256": "295c4a19c98d206d3ee1de413d9686853247b2c6fa0793ecfa8d08e3793c9497"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/tx_queue_create.c",
+      "sha256": "dba8442028379badb79ba0c67a8993c1bb75be82f5b29faa6f1b06455f011836"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/tx_queue_delete.c",
+      "sha256": "75d03bd358af31ff186724054e80f911f246745016937f0f429b30ee8cefb164"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/tx_queue_flush.c",
+      "sha256": "54891812e18f076faa0c4ed6665fc6cf6a4b24d6ac7c7bc36a98fb2ab7f01827"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/tx_queue_front_send.c",
+      "sha256": "0f6661fc0969766b898b469d85fd6199724f9d776ef068df9f9135cb69b6e86d"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/tx_queue_info_get.c",
+      "sha256": "43fa5b201d1663431066620a8c89471eceb1ff4edfd79913dc034643593df5bd"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/tx_queue_initialize.c",
+      "sha256": "8e6cdf8c5b290da749514a1fcd2e91b653c639b03aa1c6dc5d6c0d08791b1cc1"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/tx_queue_prioritize.c",
+      "sha256": "3c425d6b13b61690f3c059e8e7051f02ea92fff6c1985b1f3a37148f1dfe29ad"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/tx_queue_receive.c",
+      "sha256": "c3fb7e0178d9c67a2311c3e0bb863835ca6c3442de3d98f2334c44cf65761e2e"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/tx_queue_send_notify.c",
+      "sha256": "9228269747fa86de94f98d95c894ce9f62d947e99524c0a2863046eb80c07b30"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/tx_queue_send.c",
+      "sha256": "351ab633fc29e4ae6e04e15099a3f2f86a76052303c06d8329e4bf8b629c6d36"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/tx_semaphore_ceiling_put.c",
+      "sha256": "36d380cccfffae361ae995ce101c844900bc89164aee51e35456fd554f915749"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/tx_semaphore_cleanup.c",
+      "sha256": "3bb636d8125118ba63e9a0eb0f8ba6b26260b3498f1350670319a84c4ed02bb1"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/tx_semaphore_create.c",
+      "sha256": "6450212b42cad0c3a2903b5c2ed764a041e9a974f0000ee232e49206ec0ab8c5"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/tx_semaphore_delete.c",
+      "sha256": "9c17ee47e748a7d3832c0dd57b42b6ee947d4cf5218de3675f8bf0ccd9ee024f"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/tx_semaphore_get.c",
+      "sha256": "0f13380db6687e4795db7267b73aa1d6d7c6ca0e7f88ce6980eefffc8c171cdc"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/tx_semaphore_info_get.c",
+      "sha256": "0715e6db8ffdbab5e7c0a59b3d556038bb8b38ec30b49728bdcee28249ef31b4"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/tx_semaphore_initialize.c",
+      "sha256": "9d0a2d9a673cb47702e00125759c2f2bc5d5e4268a332d5cf31530c0d9056b00"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/tx_semaphore_prioritize.c",
+      "sha256": "10a77ec9412834f74606344da16d0d3a490f5fcc9f5e1b5114f3db117f440e73"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/tx_semaphore_put_notify.c",
+      "sha256": "9e314c678dcfec43e5bf389877239e1d5ed03707c650719eab8f056b7f8c65e0"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/tx_semaphore_put.c",
+      "sha256": "94a1126cda5e4ae7ce2e4c9da312bb67f3784813a7fac7ece854d65d013634f3"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/tx_thread_create.c",
+      "sha256": "7d3118b6924c3ea78f7103bb684e22cc11b792c0869dfb32fdfb9fd55f8c46b0"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/tx_thread_delete.c",
+      "sha256": "32b4bc35fb888ccc0eeb95c17f65ab0aa9b2cdfbeafdf7b881f1975dc1292d8b"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/tx_thread_entry_exit_notify.c",
+      "sha256": "97b362d621495b6887bf4726e973945a60ef045da2f02157f3e66267701be7b1"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/tx_thread_identify.c",
+      "sha256": "d6ff7a9a11483a0182cd7a8d5a9b7bec48f48f1e3ec86c7fec945439f5246fed"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/tx_thread_info_get.c",
+      "sha256": "ff6110d69d8348c082855af3aa229a3505ccb223fe1c40f5b9fb2e9e738e4acd"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/tx_thread_initialize.c",
+      "sha256": "cef3b310b837f2f839fc3ae015ada9eb6a79fd6f93e810120ee278e6313890ee"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/tx_thread_preemption_change.c",
+      "sha256": "70e6fab71b63d14b8d0029dcc08460911c464ab12cd8747f6502f4b36b809ebd"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/tx_thread_priority_change.c",
+      "sha256": "3afdf0e106338b17a36b3d9d48e0840e46ce4f3fe6ad293474063874d7bf7a1f"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/tx_thread_relinquish.c",
+      "sha256": "e93eb6a60c8d58b5f6ac6d019148966fd64a9868beff0325780c2b80a204fb5e"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/tx_thread_reset.c",
+      "sha256": "224affa569ae465050135809f68d861504fec3f0545a6a52cf94c8d56c3209bc"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/tx_thread_resume.c",
+      "sha256": "95e9a2e4a2d7ce202a2cf1b549023426697c05cfe88dbe680396e55284580c05"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/tx_thread_shell_entry.c",
+      "sha256": "4be50470d3621fc00f28723592088b0a1afc707cbaafc9ed0c41d595e9015aca"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/tx_thread_sleep.c",
+      "sha256": "749648227147337d3b51cc17370217fe61f3cdc035cb5f8fa7a0d5bc9aa69103"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/tx_thread_stack_analyze.c",
+      "sha256": "4b39497b32316bf95c94bee4ec3653dd3803c0ec4b23aaf923a4bfb7a26b1d37"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/tx_thread_stack_error_handler.c",
+      "sha256": "82d9660cfff2356a726e5de0178a81c0a84bb7a966873ed7eddf7cb63675c300"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/tx_thread_stack_error_notify.c",
+      "sha256": "3b8be8c9750b3ff6de2402611fc61af23e08d16ba68c8fc4753ec15dabc757d7"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/tx_thread_suspend.c",
+      "sha256": "79efe5d4c834f6876188fae38c41d9b79a34c1c8013930080b82e7f54b98b779"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/tx_thread_system_preempt_check.c",
+      "sha256": "93b9b1fa1c7bdfdb0c4260bbbabaab88d5c7c7900a6d4a92056e89e9afcd3406"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/tx_thread_system_resume.c",
+      "sha256": "7363341031ce2cfa127c4fb6a5e18f63c4e37ce9a03ecd41142cbe01150e1817"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/tx_thread_system_suspend.c",
+      "sha256": "4f6c9e9af4890a29bdeb7f33c3af8bb3a953d7e12a46c1e774dc67b5fb453285"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/tx_thread_terminate.c",
+      "sha256": "11476b69bd7ff4b1d3d9471e7a61087473b453e6af6c9ef24a1377133470e1e5"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/tx_thread_time_slice_change.c",
+      "sha256": "b751995cbc2ba97f92f3aa7d3df766a4b31803b8d39a293bdd33057efced9a76"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/tx_thread_time_slice.c",
+      "sha256": "ea496c65dd58a12e0c266747f05e3b4f9f42a93c7220b204bef2fe3ae79c5db8"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/tx_thread_timeout.c",
+      "sha256": "3c94a25defb927db896132190cecad3ac56958d8baf53bc1bc3058d80e5d8ef3"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/tx_thread_wait_abort.c",
+      "sha256": "629f5f09d8d8c5c8113fae1420afdea341b8053da5020bafa8bbeddf3ad28b7b"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/tx_time_get.c",
+      "sha256": "334bbaf72b37aa87c2326442e919cfd5d15d097f3a7d7a18e4b2ba5351c37894"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/tx_time_set.c",
+      "sha256": "b00c9f9be06f0320eba422f80ccaea19e360405537f147cd1d02984348d8ed94"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/tx_timer_activate.c",
+      "sha256": "15d3c77ca61a7f7c7d235820adb703052b8c8022e1a0ed2acb9e5cf6a8b54ce6"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/tx_timer_change.c",
+      "sha256": "3e3c8d366cbc622f4941516e0c98008d6a4bdd2b59ec0d54a5f99fe9dbde058e"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/tx_timer_create.c",
+      "sha256": "0b30c902bd51ca43e627006a54e40c32d3b7ad063f6be31c67d38d595e684094"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/tx_timer_deactivate.c",
+      "sha256": "a5c6dc6bf29c3ee3b940d4abf95ac7e37193a0613782830a365102733830c47e"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/tx_timer_delete.c",
+      "sha256": "dd6621159c6b050fb8c7de23bb1f37556894b605ff4869a3da9c4dd69ee9f73e"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/tx_timer_expiration_process.c",
+      "sha256": "dbfecacb56e6d72d1c10a42548fd6ba926bec1f6dd62e54b1bc275fad6950238"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/tx_timer_info_get.c",
+      "sha256": "fb1bbff7ac8230634832b313c1b9400ab0477482effb659895d60c3814aed0d2"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/tx_timer_initialize.c",
+      "sha256": "69d8fd64cfd41d8df5f153360ad24b7d167c561666e9bb3b7adf35dea6664186"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/tx_timer_system_activate.c",
+      "sha256": "f21abba124ca7815ca4c25602e030e1a1b0e8978f8485bc0dc63f15dc3155f21"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/tx_timer_system_deactivate.c",
+      "sha256": "fb86abf4401a0ac9a57fc7156692f4b361896407a0f5630a4d914d895be3c185"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/tx_timer_thread_entry.c",
+      "sha256": "372f3549ef4d5a8e865687b20ca945d927e0ec8e7910fee72e5b3258c53207b9"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/txe_block_allocate.c",
+      "sha256": "83c84c4314832fbd0717b396e8939a8f0dbbc00ab762f80ddd3633ea5dc139cb"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/txe_block_pool_create.c",
+      "sha256": "55d88807b58a8bc4dbb5e3bf239c4703c57339b9d4cdd1e9d038fc76665f6044"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/txe_block_pool_delete.c",
+      "sha256": "4599add8dac4783f65eedf85a14ddc2f6dbdf44cb136f711837cd32624ba20c0"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/txe_block_pool_info_get.c",
+      "sha256": "594f8317ecb669fb6a6ab7748bf4c7c4ca4ab37ccc3e254e722e7b4645c87b2c"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/txe_block_pool_prioritize.c",
+      "sha256": "f7a90ba38289f45a9cf98868baa9ff26d5fc3d4473d7bff598e72941146f97fd"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/txe_block_release.c",
+      "sha256": "3f7397e9570132bca3fa1bb4fb4854e313d9e1f6ae153aba45bcc52f1a4240c6"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/txe_byte_allocate.c",
+      "sha256": "5b189408ecd6554a1c8ce251cabf50bdf7cef71e05be614fcadfebf8834bcccd"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/txe_byte_pool_create.c",
+      "sha256": "b486e98c0bb887aa71d91fb5534ff035da4aad8432710f31974ec6bb1cad6edc"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/txe_byte_pool_delete.c",
+      "sha256": "99dde82604b1e360882c641f3c1d28c86d94ce919b04a918b6991cedb06c9139"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/txe_byte_pool_info_get.c",
+      "sha256": "b29c7d1ffe0cdb394584e7c50aca5e06a4244b541c97e5ff628ba35805f62948"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/txe_byte_pool_prioritize.c",
+      "sha256": "c4b1983f85db1134942180997c2de91815287d75f3c713b32174ba9557c7ebd3"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/txe_byte_release.c",
+      "sha256": "d4589ded7a78c58a68ef037bc40c012f03264c2ddb92aa42ef48d4e51173dbce"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/txe_event_flags_create.c",
+      "sha256": "0ace3409a1c686a4fe54f851fb37ee9acf613342d9fcfb3f7f965005d80b3222"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/txe_event_flags_delete.c",
+      "sha256": "40d8f3660294c7aa85cfc6756d4d67fb0a9c9f55c0943ef8b2e652264ef93117"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/txe_event_flags_get.c",
+      "sha256": "c9e7a177227d7322d169cc35d820989a89352886ba3c69ab8d5778f2464cca4a"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/txe_event_flags_info_get.c",
+      "sha256": "5d8b4883fe25397dd163212cd7e577590caa887e69205d83aeddf0effef20cbc"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/txe_event_flags_set_notify.c",
+      "sha256": "bb3d8677a08556128713f02e9a93ee7a950aef6d77fe4f92a9685b4d13d6c941"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/txe_event_flags_set.c",
+      "sha256": "14771d5fb343d02bb70a4e6436463a2ac985095bbacc093696b7185baeaa0d7d"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/txe_mutex_create.c",
+      "sha256": "e649de247395cdbe93366daa83f6361b66c98455271cf437fb1cc11f022dd32f"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/txe_mutex_delete.c",
+      "sha256": "336d43ae7c4c9771ec74f7720d91860594760b0a1689ecfc49698ba847e97003"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/txe_mutex_get.c",
+      "sha256": "c0f62da8b881f31989f19696f7e4d765639adf659ce48bc8758e24be95d14967"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/txe_mutex_info_get.c",
+      "sha256": "2d50b77df3b0e7be09b623e3f535531544b99d8286941076d61cd6cb92197b13"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/txe_mutex_prioritize.c",
+      "sha256": "259d72b2235630fc11885ac1ac71508e0de6ef396891a27adc02c130d16e572f"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/txe_mutex_put.c",
+      "sha256": "40e545a2a979fb85c5da102805fa241ddff4db26539fee679907bfe6a8c64e4e"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/txe_queue_create.c",
+      "sha256": "506d7221af24cdd730cb2ed0dd15d0ae2f04cad4680e725888811d6c647630a3"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/txe_queue_delete.c",
+      "sha256": "b1fe8c168ea6fef31b7e0b4050422d5d8ef2308f353417ac68ae31e0669359d2"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/txe_queue_flush.c",
+      "sha256": "12120be3abe6b21e2f9957ed77211c7560e575354c8334ea4c914895856a98b1"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/txe_queue_front_send.c",
+      "sha256": "e0ad561ba39deefa8ec2a0b8a97b194304b46ec3945f662d10601945065cd1b7"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/txe_queue_info_get.c",
+      "sha256": "0df39875612962921d68895b92ae9d3563cd5da4d9807ac3a0d82992df147430"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/txe_queue_prioritize.c",
+      "sha256": "e5d1ab4d313648e2aa714778298fd34af49625c330aeb0c239fe5e8dee0634a5"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/txe_queue_receive.c",
+      "sha256": "cb84ab6da9602efc1e09adde7fba949a91024841dc16fefe5106cd18a247a6e5"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/txe_queue_send_notify.c",
+      "sha256": "759413d56a3f59b0b083105ba7b27a2f3a75057fcfa164b2dcb72be970d6cc97"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/txe_queue_send.c",
+      "sha256": "25a896a7eadd5c30a20140256e3eb40380495e76ae5d04bb1637117f163b6196"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/txe_semaphore_ceiling_put.c",
+      "sha256": "1a273e0707022c4175c64bfe8f49ce7282e754bc912d795230ee23d5e975c3e0"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/txe_semaphore_create.c",
+      "sha256": "e70932f71f6a8e91830120051545b958ccf001d1751e1f77b465b8489152b74e"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/txe_semaphore_delete.c",
+      "sha256": "a9b48bb21f71b9dfb6353ad9a4159e463f380a7deda55cccf4a784e5573359ac"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/txe_semaphore_get.c",
+      "sha256": "740b70c1c3c1a4d34aae4ff51d75d3478f22b329d66af519a4cacf4ba8f5d80d"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/txe_semaphore_info_get.c",
+      "sha256": "61f9420eb9a1ebd350c75c642074ed156428ea3498fe371c3d9daebf2b2268bd"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/txe_semaphore_prioritize.c",
+      "sha256": "e1653f3b1899caf435a69e4f802ba7a35da4d4408bed6ce6ce255a55b83da26c"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/txe_semaphore_put_notify.c",
+      "sha256": "7cf0be0383983a41fdd7a5f4b473506fc8537a8ab71f6078fc2ebd502332e708"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/txe_semaphore_put.c",
+      "sha256": "9bfce0bbef8cfdf66a7fcb306a1ff9ca6fb28eeeb66ea0279eb9695b841cd524"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/txe_thread_create.c",
+      "sha256": "97bcc518a95ddcb09606862ddafe01f97b34ab27ea2a255026d5a583ec94dc6d"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/txe_thread_delete.c",
+      "sha256": "4b9108f257e6a2b763dec4c2fc84da5543209832903e8ecf5a550805b3e8e9ca"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/txe_thread_entry_exit_notify.c",
+      "sha256": "144d9c4df934f1a6d57812c5d6c299cba297653c6c1da8d959788efb5e5dae46"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/txe_thread_info_get.c",
+      "sha256": "58744c86f393fdaef562de03969c3f77dfea80bb8e12483ddab8841b4e742d1d"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/txe_thread_preemption_change.c",
+      "sha256": "e68becddada054bacdef5aeaa502b75446e9db505e00367959f523bc538664f3"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/txe_thread_priority_change.c",
+      "sha256": "f4ce6787160fb34bbb924b8178dad4c8cd1f1ca70d7d517a171b683a92c8b180"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/txe_thread_relinquish.c",
+      "sha256": "7fdf07077b3d7c3ad1828613d37011566a1b6871fcb1f0b3b6276353a91a9b8d"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/txe_thread_reset.c",
+      "sha256": "a14e9571dbb579669b900d54ec20add41afea3f5596f56f62bccdb92dd32f889"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/txe_thread_resume.c",
+      "sha256": "4fa6305b7e35517c8f5ca6cf7621e248e55d10aa6f9bb557ec2aec24c0fa3841"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/txe_thread_suspend.c",
+      "sha256": "63e07c9e57ac2fb1c23efe202fb32ad1be8fbda07bdf56b42b51b3535a723364"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/txe_thread_terminate.c",
+      "sha256": "f642d223dc19aa861f0584d5910bf8f2a69fcaf1f0d137408d634d06c172a58b"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/txe_thread_time_slice_change.c",
+      "sha256": "5edb8a72067e9ea250d9621b21c41e527cb9d735ae936e6df8f869633d03b3e0"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/txe_thread_wait_abort.c",
+      "sha256": "4999d536a0b5acaf94d4c20f50dbe148be6bdffb17554504b90ebffba68868d2"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/txe_timer_activate.c",
+      "sha256": "4e77714a907ec743f764ce1be5e1f0008bdb39d9bd0f30d321fe9ee3f327243c"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/txe_timer_change.c",
+      "sha256": "2ac46dab68bd27502547544c58153d78eaa721a103b8ac99f3756e015f97a319"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/txe_timer_create.c",
+      "sha256": "89295497d597b2c3e5bbe212d8abb6f912c39506b41e61364e8a7f9029ee0fbb"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/txe_timer_deactivate.c",
+      "sha256": "f0964a5c653c5c46119db94dd4f98bc0f672e5947992397e3bda4dabe855d260"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/txe_timer_delete.c",
+      "sha256": "0ddcf838aceba68c053aacae342a0628df4880fb73e204380541152a1e880397"
+    },
+    {
+      "file": "Middlewares/ST/threadx/common/src/txe_timer_info_get.c",
+      "sha256": "bd5b5b561dfc2a0e357406293c9676e071efd18293d78fb367d4b826f569cf0b"
+    },
+    {
+      "file": "Middlewares/ST/threadx/LICENSE.txt",
+      "sha256": "bf1979080aae818f32168911e7ccf5411a54a13a94728bea1a30108d170b7101"
+    },
+    {
+      "file": "Middlewares/ST/threadx/LICENSED-HARDWARE.txt",
+      "sha256": "3dc8db86b714c1d1b09a4c52e00a60f22bedcaf17151b12e3aec5716d15bdff7"
+    },
+    {
+      "file": "Middlewares/ST/threadx/ports/cortex_m7/gnu/inc/tx_port.h",
+      "sha256": "97bf75c9d77206ae43ebf7001ccc73d051ae974c9593ad87f07f1f8caba9b8dc"
+    },
+    {
+      "file": "Middlewares/ST/threadx/ports/cortex_m7/gnu/src/tx_thread_context_restore.S",
+      "sha256": "405617118d77b1d2edc935809ca103041d87519ad10a11fded3c10136aaea6ce"
+    },
+    {
+      "file": "Middlewares/ST/threadx/ports/cortex_m7/gnu/src/tx_thread_context_save.S",
+      "sha256": "b26a1c509aa18021d533267d37ba3b086ad1c0b711c4ba97600f07b89733e51b"
+    },
+    {
+      "file": "Middlewares/ST/threadx/ports/cortex_m7/gnu/src/tx_thread_interrupt_control.S",
+      "sha256": "1284abb2d21e00ec1f895b58e3eb0f9184061d66333e01e30c4e6effe381683c"
+    },
+    {
+      "file": "Middlewares/ST/threadx/ports/cortex_m7/gnu/src/tx_thread_interrupt_disable.S",
+      "sha256": "0053a2d9f74cdd22b80739287aa9ef9bd5aab605d71b222c66e21a3193d1fb5e"
+    },
+    {
+      "file": "Middlewares/ST/threadx/ports/cortex_m7/gnu/src/tx_thread_interrupt_restore.S",
+      "sha256": "60b6ed2390a0745c48b1fe0d2ce6403e9ded7469176567d963e34addd61feb1d"
+    },
+    {
+      "file": "Middlewares/ST/threadx/ports/cortex_m7/gnu/src/tx_thread_schedule.S",
+      "sha256": "3de8e638ed88fee8cdf11650d29c5362e82ff66f5eb8944da846ba952a1887fd"
+    },
+    {
+      "file": "Middlewares/ST/threadx/ports/cortex_m7/gnu/src/tx_thread_stack_build.S",
+      "sha256": "874963e38a6f2c6edc5632cb7a7d2e005b73b095a42868e5448b453ba1906e0e"
+    },
+    {
+      "file": "Middlewares/ST/threadx/ports/cortex_m7/gnu/src/tx_thread_system_return.S",
+      "sha256": "8333e94cac5deae347a770abd453810c0247f54c3c9978e94815b79b4de8671a"
+    },
+    {
+      "file": "Middlewares/ST/threadx/ports/cortex_m7/gnu/src/tx_timer_interrupt.S",
+      "sha256": "e48d3712312de7b6d8591339cc1b4bcccf6681bfdd9cf97dcd1287fc6427f7ab"
+    },
+    {
+      "file": "Middlewares/ST/usbx/common/core/inc/ux_api.h",
+      "sha256": "0e311762da278d4dc35daabdfe6f4e0525b061cc0f101ff183651d72bb2bc2be"
+    },
+    {
+      "file": "Middlewares/ST/usbx/common/core/inc/ux_class_audio10.h",
+      "sha256": "3c5634bc14ac613506f8e5b960d86f6948817d7d4f15d963f24d7f0a5896bddf"
+    },
+    {
+      "file": "Middlewares/ST/usbx/common/core/inc/ux_class_audio20.h",
+      "sha256": "4f5186552301a86722c213d36f0c6173da92e5f589cf44f2104659ca3fec643c"
+    },
+    {
+      "file": "Middlewares/ST/usbx/common/core/inc/ux_dcd_sim_slave.h",
+      "sha256": "e29d82289330222c2a5d3114ba83b6891242df5d795ff9ac3bd1b3cac16fe7b8"
+    },
+    {
+      "file": "Middlewares/ST/usbx/common/core/inc/ux_device_class_dpump.h",
+      "sha256": "07d54de254f245370035fc96cceb4f9d98b67cc375da959997c6ae93d8da0cf9"
+    },
+    {
+      "file": "Middlewares/ST/usbx/common/core/inc/ux_device_stack.h",
+      "sha256": "48de78be9f56be20dfc5d57d418478c0996a7f68bde041e98d2db8214c4a14b3"
+    },
+    {
+      "file": "Middlewares/ST/usbx/common/core/inc/ux_hcd_sim_host.h",
+      "sha256": "63b01d3f3639f08efd3934f276d8bb260829b007bff8fa475902d97c32d51336"
+    },
+    {
+      "file": "Middlewares/ST/usbx/common/core/inc/ux_host_class_dpump.h",
+      "sha256": "047244511bf696af3fde7cb859397c61c1f9f63a45b0c720b1cc37902d4e3e47"
+    },
+    {
+      "file": "Middlewares/ST/usbx/common/core/inc/ux_host_stack.h",
+      "sha256": "a6f386a1141feb5ded931ccd0ea15f566f030aacdf85624b6217ad85ee1291e6"
+    },
+    {
+      "file": "Middlewares/ST/usbx/common/core/inc/ux_system.h",
+      "sha256": "cc050e9e5f20bc08eccc257e949c6d4e3834e61aa05b232803570aec5cdaf081"
+    },
+    {
+      "file": "Middlewares/ST/usbx/common/core/inc/ux_user_sample.h",
+      "sha256": "085d09cc8c8bdc78f00374842e9029055def6bc879ebc8488e608bddd634a9bc"
+    },
+    {
+      "file": "Middlewares/ST/usbx/common/core/inc/ux_utility.h",
+      "sha256": "bc7a2e743d1e638dc7870c4aafe9459844c98500b7dab584bc375d2ae132e134"
+    },
+    {
+      "file": "Middlewares/ST/usbx/common/core/src/ux_device_stack_alternate_setting_get.c",
+      "sha256": "c1a51a74830664b7350e3c2a8ebe09826e2ba7fe675d625347a6d86d620061c6"
+    },
+    {
+      "file": "Middlewares/ST/usbx/common/core/src/ux_device_stack_alternate_setting_set.c",
+      "sha256": "f8afef29093bc8a8ee0f7e3fc81b1390822dcd635d3d0c8dbc35829ab78fa143"
+    },
+    {
+      "file": "Middlewares/ST/usbx/common/core/src/ux_device_stack_class_register.c",
+      "sha256": "746a42d071bab68f0ac72ff7b4e40ff659c47e6fd51c200dbede44013399a700"
+    },
+    {
+      "file": "Middlewares/ST/usbx/common/core/src/ux_device_stack_class_unregister.c",
+      "sha256": "607518c6a9c130d0249ac934b27f9ad07ed9cf4b8de8ccf220817e9201560d3a"
+    },
+    {
+      "file": "Middlewares/ST/usbx/common/core/src/ux_device_stack_clear_feature.c",
+      "sha256": "0ce692d689078b8f00ae6f5cdfff8b1aec35f47cfe33405e157db87e5b5d639b"
+    },
+    {
+      "file": "Middlewares/ST/usbx/common/core/src/ux_device_stack_configuration_get.c",
+      "sha256": "5bff337417c3e1d662a3c484e217c75abffa458a2df1bf717fd05cfeb2bfee97"
+    },
+    {
+      "file": "Middlewares/ST/usbx/common/core/src/ux_device_stack_configuration_set.c",
+      "sha256": "172f45997c60824705ddee32637936b95d4ff5e54a4b1afaae001a92e9b101a2"
+    },
+    {
+      "file": "Middlewares/ST/usbx/common/core/src/ux_device_stack_control_request_process.c",
+      "sha256": "ae361e6853cc18b64a2a2ca335dc025299b3f717022cec231b8defd12f7ad7f5"
+    },
+    {
+      "file": "Middlewares/ST/usbx/common/core/src/ux_device_stack_descriptor_send.c",
+      "sha256": "71766f3d399be5fee0a3e02245532f0c35fcba69e06d7707401a6943d9568a9f"
+    },
+    {
+      "file": "Middlewares/ST/usbx/common/core/src/ux_device_stack_disconnect.c",
+      "sha256": "bb5ee7e77f63cd218903614839fdb414360333faaa2bc866ff19264f239a4501"
+    },
+    {
+      "file": "Middlewares/ST/usbx/common/core/src/ux_device_stack_endpoint_stall.c",
+      "sha256": "8052031b46bed03fd3eba75c6dc768b16501449f2c9de9e849bbbe8e18621882"
+    },
+    {
+      "file": "Middlewares/ST/usbx/common/core/src/ux_device_stack_get_status.c",
+      "sha256": "f150eea6073b802274d566cf4e1beb78214491127d5e5a63d99ff46fb1af64fd"
+    },
+    {
+      "file": "Middlewares/ST/usbx/common/core/src/ux_device_stack_host_wakeup.c",
+      "sha256": "5129171c6d909b33a7f57e91cd9601dba181751275e7ccfae431f042275d4e4f"
+    },
+    {
+      "file": "Middlewares/ST/usbx/common/core/src/ux_device_stack_initialize.c",
+      "sha256": "72e9ea3e568840da0fd16580b543c1b4e370f6aa23375856e7994afc37d8803e"
+    },
+    {
+      "file": "Middlewares/ST/usbx/common/core/src/ux_device_stack_interface_delete.c",
+      "sha256": "14bb70104572e43839593f0f1e02f72f45220fcd6d3d3bb272e0098ab5a019a1"
+    },
+    {
+      "file": "Middlewares/ST/usbx/common/core/src/ux_device_stack_interface_get.c",
+      "sha256": "422200a5c2e34a2f302d11e59e414b95d1ca8d57ccae4cbe81da572d57da490a"
+    },
+    {
+      "file": "Middlewares/ST/usbx/common/core/src/ux_device_stack_interface_set.c",
+      "sha256": "33d8ee0c9ce7b34f17c8d3d8ad2b113985e980cb8ec28e77db7964c9edb082a0"
+    },
+    {
+      "file": "Middlewares/ST/usbx/common/core/src/ux_device_stack_interface_start.c",
+      "sha256": "d3dff9dfc7284afa15feb176c228cac8b2af3c777b65b0e46700b08f308f4361"
+    },
+    {
+      "file": "Middlewares/ST/usbx/common/core/src/ux_device_stack_microsoft_extension_register.c",
+      "sha256": "17c7fad6ee7b492b6cfd3b629a63277e5d17c7fd9b9fb8e7eb2e7d588010742d"
+    },
+    {
+      "file": "Middlewares/ST/usbx/common/core/src/ux_device_stack_set_feature.c",
+      "sha256": "63b7e51500a4a3d51713a3ccfd43f7f34ce333ea03333c7ef5cdef39cca7e263"
+    },
+    {
+      "file": "Middlewares/ST/usbx/common/core/src/ux_device_stack_transfer_abort.c",
+      "sha256": "812cad3020874d407eaa563ac0675a8363662732ea1c881de3c742505084503f"
+    },
+    {
+      "file": "Middlewares/ST/usbx/common/core/src/ux_device_stack_transfer_all_request_abort.c",
+      "sha256": "4d5d75314922723ed24240fe812b8bc0acb8879d1f99c41f43fafdd9a6e334ff"
+    },
+    {
+      "file": "Middlewares/ST/usbx/common/core/src/ux_device_stack_transfer_request.c",
+      "sha256": "d214a37bd6cb2fc5e18f7cf269a7a586616e826bb28ef4b95982493b400465d3"
+    },
+    {
+      "file": "Middlewares/ST/usbx/common/core/src/ux_device_stack_uninitialize.c",
+      "sha256": "45c8d70ec194da5a6835af5fd266620532c141ef59ee41c5806625797006073c"
+    },
+    {
+      "file": "Middlewares/ST/usbx/common/core/src/ux_system_error_handler.c",
+      "sha256": "235554ab47b97659930fe79cfeb953d45001f2c4cade8e2da16be8c74c0e59f8"
+    },
+    {
+      "file": "Middlewares/ST/usbx/common/core/src/ux_system_initialize.c",
+      "sha256": "9048589ae02996756ebc8a18c0b1631f0723b85d86e7071e21f3be88e31250d2"
+    },
+    {
+      "file": "Middlewares/ST/usbx/common/core/src/ux_system_uninitialize.c",
+      "sha256": "ad265affd4e0a73c1a43a1c81db309e7a6cc48b7b78680a628f5110a9e6247da"
+    },
+    {
+      "file": "Middlewares/ST/usbx/common/core/src/ux_utility_debug_callback_register.c",
+      "sha256": "efe62c1a7cfc26034e3a3e6a5b935d52581634024c5615c804ce166de8b5c19a"
+    },
+    {
+      "file": "Middlewares/ST/usbx/common/core/src/ux_utility_debug_log.c",
+      "sha256": "dadb3d656ea5843883af9508b49a68de1cb369c9fed05f07c0c8cb6ca75d3fd3"
+    },
+    {
+      "file": "Middlewares/ST/usbx/common/core/src/ux_utility_delay_ms.c",
+      "sha256": "49b197f7a63f04a96c3ed17efd35a5b3bd42b4c39695ee99fcf6fbbe06035f0f"
+    },
+    {
+      "file": "Middlewares/ST/usbx/common/core/src/ux_utility_descriptor_pack.c",
+      "sha256": "1b162879ea38acb9f5539e8dad1101090565363de6d7b475cd61f269773af84c"
+    },
+    {
+      "file": "Middlewares/ST/usbx/common/core/src/ux_utility_descriptor_parse.c",
+      "sha256": "2ec0c8b6ed38af07bc781029e844346c2354938dc38681893384455c9ae55723"
+    },
+    {
+      "file": "Middlewares/ST/usbx/common/core/src/ux_utility_error_callback_register.c",
+      "sha256": "dd8229472025868835cdc497e428c7718a541e33c7abca4869da31d1a195323c"
+    },
+    {
+      "file": "Middlewares/ST/usbx/common/core/src/ux_utility_event_flags_create.c",
+      "sha256": "228ed242eb0b8d50e789ceed8b22991827e2d98e76bd76481c935b373720fb3a"
+    },
+    {
+      "file": "Middlewares/ST/usbx/common/core/src/ux_utility_event_flags_delete.c",
+      "sha256": "babf93c3fae901fa93692f29810889fb170a9764ac961116743ad476e8511f32"
+    },
+    {
+      "file": "Middlewares/ST/usbx/common/core/src/ux_utility_event_flags_get.c",
+      "sha256": "1da48b527578fb28eb46899f9a5d81eb09e209e5366841ab533aa08b361b8ac7"
+    },
+    {
+      "file": "Middlewares/ST/usbx/common/core/src/ux_utility_event_flags_set.c",
+      "sha256": "4455b503803440b401965659011b816677e65927a97c8cd2579f3db6afbe78e7"
+    },
+    {
+      "file": "Middlewares/ST/usbx/common/core/src/ux_utility_long_get_big_endian.c",
+      "sha256": "9d36ac1899ae1c75bc700ab5c50c038af76e2fa4e8b1d8988b1ac5fb13c32dd2"
+    },
+    {
+      "file": "Middlewares/ST/usbx/common/core/src/ux_utility_long_get.c",
+      "sha256": "a46d8ae1a940249bffd1cfcf2aeab4568ca34348d05fccf51abc0ef0a2d1cdef"
+    },
+    {
+      "file": "Middlewares/ST/usbx/common/core/src/ux_utility_long_put_big_endian.c",
+      "sha256": "fc1c86597bfad7f88616a3214e0d84da9dff7aca6fbf87f5e848b57c5b8771ab"
+    },
+    {
+      "file": "Middlewares/ST/usbx/common/core/src/ux_utility_long_put.c",
+      "sha256": "b5cf7686783a21596e7e7f74ded5821b94c6385e5f1625839c137088cedb83e3"
+    },
+    {
+      "file": "Middlewares/ST/usbx/common/core/src/ux_utility_memory_allocate_add_safe.c",
+      "sha256": "cbbced897aa05563590a2353f5173074482864275d4b1f22299de701c379d8cd"
+    },
+    {
+      "file": "Middlewares/ST/usbx/common/core/src/ux_utility_memory_allocate_mulc_safe.c",
+      "sha256": "967bcf6ed10f50a958c22cf8b05a6c10ca20c620b898444598dc9c0dc1af78bd"
+    },
+    {
+      "file": "Middlewares/ST/usbx/common/core/src/ux_utility_memory_allocate_mulv_safe.c",
+      "sha256": "1e39e308e7525aca42eb07041d70381def0081a03be744d3c3a555c81045cd3b"
+    },
+    {
+      "file": "Middlewares/ST/usbx/common/core/src/ux_utility_memory_allocate.c",
+      "sha256": "13310d15deb111bb7ed638c7cd3fea7169148ea51e887093e525d4f19cae852a"
+    },
+    {
+      "file": "Middlewares/ST/usbx/common/core/src/ux_utility_memory_byte_pool_create.c",
+      "sha256": "4b22a332f3be2546bc9325ea80cf7dc78cc24f5b39141758be79047bbb941ea0"
+    },
+    {
+      "file": "Middlewares/ST/usbx/common/core/src/ux_utility_memory_byte_pool_search.c",
+      "sha256": "e6be25ca5dc508dc9beb90054e069669cc56f035f4da3a29b332fe5738b4e65a"
+    },
+    {
+      "file": "Middlewares/ST/usbx/common/core/src/ux_utility_memory_compare.c",
+      "sha256": "68479c9d6ea644aa7999d4f952c97d356154512bcb5b208530e7de35aa667428"
+    },
+    {
+      "file": "Middlewares/ST/usbx/common/core/src/ux_utility_memory_copy.c",
+      "sha256": "2a83761996906ed6882618c394fe6a7bf6d9b0416dddc492e933cbd5b308ffee"
+    },
+    {
+      "file": "Middlewares/ST/usbx/common/core/src/ux_utility_memory_free.c",
+      "sha256": "eafdbfa86c63383845405c0275e1d8bb608b04fa1c8cf01946a0c2cd89419ef9"
+    },
+    {
+      "file": "Middlewares/ST/usbx/common/core/src/ux_utility_memory_set.c",
+      "sha256": "4a4aedb577bb70b3dc22d6a3d1dcf66b81732ddf194de2a2d7014c831502b885"
+    },
+    {
+      "file": "Middlewares/ST/usbx/common/core/src/ux_utility_mutex_create.c",
+      "sha256": "12cdf50c8534d7250db912f024648c857ca8d319720f392e4875350b0aa3b37f"
+    },
+    {
+      "file": "Middlewares/ST/usbx/common/core/src/ux_utility_mutex_delete.c",
+      "sha256": "4054a26f3299d5c8928e81d58f29751a94b2859f91f7b8d83dbe3a9b05b29565"
+    },
+    {
+      "file": "Middlewares/ST/usbx/common/core/src/ux_utility_mutex_off.c",
+      "sha256": "358af35a85601574927456e62a51175c905759dde0a4d50af516a36ec240e660"
+    },
+    {
+      "file": "Middlewares/ST/usbx/common/core/src/ux_utility_mutex_on.c",
+      "sha256": "1ada8985a623a12d5ebf7e86c3ecbbc10ab603b0b4bc9fc323f544f27106fa42"
+    },
+    {
+      "file": "Middlewares/ST/usbx/common/core/src/ux_utility_pci_class_scan.c",
+      "sha256": "ba392332c59c43338017e892bf347fd69a57702615229ef1973877e95a9242c4"
+    },
+    {
+      "file": "Middlewares/ST/usbx/common/core/src/ux_utility_pci_read.c",
+      "sha256": "2ebb70a336e371c72439bc58cbeed82cdd1b45ed56e032de1ced8bbc32055d94"
+    },
+    {
+      "file": "Middlewares/ST/usbx/common/core/src/ux_utility_pci_write.c",
+      "sha256": "e5e034336480816ac27010a2bcecfaaa1e73e011eba03abc32566e7873213719"
+    },
+    {
+      "file": "Middlewares/ST/usbx/common/core/src/ux_utility_physical_address.c",
+      "sha256": "fc65ad7ab9f89d0506deea3f2c7022b5251af5a308c5c1ac49857cbf15536300"
+    },
+    {
+      "file": "Middlewares/ST/usbx/common/core/src/ux_utility_semaphore_create.c",
+      "sha256": "525b5d7423e2875d73739a396a0dc800f45348a2a2bae2271d5bfbc5da76c74b"
+    },
+    {
+      "file": "Middlewares/ST/usbx/common/core/src/ux_utility_semaphore_delete.c",
+      "sha256": "85932760984b795332e587fede5eece232a440e25b332520ea1ef52e18b7d4a6"
+    },
+    {
+      "file": "Middlewares/ST/usbx/common/core/src/ux_utility_semaphore_get.c",
+      "sha256": "1d96c60e53b185a5a6bc28eadf4564db31d6b3420bbebaf993a16978a6665199"
+    },
+    {
+      "file": "Middlewares/ST/usbx/common/core/src/ux_utility_semaphore_put.c",
+      "sha256": "15680e5368ad7ca4a1a01fba7bea311d204d0ea2dd654998ba86429564a0f7db"
+    },
+    {
+      "file": "Middlewares/ST/usbx/common/core/src/ux_utility_set_interrupt_handler.c",
+      "sha256": "f012c6fea9ac5f6ff9d1f112e98a4678565aae905589723897f58fa3b6f0c3bc"
+    },
+    {
+      "file": "Middlewares/ST/usbx/common/core/src/ux_utility_short_get_big_endian.c",
+      "sha256": "ee724eeaf577a58dda04923aad9e1aeebf3b060d52071f5843863f7d677f1cfd"
+    },
+    {
+      "file": "Middlewares/ST/usbx/common/core/src/ux_utility_short_get.c",
+      "sha256": "a87e4717bf4412b64230799fc002407f4251d439dda1e0a755fb9daf43eb6a7f"
+    },
+    {
+      "file": "Middlewares/ST/usbx/common/core/src/ux_utility_short_put_big_endian.c",
+      "sha256": "df10dd90d42a56680e4e4949f92db303183feac4caabae4955b8566ba24cbfdc"
+    },
+    {
+      "file": "Middlewares/ST/usbx/common/core/src/ux_utility_short_put.c",
+      "sha256": "cca4c851d3fa58e5556697e0553120cc5d1ea6d5750734be6a0b38e86b267104"
+    },
+    {
+      "file": "Middlewares/ST/usbx/common/core/src/ux_utility_string_length_check.c",
+      "sha256": "21c44390460343af12d3fdb6553e6f85d9d78daedef506b310205118ef6c3904"
+    },
+    {
+      "file": "Middlewares/ST/usbx/common/core/src/ux_utility_string_length_get.c",
+      "sha256": "77fbd470b68721bf2e81783a1d418c4d61335b925239668b30b1a023b8b10538"
+    },
+    {
+      "file": "Middlewares/ST/usbx/common/core/src/ux_utility_string_to_unicode.c",
+      "sha256": "4e561774b4465aafa85c8c0eaf937583e16c661f2869db19214704f98872419a"
+    },
+    {
+      "file": "Middlewares/ST/usbx/common/core/src/ux_utility_thread_create.c",
+      "sha256": "7ac7727c450e7c38d9a48bbcce35ecc378fc8f046e19474dbd1c3513e06eab00"
+    },
+    {
+      "file": "Middlewares/ST/usbx/common/core/src/ux_utility_thread_delete.c",
+      "sha256": "b5e293f0391bc7ea66593ec8a1a3422220fc16b0aa3a3b85706644d3e806524b"
+    },
+    {
+      "file": "Middlewares/ST/usbx/common/core/src/ux_utility_thread_identify.c",
+      "sha256": "a1565a7bb5bd01b30d2aafca3bda1b5fe6e25855ec6d790b3a61f4e396047b31"
+    },
+    {
+      "file": "Middlewares/ST/usbx/common/core/src/ux_utility_thread_relinquish.c",
+      "sha256": "6a1a6c47bcde2721d47797118a39d1e2c582e21d7a027484a3420273d1abc788"
+    },
+    {
+      "file": "Middlewares/ST/usbx/common/core/src/ux_utility_thread_resume.c",
+      "sha256": "c6ffd2b5166951668c82a32d15843250709ec09c3a5bfe99a2c435ab7d4b8959"
+    },
+    {
+      "file": "Middlewares/ST/usbx/common/core/src/ux_utility_thread_schedule_other.c",
+      "sha256": "2815f2e19eda2c7c02265ba7422ebeda9179be67bdfed57da2d6c35c07d6f1dd"
+    },
+    {
+      "file": "Middlewares/ST/usbx/common/core/src/ux_utility_thread_sleep.c",
+      "sha256": "5f8d45a96ffdfffc6bedbcd29292e838e78138ed7f957f19e9d7063e99827038"
+    },
+    {
+      "file": "Middlewares/ST/usbx/common/core/src/ux_utility_thread_suspend.c",
+      "sha256": "43c0302457e69d183185b34d1a519aed28a006e13af1a2fd1d1283885f02abec"
+    },
+    {
+      "file": "Middlewares/ST/usbx/common/core/src/ux_utility_timer_create.c",
+      "sha256": "7750069bb65dfc0f626488ebd3b4d4ee7eefddc335206970a52c6528bbdf7ae8"
+    },
+    {
+      "file": "Middlewares/ST/usbx/common/core/src/ux_utility_timer_delete.c",
+      "sha256": "dd666f86f75d4faa25bbcb41552a82e61e84cb5867e29dd2304f62566b98c5ed"
+    },
+    {
+      "file": "Middlewares/ST/usbx/common/core/src/ux_utility_unicode_to_string.c",
+      "sha256": "df0641205cf745c19c227c918a661677845eb7a382e832149820ca5a49cb2370"
+    },
+    {
+      "file": "Middlewares/ST/usbx/common/core/src/ux_utility_virtual_address.c",
+      "sha256": "08f350e5d0dd08c513973237a54dfac4eec2b13b735937cec5e62417927fb783"
+    },
+    {
+      "file": "Middlewares/ST/usbx/common/usbx_device_classes/inc/ux_device_class_audio.h",
+      "sha256": "2f801940e181da9b58d1cef547ae8cebe65a213ea5dbfc50b5df112a9de70bb6"
+    },
+    {
+      "file": "Middlewares/ST/usbx/common/usbx_device_classes/inc/ux_device_class_audio10.h",
+      "sha256": "9a58761609b1f78a3c2a591b1e0885eeb345d3f536cff14affd35b0fe7309af7"
+    },
+    {
+      "file": "Middlewares/ST/usbx/common/usbx_device_classes/inc/ux_device_class_audio20.h",
+      "sha256": "0e8a5a726ce4188d4adc535c9ac526d4fff5e38d2e2945deb1fadbecdfcde1d0"
+    },
+    {
+      "file": "Middlewares/ST/usbx/common/usbx_device_classes/inc/ux_device_class_ccid.h",
+      "sha256": "95a407676bfebad224c23de0bea091b5c2b41441668cf162d91af0f2b95cc702"
+    },
+    {
+      "file": "Middlewares/ST/usbx/common/usbx_device_classes/inc/ux_device_class_cdc_acm.h",
+      "sha256": "4f8d5b3e89db391d2eb52a205acdfdebac20c0266d6f6a640aa93be9a29e6345"
+    },
+    {
+      "file": "Middlewares/ST/usbx/common/usbx_device_classes/inc/ux_device_class_cdc_ecm.h",
+      "sha256": "229f176c541fee21333c642da1c492331a8abd0f0ecfc57832aae726b9c552f5"
+    },
+    {
+      "file": "Middlewares/ST/usbx/common/usbx_device_classes/inc/ux_device_class_dfu.h",
+      "sha256": "ad33aecaaa971d83545622ebe0afad46a0558af31b363cb287d1046e63ad8e94"
+    },
+    {
+      "file": "Middlewares/ST/usbx/common/usbx_device_classes/inc/ux_device_class_hid.h",
+      "sha256": "ba47c25b5512b6cfe594119760480a1044b11ac964ebbf301288058f5f189861"
+    },
+    {
+      "file": "Middlewares/ST/usbx/common/usbx_device_classes/inc/ux_device_class_pima.h",
+      "sha256": "5beba5b6e36f4e32fae296ce7d0d50945f0dd1abd9776bfff4412ff4674b989e"
+    },
+    {
+      "file": "Middlewares/ST/usbx/common/usbx_device_classes/inc/ux_device_class_printer.h",
+      "sha256": "f50a07f9b32481f3b784a54e248e6a25884aff666d8a47ed432acfbc5ed1d706"
+    },
+    {
+      "file": "Middlewares/ST/usbx/common/usbx_device_classes/inc/ux_device_class_rndis.h",
+      "sha256": "66027d73226ff0fe91a5d2599743a95aa922a5f4b22f70326510ef3f1986b9aa"
+    },
+    {
+      "file": "Middlewares/ST/usbx/common/usbx_device_classes/inc/ux_device_class_storage.h",
+      "sha256": "e3e49c706e414201806127247068f61e467d4c73c35b94cd7a6a65e611677250"
+    },
+    {
+      "file": "Middlewares/ST/usbx/common/usbx_device_classes/inc/ux_device_class_video.h",
+      "sha256": "15678c036282cc5d87250aef0f5ae3b846165cb3c25549ca6168f41514d1c041"
+    },
+    {
+      "file": "Middlewares/ST/usbx/common/usbx_device_classes/src/ux_device_class_cdc_acm_activate.c",
+      "sha256": "1bde2fef926edeeecf77dffd4f10ab23a0b592e753c6cdba0b9adcff63e9aca4"
+    },
+    {
+      "file": "Middlewares/ST/usbx/common/usbx_device_classes/src/ux_device_class_cdc_acm_bulkin_thread.c",
+      "sha256": "793661d339323470209b395fb4f2f1be64cfb0c29e40c9013229f6de3f036a5e"
+    },
+    {
+      "file": "Middlewares/ST/usbx/common/usbx_device_classes/src/ux_device_class_cdc_acm_bulkout_thread.c",
+      "sha256": "3a55c671db243fb5cf409e880215cef87214fa2b1046fe4d3f12279dc15d8d6e"
+    },
+    {
+      "file": "Middlewares/ST/usbx/common/usbx_device_classes/src/ux_device_class_cdc_acm_control_request.c",
+      "sha256": "9d16c15cb8119d273f59f4bac8106517db84ab288c655f6d3c701527e5fa6c7c"
+    },
+    {
+      "file": "Middlewares/ST/usbx/common/usbx_device_classes/src/ux_device_class_cdc_acm_deactivate.c",
+      "sha256": "8fa62b10d2f4d1f1f3656a5fe12a7efaf05358d272f6bec320c8ef04f685cfec"
+    },
+    {
+      "file": "Middlewares/ST/usbx/common/usbx_device_classes/src/ux_device_class_cdc_acm_entry.c",
+      "sha256": "c68bc5a10ce9da21f78a61e966c170f8506029da4924abb0a2b9dbd7acd809a7"
+    },
+    {
+      "file": "Middlewares/ST/usbx/common/usbx_device_classes/src/ux_device_class_cdc_acm_initialize.c",
+      "sha256": "94b3bf5b58549c29196a527561b2e4bcc6df8918c40aa3011b10af5c8bfec795"
+    },
+    {
+      "file": "Middlewares/ST/usbx/common/usbx_device_classes/src/ux_device_class_cdc_acm_ioctl.c",
+      "sha256": "82776878fdcbb6eb5daef8f62871ed9d258f0dae8f7529c3b9315258c06ecae0"
+    },
+    {
+      "file": "Middlewares/ST/usbx/common/usbx_device_classes/src/ux_device_class_cdc_acm_read.c",
+      "sha256": "f8d95b41ad28a951f7750cbec1c5917c1ebf143bd87ee5bcc57b57db26c4b1bb"
+    },
+    {
+      "file": "Middlewares/ST/usbx/common/usbx_device_classes/src/ux_device_class_cdc_acm_unitialize.c",
+      "sha256": "6425c88150b734007086023c6ab20dee76cd593608966801da70c8b792e0754a"
+    },
+    {
+      "file": "Middlewares/ST/usbx/common/usbx_device_classes/src/ux_device_class_cdc_acm_write_with_callback.c",
+      "sha256": "10c7bd24db705cfc99e8de625317d48711d8aee9eeb96e85fca532f18d0865bb"
+    },
+    {
+      "file": "Middlewares/ST/usbx/common/usbx_device_classes/src/ux_device_class_cdc_acm_write.c",
+      "sha256": "18790c3e5a72b70602f161fba25eb3efaf54ca70d2a8d022375ebea01d0ee221"
+    },
+    {
+      "file": "Middlewares/ST/usbx/common/usbx_stm32_device_controllers/ux_dcd_stm32_callback.c",
+      "sha256": "8e558246bf51689f393583518c313b5856e4123569badcb25f81833d8e5d7953"
+    },
+    {
+      "file": "Middlewares/ST/usbx/common/usbx_stm32_device_controllers/ux_dcd_stm32_endpoint_create.c",
+      "sha256": "744617cbfd356f26925af24425ff64a6a32857cf8ebb1d0c8ad096614b362b55"
+    },
+    {
+      "file": "Middlewares/ST/usbx/common/usbx_stm32_device_controllers/ux_dcd_stm32_endpoint_destroy.c",
+      "sha256": "6292bace2454251244675b277d94df6be51eb3f0f7f653e3c882874c7b6aeafe"
+    },
+    {
+      "file": "Middlewares/ST/usbx/common/usbx_stm32_device_controllers/ux_dcd_stm32_endpoint_reset.c",
+      "sha256": "9193a5f4d2aace4a78475ee2fcebb2210327ae6bf62aae968d05fa4d680c47d6"
+    },
+    {
+      "file": "Middlewares/ST/usbx/common/usbx_stm32_device_controllers/ux_dcd_stm32_endpoint_stall.c",
+      "sha256": "c47702891309b84eb917714826898662a7c36eecb08e2a0cdd8814127d92d7b4"
+    },
+    {
+      "file": "Middlewares/ST/usbx/common/usbx_stm32_device_controllers/ux_dcd_stm32_endpoint_status.c",
+      "sha256": "644816c543c658b2902c53317b68040ce2fcd2721d4801c7ca72f1f91d37a0db"
+    },
+    {
+      "file": "Middlewares/ST/usbx/common/usbx_stm32_device_controllers/ux_dcd_stm32_frame_number_get.c",
+      "sha256": "b3260be29c0beb3c1ab8a222b5ecc3f7aef9f6bd63791ab79a5a9e6207ac1340"
+    },
+    {
+      "file": "Middlewares/ST/usbx/common/usbx_stm32_device_controllers/ux_dcd_stm32_function.c",
+      "sha256": "249e83ab6e50d475217a777ee8299599663e67946fbbb098e03a0006394656fe"
+    },
+    {
+      "file": "Middlewares/ST/usbx/common/usbx_stm32_device_controllers/ux_dcd_stm32_initialize_complete.c",
+      "sha256": "a4e4dc0d2b4635c827f0a0f84a4596c6d30f86089f00de7af775fe751397746e"
+    },
+    {
+      "file": "Middlewares/ST/usbx/common/usbx_stm32_device_controllers/ux_dcd_stm32_initialize.c",
+      "sha256": "b47be0f4761a9b13956579fa0b91a55f71a6a9d6eb971cfb739cd8bdd7d11838"
+    },
+    {
+      "file": "Middlewares/ST/usbx/common/usbx_stm32_device_controllers/ux_dcd_stm32_interrupt_handler.c",
+      "sha256": "0cecdad9adc9ca550d1012663b1c4c30195a04914796256509ebaa0d2e8bb27b"
+    },
+    {
+      "file": "Middlewares/ST/usbx/common/usbx_stm32_device_controllers/ux_dcd_stm32_transfer_abort.c",
+      "sha256": "81f21ee8c072a915053cdd19de612e15ab67ab13d6cc6534ae6222fd1f356f24"
+    },
+    {
+      "file": "Middlewares/ST/usbx/common/usbx_stm32_device_controllers/ux_dcd_stm32_transfer_request.c",
+      "sha256": "5c2abfe3e5d0bce2bc0657eec2574086cb19de4aaacf6f0e3700e8996bada2b3"
+    },
+    {
+      "file": "Middlewares/ST/usbx/common/usbx_stm32_device_controllers/ux_dcd_stm32_uninitialize.c",
+      "sha256": "c007ea7206e1f525a1cfc121aa54952b429c846bc6ec26443f35482fc12d3d08"
+    },
+    {
+      "file": "Middlewares/ST/usbx/common/usbx_stm32_device_controllers/ux_dcd_stm32.h",
+      "sha256": "98e0fa62d72f73d54401a30f50de92a5cd0b93cef109f840c4f2d7ab8bd8ff54"
+    },
+    {
+      "file": "Middlewares/ST/usbx/LICENSE.txt",
+      "sha256": "bf1979080aae818f32168911e7ccf5411a54a13a94728bea1a30108d170b7101"
+    },
+    {
+      "file": "Middlewares/ST/usbx/LICENSED-HARDWARE.txt",
+      "sha256": "3dc8db86b714c1d1b09a4c52e00a60f22bedcaf17151b12e3aec5716d15bdff7"
+    },
+    {
+      "file": "Middlewares/ST/usbx/ports/generic/inc/ux_port.h",
+      "sha256": "be08f3cb3cb7daf37278cabe4db02380583f8f0a1fbddb522abcd5495502a20a"
+    }
+  ]
+}

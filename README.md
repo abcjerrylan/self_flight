@@ -2,15 +2,13 @@
 
 起步板：MicoAir743v2-AIO-35A；后续迁移到自研 STM32 飞控板。
 
-当前阶段是 **P0/P1：独立工程和可在电脑上验证的核心**。已实现基础向量/四元数、时间检查和数据契约。尚未实现 IMU 驱动、Mahony、PID、DShot、RC 或解锁状态机，也没有可烧录的 H743 固件。
+已完成 **P0/P1 和 P2A 软件部分**：纯 C++ 核心、真实 H743 CubeMX 工程、ThreadX 启动、微秒时间、USB 虚拟串口日志和完整固件构建。USART1 未初始化，PA9/PA10 留给其他用途。用户已自行烧录，应用启动、USB 枚举和每秒日志已实测通过；计时精度及其他实机项目待验证。IMU、姿态解算、控制、DShot、RC 与解锁状态机属于后续阶段。
 
-开发统一在 `main` 分支推进，不按版本或里程碑新建分支，分支名称不使用 `codex/` 前缀。
+统一使用 `main` 分支，不按版本新建分支，不使用 `codex/` 前缀。代码优先简洁直接。
 
-## 主机构建与测试
+## 电脑端构建
 
-依赖：CMake ≥ 3.22、Ninja、支持 C++17 的原生编译器（GCC/Clang/MSVC）。主机核心没有第三方库依赖，无需 HAL、ThreadX、CubeMX 或 ARM 编译器。
-
-在本仓库根目录、能找到工具的终端执行：
+依赖 CMake ≥ 3.22、Ninja、支持 C++17 的原生编译器，不需要 HAL、ThreadX 或 ARM 工具链。
 
 ```text
 cmake --preset host-debug
@@ -18,40 +16,35 @@ cmake --build --preset host-debug
 ctest --preset host-debug
 ```
 
-优化构建同样保留检查，不依赖可能被禁用的 `assert`：
+Release 使用 `host-release` preset。MinGW 可在首次 configure 添加 `-DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_COMPILER=g++`。本机路径放到私有 `CMakeUserPresets.json`，不写入共享文件。
+
+## H743 固件构建
+
+依赖 PATH 中的 `arm-none-eabi-gcc/g++`、CMake 和 Ninja。厂商源已包含在仓库，正常构建不需要 CubeMX，也不读取本机固件包或参考工程。
 
 ```text
-cmake --preset host-release
-cmake --build --preset host-release
-ctest --preset host-release
+cmake --preset mcu-debug
+cmake --build --preset mcu-debug
+cmake --preset mcu-release
+cmake --build --preset mcu-release
 ```
 
-可在首次 configure 时使用 `-DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_COMPILER=g++` 明确选择 MinGW。若编译器不在 PATH，可用本机私有 `CMakeUserPresets.json` 配置；不要把机器路径写入共享 presets。
+输出在 `build/mcu-debug` 或 `build/mcu-release`：`self_flight.elf`、`.hex`、`.bin`、`.map`。当前是 **Flash 0x08000000 的独立启动配置**，不是已确认的 bootloader 应用布局；连接实物后先确认是否保留 bootloader，再确定烧录地址。
 
-## 当前结构
+## 结构
 
 | 位置 | 内容 |
 | --- | --- |
-| `flight/core/include/self_flight/core/` | 数学、时间和数据接口 |
-| `flight/core/src/` | 原创实现，无 HAL/RTOS/硬件依赖 |
-| `tests/host/` | 14 组 CTest，含坐标/组合、异常输入、时间与数据默认状态 |
-| `boards/micoair743v2_aio35/` | 真实板资源规划与 P2 生成流程，当前只有设计文档 |
-| `third_party/` | 依赖来源、工具验证版本和后续锁定策略；当前没有引入的库 |
-| `docs/` | 架构、数据契约、参考审查、验证和进度 |
+| `flight/core/` | 原创数学、时间检查、数据契约，无 HAL/RTOS 依赖 |
+| `app/app.cpp` | 一个启动线程，每秒打印系统时间 |
+| `platform/stm32h7/` | TIM2 微秒时间、USB CDC ACM 输出、时钟查询 |
+| `boards/micoair743v2_aio35/` | IOC、真实生成代码、HAL/CMSIS/ThreadX/USBX、板级构建 |
+| `cmake/arm-gcc.cmake` | Cortex-M7 硬浮点工具链 |
+| `tools/` | CubeMX 重新生成与输出路径整理 |
+| `tests/host/` | 14 组电脑端测试 |
+| `third_party/` | 依赖版本、许可、官方包与源码摘要 |
+| `docs/` | 架构、契约、参考审查、实际验证和进度 |
 
-核心目标为 `self_flight::core`，未来 MCU 目标使用同一源文件。原生头文件根目录只有本仓库 `flight/core/include`，不加载参考工程。
+核心目标 `self_flight::core` 在 host 与 MCU 中使用相同源文件。PNX 仅供只读参考，没有模块、子模块或 include/link 依赖。
 
-## MCU 构建状态
-
-MCU 实现属于 P2，参见 [板级生成步骤](boards/micoair743v2_aio35/README.md)。当前 `SELF_FLIGHT_TARGET=mcu` 明确报错，防止把主机程序当作固件。没有虚构 `.ioc`、启动文件、链接布局或伪造的 MCU preset。
-
-## 阅读顺序
-
-1. [架构边界](docs/architecture.md)
-2. [坐标与数据契约](docs/data-contracts.md)
-3. [参考工程审查](docs/reference-review.md)
-4. [依赖策略](third_party/README.md)
-5. [实际验证结果](docs/validation.md)
-6. [进度与下一步](docs/progress.md)
-
-本仓库与 PNX 独立。未复制其模块、子模块或厂商依赖；不能在参考仓库中构建。当前项目未对外发布，整体开源许可尚未选择；新增第三方内容必须保留自身许可并记录来源。
+阅读：[板级配置和接板检查](boards/micoair743v2_aio35/README.md)、[实际验证](docs/validation.md)、[进度](docs/progress.md)、[架构](docs/architecture.md)、[数据契约](docs/data-contracts.md)、[依赖](third_party/README.md)。

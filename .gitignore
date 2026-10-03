@@ -6,3 +6,7 @@
 *.user
 *.log
 __pycache__/
+**/.mxproject
+**/.project
+**/.cproject
+**/.settings/

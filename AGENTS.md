@@ -7,7 +7,8 @@
 - Checked math operations reject non-finite and degenerate inputs and leave output arguments unchanged on failure. Do not enable fast-math, which can invalidate finite checks.
 - Pass time into algorithms. Reject duplicate/backward/oversized time intervals explicitly; do not silently clamp missing time.
 - Data defaults must remain invalid and actuator permission false. These data contracts are not an implemented arming state machine.
-- Board hardware belongs to a real CubeMX IOC and generated H743 sources. P1 only has board design documents; do not fabricate firmware or rename H723 files.
+- Board hardware belongs to the real CubeMX IOC and generated H743 sources. Keep custom changes inside USER CODE blocks; do not fabricate firmware or rename H723 files.
+- Prefer short, direct code and only abstractions needed by current functionality. Avoid speculative defensive layers; preserve correct hardware configuration and stopped motor outputs.
 - List CMake sources explicitly. Native tests do not load an ARM toolchain, HAL or ThreadX. Tests must remain active in Release.
 - Use the single long-lived main branch for this project. Do not prefix branch names with codex/ or create a branch for each version or milestone unless the user explicitly requests it.
 - Preserve user changes; do not reset, clean or stash. Do not commit, push, flash, produce motor output or fly without task authorization.
