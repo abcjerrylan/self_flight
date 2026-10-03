@@ -36,7 +36,6 @@ void run(ULONG) {
     }
     if (!capturing) return;
     std::uint32_t consumed[2]{};
-    std::uint32_t accel_in_gyro_frame = 0;
     core::StationaryCalibration stationary;
     auto calibration = board::accelerometer_calibration();
     const bool accel_ready = core::calibration_parameters_valid(calibration) &&
@@ -48,6 +47,13 @@ void run(ULONG) {
     calibration.quality = core::CalibrationQuality::Unknown;
     if (!accel_ready) { calibration.accel_bias_m_s2 = {}; calibration.accel_scale = {1,1,1}; }
     bool gyro_ready = false;
+    Temperature temperature;
+    std::uint64_t next_temperature_us = 0;
+    {
+        const platform::CriticalSection lock;
+        state.calibration = calibration;
+        state.accel_calibrated = accel_ready;
+    }
     for (;;) {
         ULONG flags{};
         if (tx_event_flags_get(&events, 3, TX_OR_CLEAR, &flags, 10) != TX_SUCCESS) {
@@ -70,6 +76,7 @@ void run(ULONG) {
             const bool stale = latency >= (index == 1 ? 1000U : 1250U);
             record.valid = ok && !overlap && !stale;
             const auto sensor_si = bmi088::to_si(record.raw, record.sensor);
+            bool calibration_changed = false;
             core::CalibrationError cal_error = gyro_ready ? core::CalibrationError::None : core::CalibrationError::Collecting;
             if (!gyro_ready) {
                 const auto error = stationary.add(index == 1,
@@ -80,28 +87,30 @@ void run(ULONG) {
                     calibration.gyro_bias_rad_s = estimate.bias;
                     calibration.stationary_gyro_variance = std::max({estimate.variance.x,estimate.variance.y,estimate.variance.z});
                     calibration.measured_us = estimate.measured_us;
-                    calibration.temperature_valid = driver.read_temperature(calibration.temperature_c);
-                    if (calibration.temperature_valid && (!std::isfinite(calibration.temperature_c) ||
-                        calibration.temperature_c < -40 || calibration.temperature_c > 85)) calibration.temperature_valid = false;
+                    calibration.temperature_c = temperature.value_c;
+                    calibration.temperature_valid = temperature.valid &&
+                        core::is_fresh(temperature.measured_us,platform::time_us(),2000000);
                     calibration.quality = accel_ready ? core::CalibrationQuality::Accepted : core::CalibrationQuality::Unknown;
-                    gyro_ready = true;
+                    gyro_ready = core::calibration_parameters_valid(calibration);
+                    calibration_changed = gyro_ready;
                     cal_error = core::CalibrationError::None;
                 }
             }
             auto corrected = sensor_si;
             if (index == 1 && gyro_ready) corrected = sensor_si-calibration.gyro_bias_rad_s;
             if (index == 0 && accel_ready) {
-                auto accel_only = calibration;
-                accel_only.quality = core::CalibrationQuality::Accepted;
-                if (!core::apply_calibration(sensor_si,false,accel_only,corrected)) record.valid = false;
+                const auto value = sensor_si-calibration.accel_bias_m_s2;
+                corrected = {value.x*calibration.accel_scale.x,
+                             value.y*calibration.accel_scale.y,value.z*calibration.accel_scale.z};
             }
-            const auto corrected_available_us = platform::time_us();
-            const bool corrected_valid = record.valid && corrected_available_us-event.time < (index == 1 ? 1000U : 1250U);
+            const auto body = board::sensor_to_body(corrected);
+            const bool corrected_valid = record.valid && core::is_finite(body);
             {
                 const platform::CriticalSection lock;
-                state.calibration = calibration;
-                state.gyro_calibrated = gyro_ready;
-                state.accel_calibrated = accel_ready;
+                if (calibration_changed) {
+                    state.calibration = calibration;
+                    state.gyro_calibrated = gyro_ready;
+                }
                 state.calibration_error = cal_error;
                 state.calibration_samples[0] = stationary.count(false);
                 state.calibration_samples[1] = stationary.count(true);
@@ -116,16 +125,28 @@ void run(ULONG) {
                 stats.maximum_latency_us = std::max(stats.maximum_latency_us, latency);
                 stats.maximum_read_us = std::max(stats.maximum_read_us, duration);
                 auto& sample = index == 1 ? state.sample.gyro : state.sample.accel;
-                sample.metadata = {event.time, corrected_available_us, event.sequence, corrected_valid};
-                sample.value = board::sensor_to_body(corrected);
-                if (index == 1) {
-                    state.sample.accel_is_new = state.sample.accel.metadata.valid &&
-                        state.sample.accel.metadata.sequence != accel_in_gyro_frame;
-                    accel_in_gyro_frame = state.sample.accel.metadata.sequence;
-                }
+                sample.value = body;
+                // Timestamp near the end of publication, including correction and shared-state work.
+                const auto published_us = platform::time_us();
+                const auto publication_latency = static_cast<std::uint32_t>(published_us-event.time);
+                const bool late = publication_latency >= (index == 1 ? 1000U : 1250U);
+                sample.metadata = {event.time,published_us,event.sequence,corrected_valid && !late};
+                stats.maximum_publication_latency_us = std::max(stats.maximum_publication_latency_us,publication_latency);
+                stats.maximum_processing_us = std::max(stats.maximum_processing_us,
+                    static_cast<std::uint32_t>(published_us-record.started_us));
+                stats.publication_late += late;
             }
             consumed[index] = event.sequence;
             if (ok && tx_queue_send(&logs, &record, TX_NO_WAIT) != TX_SUCCESS) drop_logs(1);
+        }
+        if (platform::time_us() >= next_temperature_us) {
+            temperature.valid = driver.read_temperature(temperature.value_c) &&
+                std::isfinite(temperature.value_c) && temperature.value_c >= -40 && temperature.value_c <= 85;
+            temperature.measured_us = platform::time_us();
+            temperature.errors += !temperature.valid;
+            next_temperature_us = temperature.measured_us+1000000;
+            const platform::CriticalSection lock;
+            state.temperature = temperature;
         }
     }
 }
@@ -161,9 +182,20 @@ Snapshot snapshot() {
         copy.stats[1].events = pending[1].sequence;
     }
     const auto now = platform::time_us();
+    copy.temperature.valid &= core::is_fresh(copy.temperature.measured_us,now,2000000);
     if (!core::is_usable(copy.sample.gyro, now, 5000)) copy.sample.gyro.metadata.valid = false;
     if (!core::is_usable(copy.sample.accel, now, 5000)) copy.sample.accel.metadata.valid = false;
     return copy;
+}
+
+bool take_sample(core::ImuCursor& cursor, core::ImuSample& sample) {
+    core::ImuSample latest_sample;
+    {
+        const platform::CriticalSection lock;
+        if (!state.gyro_calibrated || !state.accel_calibrated) return false;
+        latest_sample = state.sample;
+    }
+    return cursor.take(latest_sample,platform::time_us(),sample);
 }
 
 bool take_record(Record& record, unsigned wait_ticks) {

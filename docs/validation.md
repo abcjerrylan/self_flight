@@ -233,3 +233,22 @@ X动作记录没有完整90度，Y有明显手持调整；这些数值不是受�
 运动验证分开记录：第一次重启记录在36秒才开始，CAL已经Accepted，因此它只能证明接受后转动不会重新学习零偏；不将其误记为启动运动拒绝。随后用户在持续转动中重插USB，8秒onboard-motion-reject.csv所有CAL均gyro=0、quality=Unknown，Motion/Collecting并增加候选清空计数。放稳后的onboard-recovery.csv从a=1375/g=1709、Collecting，进展到a=2413/g=2999、Accepted；最终零偏(-0.000840,+0.001375,+0.000799)rad/s，温度32.125°C。证明运动不通过且静止后可自动恢复。restart计数是每次候选被清空的次数，不能当作完整3秒窗口重试数。
 
 实机静止、运动拒绝和恢复记录结束均释放COM51。标定参数属于这一块实物；对角六面模型与启动静止零偏均通过当前基本验收，不声称精密转台、交叉轴/温漂模型或飞行验收。四路电机仍为低电平GPIO，未启用PWM/DShot。
+
+
+## P3 前补丁：2026-10-03
+
+| 检查 | 结果 |
+| --- | --- |
+| host Debug | 26/26，0.45s |
+| host Release | 26/26，0.40s；Release仍执行CHECK |
+| 新回归 | 末段运动/停止恢复；消费者重复、新加计、独立游标、未来加计、无效/过期/未可用、时间倒退、序号回绕/倒退 |
+| Python回放 | 4/4，原始CSV接口保持兼容 |
+| MCU Debug | Flash89,488B / RAM_D1 64,992B；ELF/HEX/BIN/map |
+| MCU Release | Flash57,176B / RAM_D1 64,944B；ELF/HEX/BIN/map |
+| 硬件生成 | IOC/厂商文件未变；本轮不需重跑CubeMX |
+
+原生CLI的末段运动合成重放：前2.8秒静止、末0.2秒角速度0.1rad/s，加计保持重力。旧版接受gyro_bias_z=0.006697767rad/s、variance_z=0.000625125；新版两种构建返回1，拒绝找到合格窗口。
+
+旧实机原始CSV重放：六面body-{x,y,z}-{plus,minus}.csv（每份约14,430条）、onboard-static.csv（36,072条）、onboard-motion-reject.csv（14,436条）和onboard-recovery.csv（36,076条）。Debug/Release均接受六面、静止与恢复，拒绝运动文件。完整估计/返回码见build/pre-p3/replay-validation.json。没有覆盖或重新生成既有六面参数和原始采集。
+
+固件编译成功不等于本轮硬件验收。未烧录新版、未打开串口；新版1Hz温度、PIPE实际时延和末段运动拒绝仍待实测。没有改变SPI/ODR/量程、电机GPIO或启用P3解算。代码仍在main，未提交/推送，PNX只读。

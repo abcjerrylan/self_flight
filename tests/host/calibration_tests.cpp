@@ -47,6 +47,43 @@ void rejection() {
     for (unsigned i=0;i<30;++i) window.add(false,sample({i%2 ? 0.5F:-0.5F,0,kGravity},i*1250,i));
     CHECK(window.count(false)==0);
 }
+void late_motion() {
+    // Repeat across bucket boundaries: a quiet prefix must not hide recent motion.
+    for (const auto start : {2800000U,2825000U,2900000U}) {
+        StationaryCalibration window;
+        bool rejected = false, accepted = false;
+        std::uint32_t a=0,g=0;
+        for (std::uint64_t t=0; t<=3010000; t+=250) {
+            if (t%1000 == 0) rejected |= window.add(true,
+                sample({0,0,t >= start ? 0.1F : 0.0F},t,g++)) == CalibrationError::Motion;
+            if (t%1250 == 0) window.add(false,sample({0,0,kGravity},t,a++));
+            GyroEstimate out;
+            accepted |= window.estimate(out);
+        }
+        CHECK(rejected && !accepted);
+        // Stop motion without restarting the collector or breaking either sequence.
+        for (std::uint64_t t=3010250; t<=6200000; t+=250) {
+            if (t%1000 == 0) {
+                const auto error=window.add(true,sample({},t,g++));
+                CHECK(error == CalibrationError::None || error == CalibrationError::Motion);
+            }
+            if (t%1250 == 0) window.add(false,sample({0,0,kGravity},t,a++));
+        }
+        GyroEstimate out;
+        CHECK(window.estimate(out) && near(out.bias.z,0));
+    }
+    // Norm stays near g while a late tilt changes its direction.
+    StationaryCalibration window;
+    bool rejected = false;
+    std::uint32_t a=0,g=0;
+    for (std::uint64_t t=0; t<=3010000; t+=250) {
+        if (t%1000 == 0) window.add(true,sample({},t,g++));
+        if (t%1250 == 0) rejected |= window.add(false,
+            sample(t >= 2800000 ? Vec3{1,0,9.75553F} : Vec3{0,0,kGravity},t,a++)) == CalibrationError::Motion;
+    }
+    GyroEstimate out;
+    CHECK(rejected && !window.estimate(out));
+}
 std::array<Vec3,6> faces() {
     // Independent synthetic biases (0.1,-0.2,0.05), scales (1.02,0.98,1.01).
     return {{{kGravity/1.02F+0.1F,-0.2F,0.05F},{-kGravity/1.02F+0.1F,-0.2F,0.05F},
@@ -86,6 +123,7 @@ int main(int argc,char** argv) {
     const std::string test=argv[1];
     if (test=="stationary") stationary();
     else if (test=="rejection") rejection();
+    else if (test=="late_motion") late_motion();
     else if (test=="fit") fit();
     else if (test=="application") application();
     else return 2;

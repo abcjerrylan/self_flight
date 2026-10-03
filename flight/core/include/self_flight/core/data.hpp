@@ -33,7 +33,7 @@ inline bool is_usable(const VectorSample& sample, TimestampUs now,
 struct ImuSample {
     VectorSample gyro{};
     VectorSample accel{};
-    bool accel_is_new{false};
+    bool accel_is_new{false}; // Set by the consumer cursor, not the sampler.
 };
 
 enum class CalibrationQuality : std::uint8_t { Unknown, Rejected, Accepted };

@@ -24,7 +24,8 @@ public:
     void reset();
     std::uint32_t count(bool gyro) const { return moments_[gyro ? 1 : 0].count; }
 private:
-    VectorMoments moments_[2]{};
+    VectorMoments moments_[2]{}, recent_[2]{}, previous_[2]{};
+    TimestampUs recent_first_[2]{};
     SampleMetadata last_[2]{};
     TimestampUs first_[2]{};
 };

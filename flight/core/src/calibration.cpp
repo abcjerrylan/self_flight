@@ -9,6 +9,19 @@ float norm(Vec3 v) { return std::sqrt(dot(v,v)); }
 float maximum(Vec3 v) { return std::max({v.x,v.y,v.z}); }
 float axis(Vec3 v, unsigned index) { return index == 0 ? v.x : index == 1 ? v.y : v.z; }
 bool between(float value, float lower, float upper) { return value >= lower && value <= upper; }
+VectorMoments merge(const VectorMoments& a, const VectorMoments& b) {
+    if (!a.count) return b;
+    const auto count = a.count+b.count;
+    const auto delta = b.mean-a.mean;
+    const float weight = static_cast<float>(b.count)/count;
+    return {count, a.mean+delta*weight,
+        a.m2+b.m2+product(delta,delta)*(a.count*weight)};
+}
+bool moving(const VectorMoments& stats, bool gyro) {
+    return stats.count >= 30 && (gyro ?
+        norm(stats.mean) > 0.05F || maximum(stats.variance()) > 0.0009F :
+        maximum(stats.variance()) > 0.04F || !between(norm(stats.mean),8.8F,10.8F));
+}
 }
 void VectorMoments::add(Vec3 value) {
     ++count;
@@ -35,9 +48,14 @@ CalibrationError StationaryCalibration::add(bool gyro, const VectorSample& sampl
     if (!moments_[index].count) first_[index] = meta.measured_us;
     moments_[index].add(sample.value);
     last_[index] = meta;
-    const auto& stats = moments_[index];
-    if (stats.count >= 30 && ((gyro && (norm(stats.mean) > 0.05F || maximum(stats.variance()) > 0.0009F)) ||
-        (!gyro && (maximum(stats.variance()) > 0.04F || !between(norm(stats.mean), 8.8F, 10.8F)))))
+    // Adjacent 50ms buckets retain a 50-100ms view without a sample buffer.
+    if (!recent_[index].count || meta.measured_us-recent_first_[index] >= 50000) {
+        previous_[index] = recent_[index];
+        recent_[index] = {};
+        recent_first_[index] = meta.measured_us;
+    }
+    recent_[index].add(sample.value);
+    if (moving(moments_[index],gyro) || moving(merge(previous_[index],recent_[index]),gyro))
         return reject(CalibrationError::Motion);
     return CalibrationError::None;
 }

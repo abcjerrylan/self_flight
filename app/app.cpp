@@ -75,6 +75,21 @@ void run(ULONG) {
                 micro(c.accel_scale.x),micro(c.accel_scale.y),micro(c.accel_scale.z),
                 std::lround(c.stationary_gyro_variance*1000000000.0F),std::lround(c.temperature_c*1000.0F),c.temperature_valid);
             platform::write(line);
+            const auto& temp = status.temperature;
+            const bool delta_valid = temp.valid && c.temperature_valid && status.gyro_calibrated;
+            std::snprintf(line,sizeof(line),
+                "# TEMP current_mc=%ld valid=%u delta_mc=%ld delta_valid=%u errors=%lu\r\n"
+                "# PIPE pubmax=%lu/%lu procmax=%lu/%lu late=%lu/%lu\r\n",
+                std::lround(temp.value_c*1000.0F),temp.valid,
+                delta_valid ? std::lround((temp.value_c-c.temperature_c)*1000.0F) : 0L,delta_valid,
+                static_cast<unsigned long>(temp.errors),
+                static_cast<unsigned long>(status.stats[0].maximum_publication_latency_us),
+                static_cast<unsigned long>(status.stats[1].maximum_publication_latency_us),
+                static_cast<unsigned long>(status.stats[0].maximum_processing_us),
+                static_cast<unsigned long>(status.stats[1].maximum_processing_us),
+                static_cast<unsigned long>(status.stats[0].publication_late),
+                static_cast<unsigned long>(status.stats[1].publication_late));
+            platform::write(line);
             const auto& a = status.sample.accel;
             const auto& g = status.sample.gyro;
             std::snprintf(line,sizeof(line),
