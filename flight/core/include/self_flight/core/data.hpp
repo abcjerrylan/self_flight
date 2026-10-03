@@ -60,6 +60,10 @@ struct AttitudeState {
     TimestampUs gyro_measured_us{0U};
     TimestampUs accel_measured_us{0U};
     bool absolute_yaw_valid{false};
+    // Integral of corrected body rates: X/Y/Z rotation since this epoch. Starts at zero.
+    // Diagnostic only; these drifting integrals are not Euler attitude or control feedback.
+    float total_roll_rad{}, total_pitch_rad{}, total_yaw_rad{};
+    std::uint32_t total_epoch{}; // Changes when the estimator re-aligns after missing time.
 };
 
 enum class FlightMode : std::uint8_t { Rate, Attitude };

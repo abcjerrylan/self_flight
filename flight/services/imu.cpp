@@ -1,4 +1,5 @@
 #include "imu.hpp"
+#include "attitude.hpp"
 #include "platform.hpp"
 #include "profile.hpp"
 #include "imu-calibration.hpp"
@@ -137,6 +138,7 @@ void run(ULONG) {
                 stats.publication_late += late;
             }
             consumed[index] = event.sequence;
+            if (index == 1) attitude::notify();
             if (ok && tx_queue_send(&logs, &record, TX_NO_WAIT) != TX_SUCCESS) drop_logs(1);
         }
         if (platform::time_us() >= next_temperature_us) {

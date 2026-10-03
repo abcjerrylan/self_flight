@@ -1,6 +1,7 @@
 #include "app.h"
 #include "platform.hpp"
 #include "imu.hpp"
+#include "attitude.hpp"
 #include "tx_api.h"
 #include <cstdio>
 #include <cmath>
@@ -11,7 +12,7 @@ alignas(8) unsigned char stack[4096];
 
 void run(ULONG) {
     using namespace self_flight;
-    ULONG last_status = tx_time_get();
+    ULONG last_status = tx_time_get(), last_attitude = last_status;
     char batch[512]{};
     unsigned used = 0, count = 0;
     auto flush = [&] {
@@ -41,6 +42,30 @@ void run(ULONG) {
             batch[used] = '\0';
             ++count;
         } else flush();
+        if (tx_time_get()-last_attitude >= TX_TIMER_TICKS_PER_SECOND/50) {
+            flush();
+            last_attitude=tx_time_get();
+            const auto status=attitude::snapshot();
+            const auto& s=status.estimate;
+            core::Vec3 euler;
+            core::attitude_euler(s.q_nb,euler);
+            const auto micro=[](float v) { return std::lround(v*1000000.0F); };
+            const auto degrees=[](float v) { return std::lround(v*180000.0F/core::kPi); };
+            char line[512];
+            std::snprintf(line,sizeof(line),
+                "# ATT seq=%lu t=%lu%06lu q_u=%ld/%ld/%ld/%ld rpy_md=%ld/%ld/%ld total_rpy_md=%ld/%ld/%ld total_epoch=%lu total_kind=body bias_u=%ld/%ld/%ld aw_m=%ld dt_us=%ld run_us=%lu lat_us=%lu valid=%u yaw_abs=%u err=%u\r\n",
+                static_cast<unsigned long>(s.metadata.sequence),
+                static_cast<unsigned long>(s.metadata.measured_us/1000000),static_cast<unsigned long>(s.metadata.measured_us%1000000),
+                micro(s.q_nb.w),micro(s.q_nb.x),micro(s.q_nb.y),micro(s.q_nb.z),
+                degrees(euler.x),degrees(euler.y),degrees(euler.z),
+                degrees(s.total_roll_rad),degrees(s.total_pitch_rad),degrees(s.total_yaw_rad),
+                static_cast<unsigned long>(s.total_epoch),
+                micro(s.gyro_bias_rad_s.x),micro(s.gyro_bias_rad_s.y),micro(s.gyro_bias_rad_s.z),
+                std::lround(status.accel_weight*1000),micro(status.dt_s),
+                static_cast<unsigned long>(status.runtime_us),static_cast<unsigned long>(status.latency_us),
+                s.metadata.valid,s.absolute_yaw_valid,static_cast<unsigned>(status.error));
+            platform::write(line);
+        }
         if (tx_time_get() - last_status >= TX_TIMER_TICKS_PER_SECOND) {
             flush();
             last_status = tx_time_get();
@@ -90,6 +115,14 @@ void run(ULONG) {
                 static_cast<unsigned long>(status.stats[0].publication_late),
                 static_cast<unsigned long>(status.stats[1].publication_late));
             platform::write(line);
+            const auto attitude_status=attitude::snapshot();
+            std::snprintf(line,sizeof(line),
+                "# AHRS updates=%lu reject=%lu timing=%lu missed=%lu timeout=%lu late=%lu maxrun=%lu maxlat=%lu\r\n",
+                static_cast<unsigned long>(attitude_status.updates),static_cast<unsigned long>(attitude_status.rejections),
+                static_cast<unsigned long>(attitude_status.timing_errors),static_cast<unsigned long>(attitude_status.missed),
+                static_cast<unsigned long>(attitude_status.timeouts),static_cast<unsigned long>(attitude_status.late),
+                static_cast<unsigned long>(attitude_status.maximum_runtime_us),static_cast<unsigned long>(attitude_status.maximum_latency_us));
+            platform::write(line);
             const auto& a = status.sample.accel;
             const auto& g = status.sample.gyro;
             std::snprintf(line,sizeof(line),
@@ -105,6 +138,8 @@ void run(ULONG) {
 
 unsigned int app_start(void) {
     platform::start_timer();
+    const auto attitude_status = self_flight::attitude::start();
+    if (attitude_status != TX_SUCCESS) return attitude_status;
     const auto status = self_flight::imu::start();
     if (status != TX_SUCCESS) return status;
     return tx_thread_create(&log_thread, const_cast<char*>("usb_log"), run, 0,

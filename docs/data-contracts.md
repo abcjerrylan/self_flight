@@ -46,7 +46,7 @@ checked 操作返回 bool，失败时保持输出原值，也支持输入/输出
 | SampleMetadata | 测量/可用时间、序号、有效性；不是原子对象 |
 | VectorSample / ImuSample | 分别保留陀螺和加计时间；accel_is_new 表达新加计样本 |
 | Calibration | 器件/板身份、传感器轴零偏/比例、温度、静止质量和格式版本 |
-| AttitudeState | q_nb、机体角速度/零偏、输入时间、绝对航向有效性 |
+| AttitudeState | q_nb、机体角速度/零偏、输入时间、绝对航向有效性；机体轴累计转角与段编号仅供诊断 |
 | PilotCommand | 归一化三轴摇杆、油门、模式、解锁/急停请求、接收机失效 |
 | ControlSetpoint | 倾角、角速度和油门目标，mode 决定字段解释 |
 | ActuatorCommand | 电气 M1–M4 的归一化输出、饱和、输出许可 |
@@ -58,3 +58,5 @@ P1 不含状态机、校准计算、消息同步或序列连续性检查。序�
 
 
 P2B已增加原创标定计算：传感器SI轴上先扣偏置/乘比例，再执行安装旋转。完整quality仅在加计参数通过且启动gyro静止窗口通过后为Accepted；gyro_calibrated/accel_calibrated区分两路状态。原始metadata.valid与标定质量独立。身份tag仅代表固定板型/器件配置，不能唯一识别物理单板；Flash参数服务尚未实现。详见imu-calibration.md。
+
+P3 total_roll_rad/total_pitch_rad/total_yaw_rad 是校正后机体角速度的实际 dt 积分，分别对应 FRD 的 X/Y/Z 轴。每段从零开始，反转减小；不是当前欧拉姿态，不含初始化倾角，不用于控制反馈。无效输入保持旧累计量；缺样后重新初始化归零且 total_epoch 加一。模型与后续姿态控制使用 q_nb，角速度控制使用 body_rate_rad_s。

@@ -75,6 +75,7 @@ add_executable(self_flight
     "${PROJECT_SOURCE_DIR}/app/app.cpp"
     "${PROJECT_SOURCE_DIR}/platform/stm32h7/platform.cpp"
     "${PROJECT_SOURCE_DIR}/flight/services/imu.cpp"
+    "${PROJECT_SOURCE_DIR}/flight/services/attitude.cpp"
 )
 set_target_properties(self_flight PROPERTIES SUFFIX ".elf" RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}")
 target_include_directories(self_flight PRIVATE "${PROJECT_SOURCE_DIR}/app" "${PROJECT_SOURCE_DIR}/platform/stm32h7"

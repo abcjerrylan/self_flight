@@ -31,6 +31,7 @@ add_library(flight_core STATIC
     flight/core/src/math.cpp
     flight/core/src/time.cpp
     flight/core/src/calibration.cpp
+    flight/core/src/attitude.cpp
 )
 add_library(self_flight::core ALIAS flight_core)
 target_include_directories(flight_core PUBLIC flight/core/include)

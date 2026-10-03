@@ -252,3 +252,52 @@ X动作记录没有完整90度，Y有明显手持调整；这些数值不是受�
 旧实机原始CSV重放：六面body-{x,y,z}-{plus,minus}.csv（每份约14,430条）、onboard-static.csv（36,072条）、onboard-motion-reject.csv（14,436条）和onboard-recovery.csv（36,076条）。Debug/Release均接受六面、静止与恢复，拒绝运动文件。完整估计/返回码见build/pre-p3/replay-validation.json。没有覆盖或重新生成既有六面参数和原始采集。
 
 固件编译成功不等于本轮硬件验收。未烧录新版、未打开串口；新版1Hz温度、PIPE实际时延和末段运动拒绝仍待实测。没有改变SPI/ODR/量程、电机GPIO或启用P3解算。代码仍在main，未提交/推送，PNX只读。
+
+
+## P3：2026-10-03
+
+| 检查 | 本轮实际结果 |
+| --- | --- |
+| host Debug CTest | 34/34，1.10s |
+| host Release CTest | 34/34，0.89s |
+| Python回放 | 原始CSV4/4；P3集成每种native构建3/3 |
+| 算法回归 | RC实际dt、三轴/组合传播和长期归一化、800Hz加计旋转、静止倾斜/倒置/纠正、可观测bias收敛和上限、不可观测yaw、异常比力/NaN、时间/序号异常与恢复 |
+| 旧六面回放 | 两种构建均完成，最大四元数模长误差<1e-6；首帧无加计时显式等待，pitch±90°的Euler奇异性已说明 |
+| MCU Debug | Flash104,812B / RAM_D1 69,448B；用户烧录后实际验证 |
+| MCU Release | Flash66,804B / RAM_D1 69,400B；仅编译/链接，未上板 |
+| 板级生成/依赖 | IOC、厂商依赖和硬件配置未变；本轮不需CubeMX生成 |
+
+用户烧入本轮Debug，通过COM51/DTR=true连续采集；每次脚本finally关闭并释放串口。姿态线程独立运行、SPI仍只有IMU线程访问。四路电机GPIO未改，没有电机输出协议或飞行。
+
+| 实机记录 | 时长/ATT帧 | 结果 |
+| --- | --- | --- |
+| board-static.csv | 20s / 1001，全部有效 | 更新999.02Hz；roll/pitch均值-0.402°/-1.126°、标准差0.0102°/0.0119°；相对yaw变化-0.119°；量化q模长误差≤6.16e-7 |
+| board-roll.csv | 8s / 400，全部有效 | 右侧压低：roll均值+36.05°，正方向正确 |
+| board-pitch.csv | 8s / 400，全部有效 | 抬机头：pitch均值+14.76°，正方向正确；加计均值独立算得+14.766° |
+| board-yaw.csv | 60s / 3001，全部有效 | 水平顺时针：相对yaw增加+92.04°；更新998.85Hz，量化q模长误差≤7.59e-7 |
+
+全部采集窗口内AHRS reject/timing/missed/timeout/late、STATS missed/spierr/overlap/stale/logdrop/wait增量为0。启动期间AHRS timeout=25，后续不增长；串口关闭期间logdrop累计增长，打开采集期间不增长，不能混同采样丢失。本轮最后累计maxrun=180us/maxlat=282us（早期静止时为137us/256us）。PIPE late两路始终0，TEMP valid=1/errors=0；最后温度33.375°C，相对标定23.125°C已升10.25°C，不等于温漂补偿已完成。
+
+新版原始静止数据经同一C++核心回放，19,994个gyro候选，首个WaitingForAccel后19,993有效，norm误差≤1.42e-7；roll/pitch均值-0.409°/-1.120°，相对yaw变化-0.113°。回放从文件起点重新初始化，不复用固件之前45秒的姿态/bias历史，不能要求逐点绝对yaw一致。
+
+数据、固件摘要和绘图在build/p3；算法/参数/错误定义与可复现命令见p3-attitude.md。手动姿态没有精密角度参考；无磁力计，不验证绝对航向。尚未进行振动/飞行调参、P4的RC/DShot/解锁状态机及P2A独立计时误差/长回绕检查。代码仍在main，未提交/推送，PNX未写入。
+
+## USB 姿态 HTML（2026-10-04）
+
+`node tests/host/attitude_viewer_tests.cjs`：16/16 通过（含当前 build/p3 四份实机日志共 4802 帧）。覆盖分块/单位/坐标/无效/断流，以及模拟串口的 DTR、取消、锁释放、关闭与重连；包括文件导入竞态和回放末尾重播。浏览器中实际打开、演示、载入 board-yaw.csv、拖到末尾再从头播放通过，无页面运行错误。模拟串口和旧日志不等同于本次浏览器 USB 直连，后者需桌面 Chrome / Edge 验证。无 MCU 代码修改，不需要重新烧录。
+
+## 首次total欧拉展开（2026-10-04，历史实现；已替换）
+
+host Debug/Release各36/36；连续欧拉测试覆盖纯三轴正负3圈、带非零roll/yaw的完整pitch翻转、±90°竖直启动、实际Mahony正负4圈、invalid保持与Timing重新对齐/epoch。HTML 18/18，数字/曲线优先total、跨360°和epoch清图、旧日志累计字段缺失提示通过。MCU Debug/Release编译链接通过；生成HEX，未烧录。不能将主机与旧日志结果当作新版实机测量。
+
+补充验收：原生姿态Python集成Debug/Release各4/4（新增2圈yaw CSV total/epoch检查），原始IMU回放4/4通过。浏览器载入明确标记的主机生成total-yaw-host.log，101帧有效，末帧wrapped yaw=-0.002°、total yaw=719.998°，页面显示720.0°且曲线连续；页面无运行错误。这是同一C++核心的主机回放，不是新版硬件测试。Debug HEX SHA-256：64ffda42950085b927d6a5f9b0a71c352e6038a40aa27da542ec42a156265ff1。
+
+## 机体轴累计转角修正（2026-10-04）
+
+按用户实际pitch越过90°的复现条件，删除连续ZYX展开，total改为校正body_rate乘实际dt的积分。每段从0开始，不积分重力反馈；保留无效帧、时序拒绝和缺样后新epoch约定。新增total_kind=body同步固件/原生回放/HTML/汇总，旧Euler total只显示q模型并提示更新固件。当前没有控制器使用total；累计值会漂移，不作为姿态反馈。
+
+host Debug/Release各37/37（0.95s/0.86s），Python姿态集成各6/6、原始回放4/4，HTML20/20通过。回归包含±0.5°初始bank后绕body Y正负720°与噪声、实际800/1200us混合三轴积分、反转、静止重力修正不累计、初始化/无效/缺样恢复。两种MCU构建成功：Debug Flash105,644B/RAM_D1 69,464B；Release Flash67,276B/RAM_D1 69,416B。
+
+build/p3/body-pitch-host.log是同一原生核心的合成轨迹，不是实机记录。初始横滚0.5°、Y轴90°/s、8秒，8001有效姿态，末尾total=(0,719.964722,0)°；约0.0353°为浮点累加误差。浏览器401帧回放显示Y累计720.0°、X/Z0.0°且曲线连续，没有页面运行错误；合成run/lat不作为硬件测量。Debug HEX SHA-256：2a937b48c3b832a8738b1b7116e4e4dfd523c6a78af0b4d600480f6e5c38b05e。
+
+本轮未烧录、未打开串口、未输出电机信号；新版实机累计角/漂移/耗时待用户烧录后检查。main分支保留，未提交或推送；硬件配置与既有采集未变。

@@ -1,0 +1,336 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>self_flight · 实时姿态</title>
+<style>
+:root{color-scheme:dark;--bg:#0b111b;--panel:#111c2b;--line:#243347;--muted:#91a3b8;--text:#edf4ff;--roll:#64b9ff;--pitch:#54dbb0;--yaw:#ffc978}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px/1.55 "Segoe UI","Microsoft YaHei",sans-serif}main{max-width:1360px;margin:auto;padding:28px}header,.toolbar,.panel-head,.legend{display:flex;align-items:center;gap:12px;flex-wrap:wrap}header{justify-content:space-between;margin-bottom:22px}h1{font-size:27px;letter-spacing:-.5px;margin:2px 0}h2{font-size:16px;margin:0}.eyebrow{font-size:11px;letter-spacing:2px;color:var(--muted)}p{margin:6px 0;color:var(--muted)}button,.file-button{font:inherit;color:var(--text);background:#1b2b40;border:1px solid #354a62;border-radius:8px;padding:9px 15px;cursor:pointer}button:hover,.file-button:hover{background:#263c57}button:disabled{opacity:.45;cursor:default}.primary{background:#2585e1;border-color:#2585e1;font-weight:600}.primary:hover{background:#3298f7}.toolbar{margin:16px 0}.toolbar small{margin-left:auto;color:var(--muted)}.badge{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:20px;padding:6px 13px;background:#142034;font-size:13px}.badge:before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor}.badge[data-tone=good]{color:var(--pitch)}.badge[data-tone=warn]{color:var(--yaw)}.badge[data-tone=bad]{color:#ff8d92}.hint{border-left:3px solid #2585e1;background:#112237;padding:11px 15px;margin-bottom:20px;min-height:46px;color:#bfcee1}.grid{display:grid;grid-template-columns:minmax(0,1.8fr) minmax(300px,1fr);gap:18px}.panel{background:var(--panel);border:1px solid var(--line);border-radius:13px;overflow:hidden}.panel-head{justify-content:space-between;padding:17px 20px;border-bottom:1px solid var(--line)}.panel-head small{color:var(--muted)}.scene{height:420px;position:relative}.scene canvas{display:block;width:100%;height:100%;touch-action:none;cursor:grab}.scene canvas:active{cursor:grabbing}.scene-note{position:absolute;bottom:15px;left:20px;color:var(--muted);font-size:12px;pointer-events:none}.angles{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:18px}.angle{padding:18px 20px}.angle label{font-size:13px;color:var(--muted)}.angle strong{display:block;font-size:34px;line-height:1.35;font-variant-numeric:tabular-nums;letter-spacing:-1px}.angle small{display:block;color:var(--muted);font-size:11px}.roll{color:var(--roll)}.pitch{color:var(--pitch)}.yaw{color:var(--yaw)}.details{padding:7px 20px 14px}dl{display:grid;grid-template-columns:1fr auto;margin:0;font-size:14px}dt,dd{margin:0;padding:9px 0;border-bottom:1px solid #233247}dt{color:var(--muted)}dd{font-variant-numeric:tabular-nums}.chart{height:180px;padding:6px 12px}.chart canvas{width:100%;height:100%;display:block}.legend{font-size:12px}.legend span:before{content:"";display:inline-block;width:14px;height:2px;background:currentColor;margin-right:5px;vertical-align:middle}footer{color:var(--muted);font-size:12px;margin-top:18px}#replayBar{width:100%;accent-color:#2585e1}#replayControls{padding:0 20px 12px}.file-button{display:inline-block}input[type=file]{display:none}.secondary{padding:5px 10px;font-size:12px}#raw{word-break:break-all;font:11px/1.6 Consolas,monospace;color:#8295af;margin:0;padding:13px 20px;min-height:60px;border-top:1px solid var(--line)}.dim .angle strong{opacity:.4}
+@media(max-width:900px){main{padding:18px}.grid{grid-template-columns:1fr}.scene{height:360px}.angle{padding:14px}.angle strong{font-size:29px}.toolbar small{width:100%;margin:0}}
+@media(max-width:480px){main{padding:12px}h1{font-size:23px}.angles{gap:7px}.angle{padding:10px}.angle strong{font-size:25px}.angle small{font-size:10px}.scene{height:310px}.toolbar{gap:8px}button,.file-button{padding:8px 11px}}
+</style>
+</head>
+<body>
+<main>
+<header><div><div class="eyebrow">SELF_FLIGHT / P3</div><h1>实时姿态</h1><p>USB 直连 · 四元数姿态与机体轴累计转角</p></div><span id="status" class="badge">未连接</span></header>
+<div class="toolbar">
+  <button id="connect" class="primary">连接 USB</button>
+  <button id="demo">演示</button>
+  <label class="file-button" for="logFile">回放日志</label><input id="logFile" type="file" accept=".csv,.txt,.log">
+  <small>桌面 Chrome / Edge · 串口 115200 · 自动开启 DTR</small>
+</div>
+<div id="hint" class="hint" role="status">先关闭占用串口的工具，点击「连接 USB」，选择飞控的 COM 端口（当前通常为 COM51）。</div>
+<div id="dashboard" class="dim">
+<div class="angles">
+ <div class="panel angle"><label>X 轴累计转角 / Roll</label><strong id="roll" class="roll">—</strong><small>正方向：右侧压低</small></div>
+ <div class="panel angle"><label>Y 轴累计转角 / Pitch</label><strong id="pitch" class="pitch">—</strong><small>正方向：机头抬起</small></div>
+ <div class="panel angle"><label>Z 轴累计转角 / Yaw</label><strong id="yaw" class="yaw">—</strong><small>正方向：上方看顺时针</small></div>
+</div>
+<div class="grid">
+ <section class="panel"><div class="panel-head"><h2>板卡姿态</h2><button id="resetView" class="secondary">恢复视角</button></div><div class="scene"><canvas id="scene" aria-label="由飞控四元数驱动的板卡三维姿态"></canvas><div class="scene-note">箭头为机头 · X 前 / Y 右 / Z 下 · 拖动调整观察视角</div></div></section>
+ <section class="panel"><div class="panel-head"><h2>数据状态</h2><small id="source">等待连接</small></div><div class="details"><dl>
+ <dt>姿态有效</dt><dd id="valid">—</dd><dt>最后接收</dt><dd id="age">—</dd><dt>姿态日志频率</dt><dd id="rate">—</dd><dt>解算更新频率</dt><dd id="solveRate">—</dd><dt>解算耗时 / 延迟</dt><dd id="timing">—</dd><dt>加速度可信度</dt><dd id="weight">—</dd><dt>IMU 温度</dt><dd id="temperature">—</dd><dt>启动标定</dt><dd id="calibration">—</dd><dt>已接收姿态帧</dt><dd id="frames">0</dd>
+ </dl></div><p id="raw">尚未收到 # ATT 日志</p></section>
+</div>
+<section class="panel" style="margin-top:18px"><div class="panel-head"><h2>机体轴累计转角 · 最近 20 秒</h2><div class="legend"><span class="roll">X 轴累计</span><span class="pitch">Y 轴累计</span><span class="yaw">Z 轴累计</span></div></div><div class="chart"><canvas id="chart" aria-label="三个姿态角随时间变化的曲线"></canvas></div><div id="replayControls" hidden><input id="replayBar" type="range" min="0" max="1" step="0.01" value="0" aria-label="日志回放进度"><button id="play" class="secondary">暂停回放</button> <small id="replayTime"></small></div></section>
+</div>
+<footer>模型使用 WXYZ 四元数；数值和曲线是校正后机体三轴角速度的有符号积分，转过 90°/360° 继续累计，反转会减小。累计量会漂移，不是对地欧拉姿态，也不用于飞行控制。上电及解算重初始化时从零开始新的累计记录。断流或无效数据时保留最后有效模型，并明确标记状态。所有数据只在本页处理。</footer>
+</main>
+<script id="viewer-core">
+// ATT 的 seq 是陀螺样本序号；不能用相邻 ATT 序号差判断丢帧。
+function fields(line) {
+  return Object.fromEntries(line.trim().split(/\s+/).slice(2).map(part => part.split('=')));
+}
+function parseAttitude(line) {
+  if (!line.startsWith('# ATT ')) return null;
+  const f = fields(line), names = ['seq','t','valid','yaw_abs','err','dt_us','run_us','lat_us','aw_m'];
+  if (names.some(key => !/^-?\d+$/.test(f[key] || ''))) return null;
+  const numbers = Object.fromEntries(names.map(key => [key, Number(f[key])]));
+  if (!Object.values(numbers).every(Number.isSafeInteger) || ![0,1].includes(numbers.valid)) return null;
+  const vector = (key, size, divisor) => {
+    const parts = (f[key] || '').split('/');
+    return parts.length === size && parts.every(v => /^-?\d+$/.test(v)) ? parts.map(v => Number(v) / divisor) : null;
+  };
+  const q = vector('q_u', 4, 1e6), rpy = vector('rpy_md', 3, 1000);
+  if (!q || !rpy || ![...q,...rpy].every(Number.isFinite)) return null;
+  const values = f.total_rpy_md === undefined ? null : vector('total_rpy_md', 3, 1000);
+  const total = f.total_kind === 'body' ? values : null;
+  const epoch = f.total_epoch === undefined ? null : Number(f.total_epoch);
+  if (f.total_rpy_md !== undefined && (!values || !values.every(Number.isFinite))) return null;
+  if (epoch !== null && (!Number.isSafeInteger(epoch) || epoch < 0)) return null;
+  const norm = Math.hypot(...q);
+  if (numbers.valid && (norm < .5 || norm > 1.5)) return null;
+  return {...numbers, q: norm > 0 ? q.map(v => v / norm) : q, rpy, total, epoch, line};
+}
+class LineReader {
+  constructor(onLine) { this.onLine = onLine; this.tail = ''; this.discard = false; }
+  push(text) {
+    const parts = (this.tail + text).split('\n');
+    this.tail = parts.pop();
+    for (const part of parts) {
+      if (!this.discard && part.length <= 2048) this.onLine(part.replace(/\r$/, ''));
+      this.discard = false;
+    }
+    if (this.tail.length > 2048) { this.tail = ''; this.discard = true; }
+  }
+}
+function rotate(q, v) {
+  const [w,x,y,z] = q, [a,b,c] = v;
+  const tx = 2*(y*c-z*b), ty = 2*(z*a-x*c), tz = 2*(x*b-y*a);
+  return [a+w*tx+y*tz-z*ty, b+w*ty+z*tx-x*tz, c+w*tz+x*ty-y*tx];
+}
+function quaternion(r,p,y) {
+  const [cr,cp,cy] = [r,p,y].map(a => Math.cos(a*Math.PI/360));
+  const [sr,sp,sy] = [r,p,y].map(a => Math.sin(a*Math.PI/360));
+  return [cr*cp*cy+sr*sp*sy,sr*cp*cy-cr*sp*sy,cr*sp*cy+sr*cp*sy,cr*cp*sy-sr*sp*cy];
+}
+if (typeof module !== 'undefined') module.exports = {parseAttitude,LineReader,rotate,quaternion};
+</script>
+<script>
+'use strict';
+const $ = id => document.getElementById(id);
+let mode = 'idle', busy = false, port = null, reader = null, readTask = null, stopping = false;
+let latest = null, good = null, lastReceived = 0, count = 0, history = [], arrivals = [], temp = '—', cal = '—';
+let cameraYaw = .55, cameraElev = .75, drag = null, replay = [], cursor = 0, playing = false, replayBase = 0, replayOffset = 0, demoStart = 0;
+const errors = ['正常','等待加速度','样本无效','时间间隔异常','配置异常','数值异常'];
+function status(text, tone = '') { $('status').textContent = text; $('status').dataset.tone = tone; }
+function resetData() {
+  latest = good = null; lastReceived = count = 0; history = []; arrivals = []; temp = cal = '—';
+  $('raw').textContent = '尚未收到 # ATT 日志';
+}
+function controls() {
+  $('connect').disabled = busy;
+  $('connect').textContent = port ? '断开 USB' : '连接 USB';
+  $('demo').disabled = !!port || busy;
+  $('demo').textContent = mode === 'demo' ? '停止演示' : '演示';
+  $('logFile').disabled = !!port || busy;
+  $('replayControls').hidden = mode !== 'replay';
+  $('play').textContent = playing ? '暂停回放' : '继续回放';
+}
+function accept(frame, now = performance.now()) {
+  if (latest && (frame.t < latest.t || frame.epoch !== latest.epoch)) { history = []; arrivals = []; good = null; }
+  latest = frame; lastReceived = now; count++; arrivals.push(now);
+  if (frame.valid) {
+    good = frame;
+    if (frame.total) history.push({time: frame.t / 1e6, angles: frame.total});
+    const cutoff = frame.t / 1e6 - 20;
+    while (history.length && (history[0].time < cutoff || history.length > 2000)) history.shift();
+  }
+  $('raw').textContent = frame.line || '演示姿态 · 合成数据';
+  if (!frame.total) $('hint').textContent = '此固件或日志缺少机体轴累计转角（total_kind=body）：请烧录新版固件。模型仍可显示，累计数值和曲线暂不显示。';
+}
+function consume(line) {
+  const att = parseAttitude(line);
+  if (att) { accept(att); return; }
+  if (line.startsWith('# TEMP ')) {
+    const f = fields(line);
+    temp = f.valid === '1' && Number.isFinite(Number(f.current_mc)) ? (Number(f.current_mc)/1000).toFixed(1)+' °C' : '无效';
+  } else if (line.startsWith('# CAL ')) {
+    const f = fields(line);
+    cal = f.gyro === '1' && f.accel === '1' ? '已完成' : '等待静止 / 标定中';
+  }
+}
+async function readSerial(activePort) {
+  const decoder = new TextDecoder(), lines = new LineReader(consume);
+  try {
+    while (!stopping && activePort.readable) {
+      reader = activePort.readable.getReader();
+      try {
+        while (!stopping) {
+          const {value,done} = await reader.read();
+          if (done) break;
+          if (value) lines.push(decoder.decode(value, {stream:true}));
+        }
+      } finally { reader.releaseLock(); reader = null; }
+      // 意外 EOF 直接结束；用户可再次连接。
+      break;
+    }
+  } catch (error) {
+    if (!stopping) $('hint').textContent = 'USB 读取结束：'+error.message+'。检查连接后重新连接。';
+  } finally {
+    try { await activePort.setSignals({dataTerminalReady:false}); } catch {}
+    try { await activePort.close(); } catch {}
+    if (port === activePort) { port = null; mode = 'idle'; }
+    busy = false; status('已断开'); controls();
+  }
+}
+async function disconnect() {
+  stopping = true; busy = true; controls();
+  if (reader) { try { await reader.cancel(); } catch {} }
+  if (readTask) await readTask;
+  $('hint').textContent = '串口已释放，可重新连接或打开其他串口工具。';
+}
+$('connect').onclick = async () => {
+  if (port) { await disconnect(); return; }
+  if (!('serial' in navigator) || !window.isSecureContext) {
+    $('hint').textContent = '请用桌面 Chrome 或 Edge 打开此 HTML；当前浏览器或页面环境不支持 USB 串口。'; return;
+  }
+  busy = true; controls();
+  let selected = null, opened = false;
+  try {
+    selected = await navigator.serial.requestPort();
+    await selected.open({baudRate:115200, bufferSize:262144}); opened = true;
+    await selected.setSignals({dataTerminalReady:true});
+    mode = 'serial'; playing = false; stopping = false; port = selected; resetData();
+    $('hint').textContent = 'USB 已连接，等待 # ATT 姿态数据。上电后请先让板卡静止，等待标定完成。';
+    status('等待姿态','warn'); busy = false; controls();
+    readTask = readSerial(selected);
+  } catch (error) {
+    if (opened) { try { await selected.close(); } catch {} }
+    busy = false; controls();
+    if (error.name !== 'NotFoundError') $('hint').textContent = '连接失败：'+error.message+'。请关闭占用该端口的串口工具后重试。';
+  }
+};
+if ('serial' in navigator) navigator.serial.addEventListener('disconnect', event => {
+  if ((event.port || event.target) === port) {
+    $('hint').textContent = 'USB 已拔出。重新插入后点击「连接 USB」。';
+    if (reader) reader.cancel().catch(()=>{});
+  }
+});
+window.addEventListener('beforeunload', () => { stopping = true; if (reader) reader.cancel().catch(()=>{}); });
+$('demo').onclick = () => {
+  if (mode === 'demo') { mode = 'idle'; resetData(); status('未连接'); $('hint').textContent = '演示已停止，点击「连接 USB」查看实际板卡。'; }
+  else { mode = 'demo'; playing = false; resetData(); demoStart = performance.now(); $('hint').textContent = '演示模式：当前为合成数据，可先检查页面效果；连接 USB 后才是实际板卡姿态。'; }
+  controls();
+};
+function seek(seconds) {
+  replayOffset = seconds; replayBase = performance.now(); cursor = 0; resetData();
+  $('replayBar').value = seconds;
+  const target = replay[0].t + seconds*1e6;
+  while (cursor < replay.length && replay[cursor].t <= target) accept(replay[cursor++]);
+}
+$('logFile').onchange = async event => {
+  const file = event.target.files[0]; if (!file || port || busy) return;
+  busy = true; controls();
+  const frames = [];
+  const lines = new LineReader(line => { const att = parseAttitude(line); if (att) frames.push(att); });
+  try {
+    const stream = file.stream().getReader(), decoder = new TextDecoder();
+    try { while (true) { const {value,done} = await stream.read(); if (done) break; lines.push(decoder.decode(value,{stream:true})); } }
+    finally { stream.releaseLock(); }
+    lines.push(decoder.decode()+'\n');
+    if (!frames.length) throw new Error('未找到 # ATT 姿态帧，请选择 P3 日志。');
+    if (frames.some((f,i) => i && f.t < frames[i-1].t)) throw new Error('日志包含重启或倒退时间，请选取一次启动的日志。');
+    mode = 'replay'; replay = frames; playing = true; seek(0);
+    $('replayBar').max = Math.max(.01,(frames.at(-1).t-frames[0].t)/1e6);
+    $('hint').textContent = '本地日志回放：'+file.name+'，共 '+frames.length+' 帧。';
+    controls();
+  } catch (error) { $('hint').textContent = error.message; }
+  finally { busy = false; controls(); event.target.value = ''; }
+};
+$('play').onclick = () => {
+  if (!playing && cursor >= replay.length) seek(0);
+  replayOffset = Number($('replayBar').value); replayBase = performance.now(); playing = !playing; controls();
+};
+$('replayBar').oninput = event => seek(Number(event.target.value));
+$('resetView').onclick = () => { cameraYaw = .55; cameraElev = .75; };
+$('scene').onpointerdown = event => { drag = [event.clientX,event.clientY]; event.target.setPointerCapture(event.pointerId); };
+$('scene').onpointermove = event => {
+  if (!drag) return;
+  cameraYaw += (event.clientX-drag[0])*.008;
+  cameraElev = Math.max(.12,Math.min(1.45,cameraElev+(event.clientY-drag[1])*.008));
+  drag = [event.clientX,event.clientY];
+};
+$('scene').onpointerup = $('scene').onpointercancel = () => { drag = null; };
+function canvas(id) {
+  const element = $(id), rect = element.getBoundingClientRect(), dpr = Math.min(2,window.devicePixelRatio || 1);
+  if (element.width !== Math.round(rect.width*dpr) || element.height !== Math.round(rect.height*dpr)) { element.width = Math.round(rect.width*dpr); element.height = Math.round(rect.height*dpr); }
+  const ctx = element.getContext('2d'); ctx.setTransform(dpr,0,0,dpr,0,0); ctx.clearRect(0,0,rect.width,rect.height);
+  return [ctx,rect.width,rect.height];
+}
+function drawScene() {
+  const [ctx,w,h] = canvas('scene'), q = good ? good.q : [1,0,0,0];
+  const c = Math.cos(cameraYaw), s = Math.sin(cameraYaw), ce = Math.cos(cameraElev), se = Math.sin(cameraElev), scale = Math.min(w/5.8,h/4.4);
+  // NED→画面三维：右=E，上=-D，远=-N；相机独立于板卡姿态。
+  const project = ned => {
+    const [x,y,z] = [ned[1],-ned[2],-ned[0]], rx = c*x-s*z, depth = ce*(s*x+c*z)+se*y, up = ce*y-se*(s*x+c*z);
+    return [w/2+rx*scale,h/2-up*scale,depth];
+  };
+  const path = (points, fill, stroke) => {
+    ctx.beginPath(); points.forEach((p,i)=>i ? ctx.lineTo(p[0],p[1]) : ctx.moveTo(p[0],p[1])); ctx.closePath();
+    if (fill) { ctx.fillStyle = fill; ctx.fill(); } if (stroke) { ctx.strokeStyle = stroke; ctx.stroke(); }
+  };
+  ctx.lineWidth = 1; ctx.strokeStyle = '#203148';
+  for (let i=-3;i<=3;i++) for (const ends of [[[i,-3,1.05],[i,3,1.05]],[[-3,i,1.05],[3,i,1.05]]]) {
+    const a=project(ends[0]), b=project(ends[1]); ctx.beginPath(); ctx.moveTo(a[0],a[1]); ctx.lineTo(b[0],b[1]); ctx.stroke();
+  }
+  const vertices = [[-1.35,-.95,-.08],[1.35,-.95,-.08],[1.35,.95,-.08],[-1.35,.95,-.08],[-1.35,-.95,.08],[1.35,-.95,.08],[1.35,.95,.08],[-1.35,.95,.08]].map(v=>project(rotate(q,v)));
+  const faces = [[[0,1,2,3],'#177b70'],[[4,7,6,5],'#0c4944'],[[0,4,5,1],'#105d57'],[[1,5,6,2],'#237970'],[[2,6,7,3],'#10534e'],[[3,7,4,0],'#1b6861']];
+  const polygons = faces.map(([indices,color])=>({points:indices.map(i=>vertices[i]),color,details:[]}));
+  const topFace = polygons[0];
+  // 标记随元件面一起绘制；倒置时由底面遮住。
+  for (const [x,y,dx,dy,color] of [[-.35,0,.48,.43,'#172735'],[.35,-.55,.28,.23,'#30485a'],[-.85,.48,.21,.18,'#bdad6b']]) {
+    topFace.details.push({points:[[x-dx,y-dy,-.105],[x+dx,y-dy,-.105],[x+dx,y+dy,-.105],[x-dx,y+dy,-.105]].map(v=>project(rotate(q,v))),color});
+  }
+  topFace.details.push({points:[[.5,-.11,-.11],[.98,-.11,-.11],[.98,-.29,-.11],[1.27,0,-.11],[.98,.29,-.11],[.98,.11,-.11],[.5,.11,-.11]].map(v=>project(rotate(q,v))),color:'#e7edbb'});
+  polygons.sort((a,b)=>a.points.reduce((s,p)=>s+p[2],0)/a.points.length-b.points.reduce((s,p)=>s+p[2],0)/b.points.length);
+  for (const poly of polygons) {
+    path(poly.points,poly.color,'#61b5a233');
+    for (const detail of poly.details) path(detail.points,detail.color,null);
+  }
+  const origin=project([0,0,0]);
+  [['X · 前',[1.85,0,0],'#64b9ff'],['Y · 右',[0,1.6,0],'#54dbb0'],['Z · 下',[0,0,1.4],'#ffc978']].forEach(([label,v,color])=>{
+    const p=project(rotate(q,v)); ctx.strokeStyle=color; ctx.lineWidth=2; ctx.beginPath(); ctx.moveTo(origin[0],origin[1]); ctx.lineTo(p[0],p[1]); ctx.stroke(); ctx.fillStyle=color; ctx.font='12px Segoe UI, Microsoft YaHei'; ctx.fillText(label,p[0]+7,p[1]+4);
+  });
+  ctx.fillStyle='#7e94af'; ctx.font='12px Segoe UI, Microsoft YaHei'; ctx.fillText(good ? 'q_nb · body → navigation' : '等待有效姿态',20,27);
+}
+function drawChart() {
+  const [ctx,w,h] = canvas('chart'), left=43,right=w-12,top=15,bottom=h-24;
+  const end=history.length ? history.at(-1).time : 20, start=end-20;
+  let bound=30; for (const sample of history) for (const angle of sample.angles) bound=Math.max(bound,Math.abs(angle)); bound=Math.ceil(bound/30)*30;
+  const px=t=>left+(t-start)/20*(right-left), py=a=>(top+bottom)/2-a/bound*(bottom-top)/2;
+  ctx.font='11px Segoe UI'; ctx.lineWidth=1;
+  for (const a of [-bound,0,bound]) { ctx.strokeStyle='#29394d'; ctx.beginPath(); ctx.moveTo(left,py(a));ctx.lineTo(right,py(a));ctx.stroke();ctx.fillStyle='#8295af';ctx.fillText(a+'°',3,py(a)+4); }
+  for (const seconds of [20,15,10,5,0]) { const x=px(end-seconds); ctx.fillStyle='#8295af';ctx.fillText(seconds ? '-'+seconds+'s' : '现在',x-10,h-5); }
+  ['#64b9ff','#54dbb0','#ffc978'].forEach((color,axis)=>{
+    ctx.strokeStyle=color;ctx.lineWidth=1.6;ctx.beginPath();let previous=null;
+    for (const sample of history) {
+      const angle=sample.angles[axis];
+      if (!previous || sample.time-previous.time>.5) ctx.moveTo(px(sample.time),py(angle));
+      else ctx.lineTo(px(sample.time),py(angle));
+      previous={time:sample.time,angle};
+    } ctx.stroke();
+  });
+}
+let rendered = 0;
+function render(now) {
+  if (now-rendered >= 30) {
+    rendered = now;
+    if (mode === 'demo') {
+      const t=(now-demoStart)/1000, r=0, p=t*30, y=0;
+      accept({seq:count+1,t:Math.round(t*1e6),q:quaternion(r,p,y),rpy:[r,p,y],total:[r,p,y],epoch:1,valid:1,yaw_abs:0,err:0,dt_us:1000,run_us:75,lat_us:210,aw_m:1000},now);
+    } else if (mode === 'replay' && playing) {
+      const position=replayOffset+(now-replayBase)/1000, target=replay[0].t+position*1e6;
+      while (cursor<replay.length && replay[cursor].t<=target) accept(replay[cursor++],now);
+      $('replayBar').value=Math.min(position,Number($('replayBar').max));
+      if (cursor>=replay.length) { playing=false; controls(); }
+    }
+    const age=latest ? now-lastReceived : Infinity, fresh=mode==='replay' || (mode!=='idle' && age<600), valid=latest && latest.valid===1 && fresh;
+    $('dashboard').classList.toggle('dim',!valid);
+    if (mode==='serial') {
+      if (!latest) status('等待姿态','warn');
+      else if (!fresh) status('数据已断流','bad');
+      else status(latest.valid ? '实时 · 有效' : '实时 · 无效',latest.valid ? 'good' : 'bad');
+    } else if (mode==='demo') status('演示 · 合成数据','warn');
+    else if (mode==='replay') status(playing ? '日志回放' : (cursor>=replay.length ? '回放结束' : '回放暂停'),'warn');
+    $('source').textContent=mode==='serial' ? 'USB / P3' : mode==='demo' ? '合成数据' : mode==='replay' ? '本地文件' : '串口已关闭';
+    for (const [i,id] of ['roll','pitch','yaw'].entries()) $(id).textContent=good && good.total ? good.total[i].toFixed(1)+'°' : '—';
+    $('valid').textContent=latest ? (!latest.valid ? '否 · '+(errors[latest.err] || '错误 '+latest.err) : mode==='idle' ? '已断开' : mode==='replay' ? '回放帧有效' : fresh ? '是' : '数据已过期') : '—';
+    $('age').textContent=latest ? (mode==='replay' ? '记录时间 '+(latest.t/1e6).toFixed(2)+' s' : (age/1000).toFixed(2)+' s 前') : '—';
+    while (arrivals.length && arrivals[0]<now-2000) arrivals.shift();
+    $('rate').textContent=mode==='serial' && arrivals.length>1 && fresh ? ((arrivals.length-1)*1000/(arrivals.at(-1)-arrivals[0])).toFixed(1)+' Hz' : '—';
+    $('solveRate').textContent=latest && latest.dt_us>0 ? (1e6/latest.dt_us).toFixed(0)+' Hz' : '—';
+    $('timing').textContent=latest ? latest.run_us+' / '+latest.lat_us+' μs' : '—';
+    $('weight').textContent=latest ? (latest.aw_m/10).toFixed(1)+' %' : '—';
+    $('temperature').textContent=temp; $('calibration').textContent=cal; $('frames').textContent=count.toLocaleString();
+    if (mode==='replay') $('replayTime').textContent=Number($('replayBar').value).toFixed(1)+' / '+Number($('replayBar').max).toFixed(1)+' s';
+    drawScene(); drawChart();
+  }
+  requestAnimationFrame(render);
+}
+if (!('serial' in navigator) || !window.isSecureContext) $('hint').textContent='当前环境不支持 USB 串口。请在桌面 Chrome / Edge 中打开此 HTML；演示与日志回放仍可使用。';
+controls(); requestAnimationFrame(render);
+</script>
+</body>
+</html>

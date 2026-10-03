@@ -1,0 +1,15 @@
+#pragma once
+#include "self_flight/core/attitude.hpp"
+
+namespace self_flight::attitude {
+struct Snapshot {
+    core::AttitudeState estimate{};
+    core::AttitudeError error{core::AttitudeError::WaitingForAccel};
+    float accel_weight{}, dt_s{};
+    std::uint32_t updates{}, rejections{}, timing_errors{}, missed{}, timeouts{}, late{};
+    std::uint32_t runtime_us{}, latency_us{}, maximum_runtime_us{}, maximum_latency_us{};
+};
+unsigned start();
+void notify(); // Sampling thread, after gyro publication; not a second SPI reader.
+Snapshot snapshot();
+}
