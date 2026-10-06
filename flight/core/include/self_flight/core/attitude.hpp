@@ -1,16 +1,8 @@
 #pragma once
 #include "self_flight/core/data.hpp"
+#include "self_flight/core/rate_feedback.hpp"
 
 namespace self_flight::core {
-// First-order RC low-pass, coefficients derived from this sample's actual dt.
-class LowPass3 {
-public:
-    bool update(Vec3 input, float dt_s, float cutoff_hz, Vec3& out);
-    void reset() { *this = {}; }
-private:
-    Vec3 value_{};
-    bool ready_{};
-};
 bool propagate(Quaternion q_nb, Vec3 body_rate_rad_s, float dt_s, Quaternion& out);
 bool attitude_euler(Quaternion q_nb, Vec3& roll_pitch_yaw_rad);
 

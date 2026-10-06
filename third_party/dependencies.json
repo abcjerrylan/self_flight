@@ -72,6 +72,6 @@
       ]
     }
   ],
-  "vendor_changes": "None: all 411 vendored files byte-match the locked installed official packages. CubeMX application hooks and build integration are separate.",
+  "vendor_changes": "None: all 417 vendored files byte-match the locked installed official packages. CubeMX application hooks and build integration are separate.",
   "vendor_file_hashes": "third_party/vendor-fingerprints.json"
 }

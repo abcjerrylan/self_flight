@@ -1,4 +1,4 @@
-"""Replay calibrated IMU through the same C++ Mahony core as the firmware."""
+"""Replay calibrated IMU through the same C++ gyro/Mahony pipeline as the firmware."""
 import argparse
 import csv
 import importlib.util

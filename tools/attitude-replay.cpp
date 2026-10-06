@@ -1,17 +1,17 @@
-#include "self_flight/core/attitude.hpp"
+#include "self_flight/core/imu_pipeline.hpp"
 #include "self_flight/core/imu.hpp"
 #include <iomanip>
 #include <iostream>
 
 using namespace self_flight::core;
 int main() {
-    Mahony estimator;
+    ImuPipeline estimator;
     ImuCursor cursor;
     ImuSample latest,selected;
     VectorSample sample;
     char sensor; unsigned valid;
     std::cout<<std::setprecision(9)
-        <<"sequence,measured_us,qw,qx,qy,qz,roll_deg,pitch_deg,yaw_deg,bx,by,bz,weight,valid,error,total_yaw_deg,total_epoch\n";
+        <<"sequence,measured_us,qw,qx,qy,qz,roll_deg,pitch_deg,yaw_deg,bx,by,bz,weight,valid,error,total_yaw_deg,total_epoch,wx,wy,wz,ax,ay,az,rate_valid,d_valid\n";
     while (std::cin>>sensor>>sample.metadata.sequence>>sample.metadata.measured_us>>
         sample.metadata.available_us>>sample.value.x>>sample.value.y>>sample.value.z>>valid) {
         if ((sensor!='A' && sensor!='G') || valid>1) return 2;
@@ -27,7 +27,11 @@ int main() {
             <<euler.x*180/kPi<<','<<euler.y*180/kPi<<','<<euler.z*180/kPi<<','
             <<s.gyro_bias_rad_s.x<<','<<s.gyro_bias_rad_s.y<<','<<s.gyro_bias_rad_s.z<<','
             <<estimator.accel_weight()<<','<<s.metadata.valid<<','<<static_cast<unsigned>(error)<<','
-            <<s.total_yaw_rad*180/kPi<<','<<s.total_epoch<<'\n';
+            <<s.total_yaw_rad*180/kPi<<','<<s.total_epoch;
+        const auto& r=estimator.rate();
+        std::cout<<','<<r.body_rate_rad_s.x<<','<<r.body_rate_rad_s.y<<','<<r.body_rate_rad_s.z<<','
+            <<r.angular_accel_rad_s2.x<<','<<r.angular_accel_rad_s2.y<<','<<r.angular_accel_rad_s2.z<<','
+            <<r.metadata.valid<<','<<r.derivative_valid<<'\n';
     }
     return std::cin.eof() ? 0 : 2;
 }

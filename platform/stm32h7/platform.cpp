@@ -4,15 +4,18 @@
 #include "ux_api.h"
 #include "ux_device_class_cdc_acm.h"
 #include "imu.hpp"
+#include "rc.hpp"
 #include <cstring>
 
 extern "C" {
 extern TIM_HandleTypeDef htim2;
 extern SPI_HandleTypeDef hspi2;
+extern UART_HandleTypeDef huart6;
 }
 
 namespace {
 UX_SLAVE_CLASS_CDC_ACM* volatile usb = nullptr;
+std::uint8_t receiver_byte;
 bool spi_transfer(void*, self_flight::bmi088::Sensor sensor, const std::uint8_t* tx,
                   std::uint8_t* rx, std::size_t count) {
     const auto pin = sensor == self_flight::bmi088::Sensor::Accel ? BMI088_A_CS_Pin : BMI088_G_CS_Pin;
@@ -28,6 +31,18 @@ void delay_ms(void*, unsigned ms) { tx_thread_sleep(ms + 1); }
 extern "C" void HAL_GPIO_EXTI_Callback(std::uint16_t pin) {
     if (pin == BMI088_A_DRDY_Pin) self_flight::imu::drdy(self_flight::bmi088::Sensor::Accel);
     if (pin == BMI088_G_DRDY_Pin) self_flight::imu::drdy(self_flight::bmi088::Sensor::Gyro);
+}
+extern "C" void HAL_UART_RxCpltCallback(UART_HandleTypeDef* uart) {
+    if (uart!=&huart6 || uart->ErrorCode!=HAL_UART_ERROR_NONE) return;
+    self_flight::rc::received(receiver_byte);
+    if (!platform::start_receiver()) self_flight::rc::received(0,0x80000000U);
+}
+extern "C" void HAL_UART_ErrorCallback(UART_HandleTypeDef* uart) {
+    if (uart!=&huart6) return;
+    const auto error=uart->ErrorCode;
+    HAL_UART_AbortReceive(uart);
+    self_flight::rc::received(0,error);
+    if (!platform::start_receiver()) self_flight::rc::received(0,0x80000000U);
 }
 
 void usb_log_attach(void* instance) {
@@ -46,6 +61,7 @@ self_flight::bmi088::Bus imu_bus() { return {nullptr, spi_transfer, delay_ms}; }
 void start_timer() {
     if (HAL_TIM_Base_Start(&htim2) != HAL_OK) Error_Handler();
 }
+bool start_receiver() { return HAL_UART_Receive_IT(&huart6,&receiver_byte,1)==HAL_OK; }
 
 std::uint32_t cpu_hz() { return HAL_RCC_GetSysClockFreq(); }
 

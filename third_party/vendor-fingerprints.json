@@ -1646,6 +1646,30 @@
     {
       "file": "Middlewares/ST/usbx/ports/generic/inc/ux_port.h",
       "sha256": "be08f3cb3cb7daf37278cabe4db02380583f8f0a1fbddb522abcd5495502a20a"
+    },
+    {
+      "file": "Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_uart.h",
+      "sha256": "4065a1e1b21da22b6ee74e6549d573ea4c0930e744ce923a776cfc3f35383bd7"
+    },
+    {
+      "file": "Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_uart_ex.h",
+      "sha256": "99756f731f50013b1344f8ea0d1a0259ccacd5e085fb7477080c215dcf343841"
+    },
+    {
+      "file": "Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_ll_lpuart.h",
+      "sha256": "272862ad6036ead74e88306b08ed0870c44f866617328beabb505038be9af6ba"
+    },
+    {
+      "file": "Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_ll_usart.h",
+      "sha256": "137553753bb69d630d93751f895b3951be03c7a30862a31ac60e94355ce81bde"
+    },
+    {
+      "file": "Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_uart.c",
+      "sha256": "24be6acbe1eaad088184086efb3a4ce309e00e90ceeeecbf3e112b8ec23bb429"
+    },
+    {
+      "file": "Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_uart_ex.c",
+      "sha256": "ef3ee8fb9ea24163b9ed0b0e6078bba36b071de3ff9af16a7914df634e0bb191"
     }
   ]
 }

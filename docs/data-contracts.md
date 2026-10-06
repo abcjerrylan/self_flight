@@ -50,7 +50,7 @@ checked 操作返回 bool，失败时保持输出原值，也支持输入/输出
 | PilotCommand | 归一化三轴摇杆、油门、模式、解锁/急停请求、接收机失效 |
 | ControlSetpoint | 倾角、角速度和油门目标，mode 决定字段解释 |
 | ActuatorCommand | 电气 M1–M4 的归一化输出、饱和、输出许可 |
-| FlightStatus | 状态与统计；故障/禁止解锁 bit 定义待真实状态机实现 |
+| FlightStatus | 状态与统计；P4A GuardReason定义故障/禁止解锁bit |
 
 所有 metadata 默认 invalid；PilotCommand 默认 failsafe；FlightStatus 默认 Boot；电机输出为零且许可 false。校准默认 Unknown，比例为单位值不代表已完成标定。
 
@@ -60,3 +60,5 @@ P1 不含状态机、校准计算、消息同步或序列连续性检查。序�
 P2B已增加原创标定计算：传感器SI轴上先扣偏置/乘比例，再执行安装旋转。完整quality仅在加计参数通过且启动gyro静止窗口通过后为Accepted；gyro_calibrated/accel_calibrated区分两路状态。原始metadata.valid与标定质量独立。身份tag仅代表固定板型/器件配置，不能唯一识别物理单板；Flash参数服务尚未实现。详见imu-calibration.md。
 
 2026-10-06恢复姿态反馈语义：删除total_roll_rad/total_pitch_rad，只保留total_yaw_rad。Roll/Pitch由attitude_euler(q_nb,out)取得当前ZYX姿态；total_yaw_rad从同一四元数的yaw按相邻帧最短角差展开，不是body Z角速度积分。无效帧保留旧值且metadata.valid=false；缺样重新对齐时重设偏航并令total_epoch加一。偏航目标必须与反馈属于同一参考段；通常定向的误差按remainder(target-current,2*pi)处理，明确多圈转动才使用同段连续目标。六轴相对航向会漂移，俯仰±90°时欧拉/yaw均有奇异性；全姿态控制使用q_nb，角速度环使用body_rate_rad_s。
+
+P3+新增RateFeedback：filtered_gyro_rad_s在在线残余偏置前，body_rate_rad_s为同帧Mahony偏置扣除后的反馈，angular_accel_rad_s2由filtered_gyro差分再低通，独立derivative_valid在首帧/断流恢复时false。失败不能以旧D冒充当前D。P4A的FlightHealth要求rate/attitude属于同一采样时刻和序号；GuardReason和reset_sequence供未来控制器处理参考变化/清积分。SBUS Frame的时间是完整帧收到的时刻；frame_lost不刷新有效PilotCommand，failsafe显式发布接收机失效，100ms过期也会撤销输出。通道映射当前未分配，原始帧有效不代表已经有有效飞手指令。DShot Batch是软件准备结果，即使STOP批次valid也不表示已有硬件发送。详见[p3plus-p4a.md](p3plus-p4a.md)。

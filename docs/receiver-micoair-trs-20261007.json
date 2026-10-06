@@ -1,0 +1,19 @@
+{
+  "receiver": "MicoAir TRS 2.4G SBUS",
+  "board": "MicoAir743v2-AIO-35A",
+  "port": "UART6 RX / PC7, direct RX6, MCU inversion enabled",
+  "date": "2026-10-07",
+  "source_logs": ["build/p3p4/rc-right-horizontal.csv", "build/p3p4/rc-controls.csv"],
+  "channels_one_based": {
+    "roll": {"channel": 1, "low": 173, "center": 992, "high": 1811, "raw_increases": "right stick right"},
+    "pitch": {"channel": 2, "low": 173, "center": 992, "high": 1811, "raw_increases": "right stick up"},
+    "throttle": {"channel": 3, "low": 173, "high": 1811, "raw_increases": "left stick up"},
+    "yaw": {"channel": 4, "low": 173, "center": 992, "observed_high": 1807, "raw_increases": "left stick right"}
+  },
+  "profile_scale": {"low": 173, "center": 992, "high": 1811},
+  "frd_reversed_roll_pitch_yaw": [false, true, false],
+  "arm_channel": null,
+  "arm_note": "Auxiliary switch not yet observed; remain unassigned. Do not map throttle to arm.",
+  "rssi_channel_one_based": 12,
+  "scope": "Manual stick/channel check; not a precision transmitter calibration or motor test."
+}

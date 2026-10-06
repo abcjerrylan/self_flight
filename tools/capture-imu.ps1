@@ -1,7 +1,8 @@
 param(
     [Parameter(Mandatory)][string]$Port,
     [int]$Seconds = 20,
-    [string]$Output = 'build/p2b/imu.csv'
+    [string]$Output = 'build/p2b/imu.csv',
+    [string]$StopFile = ''
 )
 $ErrorActionPreference = 'Stop'
 $path = [IO.Path]::GetFullPath($Output)
@@ -15,9 +16,9 @@ $buffer = [byte[]]::new(65536)
 $bytes = 0
 try {
     $serial.Open()
-    $stream = [IO.File]::Create($path)
+    $stream = [IO.FileStream]::new($path, [IO.FileMode]::Create, [IO.FileAccess]::Write, [IO.FileShare]::Read)
     $watch = [Diagnostics.Stopwatch]::StartNew()
-    while ($watch.Elapsed.TotalSeconds -lt $Seconds) {
+    while ($watch.Elapsed.TotalSeconds -lt $Seconds -and (!$StopFile -or ![IO.File]::Exists($StopFile))) {
         try { $count = $serial.Read($buffer, 0, $buffer.Length) }
         catch [TimeoutException] { continue }
         $stream.Write($buffer, 0, $count)

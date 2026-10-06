@@ -2,9 +2,12 @@
 #include "platform.hpp"
 #include "imu.hpp"
 #include "attitude.hpp"
+#include "flight.hpp"
+#include "rc.hpp"
 #include "tx_api.h"
 #include <cstdio>
 #include <cmath>
+#include <cstring>
 
 namespace {
 TX_THREAD log_thread;
@@ -64,6 +67,15 @@ void run(ULONG) {
                 std::lround(status.accel_weight*1000),micro(status.dt_s),
                 static_cast<unsigned long>(status.runtime_us),static_cast<unsigned long>(status.latency_us),
                 s.metadata.valid,s.absolute_yaw_valid,static_cast<unsigned>(status.error));
+            platform::write(line);
+            const auto& r=status.rate;
+            std::snprintf(line,sizeof(line),
+                "# RATE seq=%lu rate_u=%ld/%ld/%ld accel_m=%ld/%ld/%ld valid=%u d_valid=%u err=%u\r\n",
+                static_cast<unsigned long>(r.metadata.sequence),
+                micro(r.body_rate_rad_s.x),micro(r.body_rate_rad_s.y),micro(r.body_rate_rad_s.z),
+                std::lround(r.angular_accel_rad_s2.x*1000),std::lround(r.angular_accel_rad_s2.y*1000),
+                std::lround(r.angular_accel_rad_s2.z*1000),
+                r.metadata.valid,r.derivative_valid,static_cast<unsigned>(status.rate_error));
             platform::write(line);
         }
         if (tx_time_get() - last_status >= TX_TIMER_TICKS_PER_SECOND) {
@@ -131,6 +143,49 @@ void run(ULONG) {
                 static_cast<unsigned long>(g.metadata.sequence),micro(g.value.x),micro(g.value.y),micro(g.value.z),
                 a.metadata.valid,g.metadata.valid);
             platform::write(line);
+            const auto flight_status=flight::snapshot();
+            std::snprintf(line,sizeof(line),
+                "# FLIGHT state=%u allowed=%u block=%lu fault=%lu reset=%lu rc=%lu dry=1 batches=%lu stopped=%lu frames=%04x/%04x/%04x/%04x stop_reason=%lu\r\n",
+                static_cast<unsigned>(flight_status.status.state),flight_status.status.output_allowed,
+                static_cast<unsigned long>(flight_status.status.arm_block_reasons),
+                static_cast<unsigned long>(flight_status.status.fault_reasons),
+                static_cast<unsigned long>(flight_status.control_reset_sequence),
+                static_cast<unsigned long>(flight_status.rc_updates),static_cast<unsigned long>(flight_status.batches),
+                static_cast<unsigned long>(flight_status.stop_batches),
+                static_cast<unsigned>(flight_status.software_output.frames[0]),
+                static_cast<unsigned>(flight_status.software_output.frames[1]),
+                static_cast<unsigned>(flight_status.software_output.frames[2]),
+                static_cast<unsigned>(flight_status.software_output.frames[3]),
+                static_cast<unsigned long>(flight_status.software_output.stop_reasons));
+            platform::write(line);
+            const auto& receiver=flight_status.receiver;
+            const auto receiver_stats=rc::statistics();
+            const auto now=platform::time_us();
+            const auto age=now>=receiver.metadata.measured_us ? now-receiver.metadata.measured_us : 0;
+            std::snprintf(line,sizeof(line),
+                "# RC seq=%lu age_us=%lu fresh=%u lost=%u failsafe=%u map=%u bytes=%lu err=%lu drop=%lu bad=%lu reset=%lu ch=",
+                static_cast<unsigned long>(receiver.metadata.sequence),
+                static_cast<unsigned long>(age>0xffffffffU ? 0xffffffffU : age),
+                receiver.metadata.valid && core::is_fresh(receiver.metadata.measured_us,now,100000),
+                receiver.frame_lost,receiver.failsafe,flight_status.receiver_mapping_ready,
+                static_cast<unsigned long>(receiver_stats.bytes),static_cast<unsigned long>(receiver_stats.errors),
+                static_cast<unsigned long>(receiver_stats.drops),
+                static_cast<unsigned long>(flight_status.receiver_stats.malformed),
+                static_cast<unsigned long>(receiver_stats.restarts));
+            unsigned length=static_cast<unsigned>(std::strlen(line));
+            for (unsigned i=0;i<16;++i) length+=static_cast<unsigned>(std::snprintf(line+length,sizeof(line)-length,
+                "%u%c",static_cast<unsigned>(receiver.channels[i]),i==15 ? '\r' : '/'));
+            line[length++]='\n'; line[length]='\0';
+            platform::write(line);
+            const auto& pilot=flight_status.pilot;
+            std::snprintf(line,sizeof(line),
+                "# PILOT seq=%lu fresh=%u rpy_m=%ld/%ld/%ld throttle_m=%ld arm=%u mode=%u estop=%u failsafe=%u\r\n",
+                static_cast<unsigned long>(pilot.metadata.sequence),
+                core::is_usable(pilot,now,100000),
+                std::lround(pilot.roll*1000),std::lround(pilot.pitch*1000),std::lround(pilot.yaw*1000),
+                std::lround(pilot.collective*1000),pilot.arm_request,static_cast<unsigned>(pilot.mode),
+                pilot.emergency_stop,pilot.receiver_failsafe);
+            platform::write(line);
         }
     }
 }
@@ -142,6 +197,8 @@ unsigned int app_start(void) {
     if (attitude_status != TX_SUCCESS) return attitude_status;
     const auto status = self_flight::imu::start();
     if (status != TX_SUCCESS) return status;
+    const auto receiver_status=self_flight::rc::start();
+    if (receiver_status!=TX_SUCCESS) return receiver_status;
     return tx_thread_create(&log_thread, const_cast<char*>("usb_log"), run, 0,
                             stack, sizeof(stack), 15, 15, TX_NO_TIME_SLICE, TX_AUTO_START);
 }

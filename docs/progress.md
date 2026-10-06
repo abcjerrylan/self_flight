@@ -1,6 +1,6 @@
 # 进度
 
-日期：2026-10-03。
+当前更新：2026-10-07。以下保留各阶段历史结果。
 
 ## P0：已完成
 
@@ -47,11 +47,11 @@
 
 ## 下一步
 
-P3算法与桌面实机方向验收已完成，详见[p3-attitude.md](p3-attitude.md)。下一阶段P4：实现DShot300与逻辑分析仪波形验证，确认实际接收机协议并接入RC与解锁/故障状态机。
+P3算法与桌面实机方向验收已完成，详见[p3-attitude.md](p3-attitude.md)。P3+与P4A的软件实施/主机验证已完成，见[p3plus-p4a.md](p3plus-p4a.md)。用户已确认微空TRS的SBUS接在UART6 RX；解析及真实UART配置已完成，用户烧录后新处理链桌面时序和16路原始通道接收已实测通过；继续确定映射和真实失联行为，再进入P4B定时器DMA/波形。
 
 P3前补丁已随本轮固件上板：启动静止标定Accepted，TEMP有效、PIPE无新增迟到；末段运动拒绝的专项硬件复测仍待补（主机回归与旧实机回放通过）。P2A独立计时误差、71.6分钟回绕和电机脚电平等项目仍待完成。
 
-尚未实现：PID、混控、DShot、RC、解锁状态机、持久化和飞行。现有数据类型不等于这些功能已存在。
+尚未实现：PID、混控、真实定时器DMA DShot、持久化和飞行。SBUS已实现但实际通道映射与板上接收验收待完成。P4A软件状态机和DShot编码已有实现/主机测试，固件控制器及硬件驱动ready为false，不能解锁。
 
 ## USB 首次接板检查
 
@@ -105,3 +105,31 @@ USB保留rpy_md并改为独立total_yaw_md；移除total_rpy_md/total_kind。HTM
 同一native核心生成build/p3/yaw-feedback-host.csv/.log/-report.json：保持roll12°/pitch-8°并绕导航Z转720°，2001/2001有效，末帧roll=12.000005°, pitch=-7.999994°, total_yaw=719.988098°。该记录为主机合成，不是板上测量；日志run/lat是占位值。Debug HEX SHA-256：99aef09f5049bb45ea9dc129c531af9d0ca3c48840851d6b437f8ec084717a4b。
 
 新版尚未烧录，新增atan2/展开耗时和实机姿态输出待测；未打开串口或输出电机信号。仍使用main，未提交/推送。
+
+
+## PX4源码解析与控制框架（2026-10-06）
+
+按用户要求在线审阅固定v1.17.0的姿态外环、角速度PID、传感器角速度处理、分配去饱和及DShot高层输出路径；EKF2仅审阅IMU输入/姿态输出接口，不宣称完成全仓库或完整EKF算法审计。本机直接下载失败，源码通过官方在线页面读取。文件/函数范围、对照优化与P3+/P4/P5分期见[px4-code-review.md](px4-code-review.md)。
+
+新增[control-framework.hpp](control-framework.hpp)为docs内原创接口草案，未加入CMake或固件；复用既有数据/数学，声明角速度反馈、四元数外环、角速度内环、混控轴饱和反馈与状态门控。主机MinGW和Cortex-M7 ARM编译器均通过C++17严格警告语法检查；这不代表算法已实现、已链接或已在硬件验收。
+
+建议下一实施包P3+数据处理/重置语义与P4A软件输出/状态机；P4B实际接收机协议、四电机位置/转向与波形测量仍需明确。保持Roll/Pitch/total_yaw页面选择，后续控制内部建议q_nb和机体角速度。本轮只新增两份设计材料并更新进度，生产源码/固件未变，未烧录/串口采集/电机输出，main分支保持，未提交或推送。
+
+## P3+ / P4A实施（2026-10-07，含桌面反馈和SBUS接收验收）
+
+- gyro低通统一为共享RateFeedbackFilter，固件/native回放共用ImuPipeline，Mahony内部gyro低通旁路；新增真实dt角加速度差分和独立30Hz低通。在线残余偏置不进入差分，同帧rate使用新偏置；缺样/首帧D无效，不把旧值作为新反馈。
+- FlightGuard实现启动/标定/上锁/解锁/故障状态，先OFF再ON、低油门解锁、有效新鲜RC与反馈、故障锁存和明确恢复；参考改变、控制超期触发停止并通知未来PID清积分。
+- DShot encode/prepare原创实现四路软件批次、标准校验、STOP/油门映射；非法/过期/禁止输出时全STOP。真实固件controller_ready和output_driver_ready为false，不能解锁，没有电机输出调用。
+- 用户确认TRS SBUS已接UART6 RX后，实际重跑CubeMX配置PC7、100000/8E2、MCU RX反相、IRQ7；接收ISR入固定128条队列，优先级9线程解析16通道。丢帧不刷新有效指令，failsafe立即禁止，部分帧/接收错误恢复已实现。通道配置暂未分配，先以USB原始值确认实际映射。
+- 日志增加50Hz RATE和1Hz FLIGHT/RC，保持ATT与HTML当前Roll/Pitch/total_yaw及四元数模型。快速服务run/lat覆盖滤波/姿态/软件状态和帧准备；新链最坏时序尚未在板上测量。
+- host Debug/Release最终各59/59；Python姿态集成各6/6、原始回放4/4、HTML20/20通过。旧静止及六面8份实机输入由新核心在两种native构建回放通过，记录在build/p3p4/replay-report.json；不是本轮板上数据。
+- H743 Debug Flash134508B/RAM_D1 74480B；Release Flash84824B/RAM_D1 74448B；均编译链接成功，ELF/HEX/BIN/map已生成。Debug HEX SHA-256为d079648d25f44abe6152a1da21ea1bf4ddf4886afa5d74a1981bb8e5889c9b29，Release为909f629d796fb59d7a07a1b93f05bcda8c220049911ec74a7b85101fde7f21a3。
+- 新增6个UART厂商文件与锁定H7 V1.12.1归档逐字节一致，旧411个摘要核对通过，总417个；原电机GPIO低电平/下拉、400MHz CPU、USB/SPI和USART1未占用配置保留。仍在main，未提交/推送、未自动烧录、未操作电机。
+
+用户自行烧录后在COM51做两轮20秒采集，ATT与RATE/D各1001/1001有效。稳定连接轮更新998.914Hz，窗口抽样最大处理251us/延迟337us，累计最大370us/509us；采样/姿态/日志没有新增丢样、错误、超期或超时。标定Accepted，所有FLIGHT为Disarmed/allowed=0/四路STOP。SBUS首末诊断间新增2706帧/67650字节，20条RC诊断全部fresh且无lost/failsafe，坏帧/错误/队列丢失无增加；上电已有1次接收错误。原始与汇总在build/p3p4/board-static*、board-linked*，COM51已释放。
+
+继续确认真实通道端点/方向、解锁开关和失联行为；确定映射后填receiver-profile.hpp。P4B真实DShot波形和P5控制器/混控尚未开始。详细实现、理由、验收与限制见[p3plus-p4a.md](p3plus-p4a.md)。
+
+用户进一步逐项检查确认AETR：CH1横滚、CH2俯仰、CH3油门、CH4偏航。CH1/2/3端点173/1811，中点992；CH4这次右端1807。已保存四轴配置和FRD俯仰反向，解锁辅助通道仍未观察到，保持未分配/map=0。数据在build/p3p4/rc-right-horizontal.csv、rc-controls.csv及docs/receiver-micoair-trs-20261007.json；连续采集已结束，COM51已释放。待用户确认遥控器开关与通道配置后继续。
+
+补充构建含四轴配置及PILOT诊断，尚未烧录。当前Debug Flash134940B/RAM_D1 74528B、Release Flash85136B/RAM_D1 74496B；当前HEX摘要分别bea31c8ffd44dfab28de094506cb185360e365d94cdee60f15b2c3547e2eeb25、2fc603a8df046dae5baeab75d11200c424d493aa323518ac21531c76284af1e4。此前两轮板上时序/接收结果对应初轮固件，不作为此补充构建的新板上测量。

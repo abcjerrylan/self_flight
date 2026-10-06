@@ -24,15 +24,6 @@ Quaternion tilt(Vec3 down) {
             std::cos(r)*std::sin(p),-std::sin(r)*std::sin(p)};
 }
 }
-bool LowPass3::update(Vec3 input, float dt, float cutoff, Vec3& out) {
-    if (!is_finite(input) || !std::isfinite(dt) || dt < 0 || (ready_ && dt == 0) ||
-        !std::isfinite(cutoff) || cutoff < 0) return false;
-    const float alpha=cutoff == 0 ? 1.0F : dt/(dt+1.0F/(2*kPi*cutoff));
-    const auto value=ready_ ? value_+(input-value_)*alpha : input;
-    if (!is_finite(value)) return false;
-    value_=value; ready_=true; out=value;
-    return true;
-}
 bool propagate(Quaternion q, Vec3 rate, float dt, Quaternion& out) {
     Quaternion unit;
     if (!is_finite(rate) || !std::isfinite(dt) || dt <= 0 || !try_normalize(q,unit)) return false;

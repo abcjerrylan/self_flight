@@ -4,6 +4,7 @@
 
 namespace platform {
 void start_timer();
+bool start_receiver();
 std::uint32_t cpu_hz();
 // Serialized across ISR/threads; read at least once per TIM2 wrap (71.6 minutes).
 std::uint64_t time_us();

@@ -38,6 +38,7 @@ struct Snapshot {
 unsigned start();
 void drdy(bmi088::Sensor sensor);
 Snapshot snapshot();
+bool calibrated();
 // Requires both calibrations. Each consumer owns its cursor; diagnostics do not consume it.
 bool take_sample(core::ImuCursor& cursor, core::ImuSample& sample);
 bool take_record(Record& record, unsigned wait_ticks);

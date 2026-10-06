@@ -190,6 +190,11 @@ Snapshot snapshot() {
     return copy;
 }
 
+bool calibrated() {
+    const platform::CriticalSection lock;
+    return state.gyro_calibrated && state.accel_calibrated;
+}
+
 bool take_sample(core::ImuCursor& cursor, core::ImuSample& sample) {
     core::ImuSample latest_sample;
     {
