@@ -55,4 +55,4 @@ BMI088配置、CSV格式和采集回放见 [P2B说明](docs/p2b-imu.md)；标定
 
 P3参数、偏航边界、姿态日志与回放见 [姿态估计](docs/p3-attitude.md)。
 
-USB 实时姿态页面：[attitude-viewer.html](tools/attitude-viewer.html)，用桌面 Chrome / Edge 打开后选择飞控串口；支持四元数板卡模型、机体轴累计转角曲线和本地日志回放；累计角需要烧录输出 total_kind=body 的新版固件，累计值会漂移，不用于姿态控制。使用说明见 [实时姿态页面](docs/attitude-viewer.md)。
+USB 实时姿态页面：[attitude-viewer.html](tools/attitude-viewer.html)，用桌面 Chrome / Edge 打开后选择飞控串口；支持四元数板卡模型、当前 Roll/Pitch 与连续 Yaw 曲线和本地日志回放；连续偏航需要输出 total_yaw_md 的新版固件。六轴航向会漂移，俯仰±90°的欧拉奇异性仍存在。使用说明见 [实时姿态页面](docs/attitude-viewer.md)。

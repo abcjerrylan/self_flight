@@ -24,7 +24,7 @@ def summarize(lines):
     if not valid:
         raise ValueError("no valid # ATT; check P3 firmware and calibration")
     angles = [[int(row["rpy_md"].split("/")[i])/1000 for row in valid] for i in range(3)]
-    totals = [[int(row["total_rpy_md"].split("/")[i])/1000 for row in valid] for i in range(3)] if all("total_rpy_md" in row and row.get("total_kind")=="body" for row in valid) else None
+    yaw = [int(row["total_yaw_md"])/1000 for row in valid] if all("total_yaw_md" in row for row in valid) else None
     qnorms = [math.sqrt(sum((int(v)/1e6)**2 for v in row["q_u"].split("/"))) for row in valid]
     elapsed = (int(valid[-1]["t"])-int(valid[0]["t"]))/1e6
     yaw_change = sum((after-before+180)%360-180 for before, after in zip(angles[2], angles[2][1:]))
@@ -40,9 +40,8 @@ def summarize(lines):
                 update_rate_hz=((int(valid[-1]["seq"])-int(valid[0]["seq"]))%2**32)/elapsed if elapsed else None,
                 quaternion_norm_error_max=max(abs(v-1) for v in qnorms),
                 first_rpy_deg=[v[0] for v in angles], last_rpy_deg=[v[-1] for v in angles],
-                first_total_rpy_deg=[v[0] for v in totals] if totals else None,
-                last_total_rpy_deg=[v[-1] for v in totals] if totals else None,
-                total_kind="body" if totals else None,
+                first_total_yaw_deg=yaw[0] if yaw else None,
+                last_total_yaw_deg=yaw[-1] if yaw else None,
                 total_epochs=sorted({int(row["total_epoch"]) for row in valid if "total_epoch" in row}),
                 mean_rpy_deg=[statistics.mean(v) for v in angles],
                 stddev_rpy_deg=[statistics.pstdev(v) for v in angles],

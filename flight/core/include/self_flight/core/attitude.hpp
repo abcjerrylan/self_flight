@@ -37,7 +37,7 @@ private:
     Vec3 accel_{};
     TimestampUs accel_time_{};
     std::uint32_t accel_sequence_{};
-    float weight_{}, dt_{};
+    float weight_{}, dt_{}, yaw_rad_{};
     bool config_valid_{}, initialized_{}, accel_seen_{};
 };
 }

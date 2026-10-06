@@ -6,10 +6,13 @@
 namespace self_flight::core {
 namespace {
 float norm(Vec3 value) { return std::sqrt(dot(value,value)); }
+float yaw_of_unit(Quaternion q) {
+    return std::atan2(2*(q.w*q.z+q.x*q.y),1-2*(q.y*q.y+q.z*q.z));
+}
 Vec3 euler_of_unit(Quaternion q) {
     return {std::atan2(2*(q.w*q.x+q.y*q.z),1-2*(q.x*q.x+q.y*q.y)),
             std::asin(std::clamp(2*(q.w*q.y-q.z*q.x),-1.0F,1.0F)),
-            std::atan2(2*(q.w*q.z+q.x*q.y),1-2*(q.y*q.y+q.z*q.z))};
+            yaw_of_unit(q)};
 }
 Vec3 down_in_body(Quaternion q) {
     return {2*(q.x*q.z-q.w*q.y),2*(q.y*q.z+q.w*q.x),1-2*(q.x*q.x+q.y*q.y)};
@@ -106,13 +109,13 @@ AttitudeError Mahony::update(const ImuSample& sample, TimestampUs now) {
     }
     if (!is_finite(bias) || !try_normalize(q,q)) return AttitudeError::Numerical;
     const auto rate=gyro-bias;
-    const Vec3 previous{state_.total_roll_rad,state_.total_pitch_rad,state_.total_yaw_rad};
-    // Measured body-axis rotation only; Mahony gravity feedback is not physical motion.
-    const auto total=initialized_ ? previous+rate*dt_ : Vec3{};
-    if (!is_finite(total)) return AttitudeError::Numerical;
+    const float yaw=yaw_of_unit(q);
+    const float total=initialized_ ? state_.total_yaw_rad+std::remainder(yaw-yaw_rad_,2*kPi) : yaw;
+    if (!std::isfinite(total)) return AttitudeError::Numerical;
     const auto epoch=state_.total_epoch+static_cast<unsigned>(!initialized_);
     state_={ {g.measured_us,now,g.sequence,true},q,rate,bias,g.measured_us,accel_time_,false,
-             total.x,total.y,total.z,epoch };
+             total,epoch };
+    yaw_rad_=yaw;
     initialized_=true;
     return AttitudeError::None;
 }

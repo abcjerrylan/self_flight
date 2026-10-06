@@ -8,7 +8,7 @@ const html = fs.readFileSync(htmlPath, 'utf8');
 const scripts = [...html.matchAll(/<script[^>]*>([\s\S]*?)<\/script>/g)].map(m => m[1]);
 const core = {module:{exports:{}}}; vm.runInNewContext(scripts[0], core);
 const {parseAttitude,LineReader,rotate,quaternion} = core.module.exports;
-const line = '# ATT seq=44841 t=45010654 q_u=999945/-3474/-9787/-1157 rpy_md=-397/-1122/-129 total_rpy_md=-397/-1122/359871 total_epoch=1 total_kind=body bias_u=-495/494/13 aw_m=953 dt_us=1000 run_us=73 lat_us=200 valid=1 yaw_abs=0 err=0';
+const line = '# ATT seq=44841 t=45010654 q_u=999945/-3474/-9787/-1157 rpy_md=-397/-1122/-129 total_yaw_md=359871 total_epoch=1 bias_u=-495/494/13 aw_m=953 dt_us=1000 run_us=73 lat_us=200 valid=1 yaw_abs=0 err=0';
 const frame = parseAttitude(line);
 let passed = 0;
 async function test(name, fn) { await fn(); passed++; console.log('PASS '+name); }
@@ -42,33 +42,40 @@ function file(text) {
   await test('ATT units and quaternion normalization',()=>{
     assert.deepEqual(plain(frame.rpy),[-.397,-1.122,-.129]);assert.equal(frame.t,45010654);assert.equal(frame.run_us,73);assert.ok(Math.abs(Math.hypot(...frame.q)-1)<1e-12);
   });
-  await test('firmware totals replace wrapped angles in cards and chart',()=>{
+  await test('roll pitch follow Euler while only yaw is unwrapped',()=>{
     const p=page();p.state("mode='serial'");p.state('accept('+JSON.stringify(frame)+',0)');p.step(40);
+    assert.equal(p.elements.roll.textContent,'-0.4°');assert.equal(p.elements.pitch.textContent,'-1.1°');
     assert.equal(p.elements.yaw.textContent,'359.9°');assert.equal(p.state('history[0].angles[2]'),359.871);
-    p.state('accept('+JSON.stringify({...plain(frame),t:frame.t+20000,total:[-.397,-1.122,360.129]})+',80)');p.step(100);
+    p.state('accept('+JSON.stringify({...plain(frame),t:frame.t+20000,totalYaw:360.129,rpy:[12,23,.129]})+',80)');p.step(100);
+    assert.equal(p.elements.roll.textContent,'12.0°');assert.equal(p.elements.pitch.textContent,'23.0°');
     assert.equal(p.elements.yaw.textContent,'360.1°');assert.equal(p.state('history.length'),2);
-    p.state('accept('+JSON.stringify({...plain(frame),t:frame.t+40000,total:[0,0,0],epoch:2})+',120)');p.step(140);
+    p.state('accept('+JSON.stringify({...plain(frame),t:frame.t+40000,totalYaw:0,epoch:2})+',120)');p.step(140);
     assert.equal(p.state('history.length'),1);assert.equal(p.elements.yaw.textContent,'0.0°');
   });
-  await test('old logs show the model without fabricating totals',()=>{
-    const old=line.replace(/ total_rpy_md=[^ ]+ total_epoch=1/,'');const a=parseAttitude(old);assert.equal(a.total,null);
+  await test('old logs restore all Euler cards and warn about wrapped yaw',()=>{
+    const old=line.replace(/ total_yaw_md=[^ ]+ total_epoch=1/,'');const a=parseAttitude(old);assert.equal(a.totalYaw,null);
     const p=page();p.state("mode='serial'");p.state('accept('+JSON.stringify(a)+',0)');p.step(40);
-    assert.equal(p.elements.yaw.textContent,'—');assert.equal(p.state('history.length'),0);assert.match(p.elements.hint.textContent,/烧录新版/);
+    assert.equal(p.elements.roll.textContent,'-0.4°');assert.equal(p.elements.pitch.textContent,'-1.1°');
+    assert.equal(p.elements.yaw.textContent,'-0.1°');assert.equal(p.state('history.length'),1);assert.match(p.elements.hint.textContent,/total_yaw_md/);
     assert.equal(parseAttitude(line.replace('359871','NaN')),null);
+    assert.equal(parseAttitude(line.replace('359871','9007199254740992')),null);
   });
-  await test('legacy Euler totals are not mislabeled as body-axis rotation',()=>{
-    const a=parseAttitude(line.replace(' total_kind=body',''));assert.equal(a.total,null);
+  await test('legacy body integrals are ignored as attitude feedback',()=>{
+    const a=parseAttitude(line.replace('total_yaw_md=359871','total_rpy_md=10000/20000/30000 total_kind=body'));
+    assert.equal(a.totalYaw,null);
     const p=page();p.state("mode='serial'");p.state('accept('+JSON.stringify(a)+',0)');p.step(40);
-    assert.equal(p.elements.pitch.textContent,'—');assert.match(p.elements.hint.textContent,/total_kind=body/);
+    assert.equal(p.elements.pitch.textContent,'-1.1°');assert.equal(p.elements.yaw.textContent,'-0.1°');
   });
-  await test('pitch crosses vertical and two turns without Euler coupling',()=>{
+  await test('pitch uses current attitude rather than accumulated turns',()=>{
     const p=page();p.state("mode='serial'");
-    for(const [i,angle] of [89,90,91,180,360,720].entries()){
-      const a={...plain(frame),t:i*20000,total:[0,angle,0],rpy:[180,90,180],q:plain(quaternion(.5,angle,0))};
+    for(const [i,[roll,pitch,yaw]] of [[.5,89,0],[179.5,89,180],[179.5,0,180],[.5,0,360]].entries()){
+      const a={...plain(frame),t:i*20000,totalYaw:yaw,rpy:[roll,pitch,(yaw+180)%360-180]};
       p.state('accept('+JSON.stringify(a)+','+(i*40)+')');p.step(i*40+30);
-      assert.equal(p.elements.pitch.textContent,angle.toFixed(1)+'°');assert.equal(p.elements.roll.textContent,'0.0°');assert.equal(p.elements.yaw.textContent,'0.0°');
+      assert.equal(p.elements.pitch.textContent,pitch.toFixed(1)+'°');
+      assert.equal(p.elements.roll.textContent,roll.toFixed(1)+'°');
+      assert.equal(p.elements.yaw.textContent,yaw.toFixed(1)+'°');
     }
-    assert.equal(p.state('history.length'),6);
+    assert.equal(p.state('history.length'),4);
   });
   await test('every line split, CRLF and mixed IMU records',()=>{
     const text='IMU,G,1,2,3,4,5,6,7,0,1\r\n'+line+'\r\n# TEMP current_mc=32000 valid=1\n'+line+'\n';

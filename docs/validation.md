@@ -301,3 +301,19 @@ host Debug/Release各37/37（0.95s/0.86s），Python姿态集成各6/6、原始�
 build/p3/body-pitch-host.log是同一原生核心的合成轨迹，不是实机记录。初始横滚0.5°、Y轴90°/s、8秒，8001有效姿态，末尾total=(0,719.964722,0)°；约0.0353°为浮点累加误差。浏览器401帧回放显示Y累计720.0°、X/Z0.0°且曲线连续，没有页面运行错误；合成run/lat不作为硬件测量。Debug HEX SHA-256：2a937b48c3b832a8738b1b7116e4e4dfd523c6a78af0b4d600480f6e5c38b05e。
 
 本轮未烧录、未打开串口、未输出电机信号；新版实机累计角/漂移/耗时待用户烧录后检查。main分支保留，未提交或推送；硬件配置与既有采集未变。
+
+## 恢复当前姿态，单独保留连续yaw（2026-10-06）
+
+用户明确需要姿态反馈，因此删除total_roll_rad/total_pitch_rad和三轴body积分。保持原来的四元数Mahony传播/滤波/重力修正；Roll/Pitch通过attitude_euler(state.q_nb,out)取得当前ZYX姿态，倾斜启动直接反映摆放倾角。
+
+total_yaw_rad每个成功帧从同一q_nb提取yaw，执行total_yaw += remainder(yaw-previous_yaw,2*pi)，跨179°→-179°时继续181°，反转减小。首帧以当前yaw初始化；失效帧不提交新值，缺样后重新对齐重设参考并令total_epoch加一。它与Euler航向一致，倾斜时不等于body Z角速度积分；展开只有同参考段且相邻姿态可跟踪时有效。pitch±90°仍是yaw/roll欧拉奇异点，不承诺翻滚时连续独立航向。
+
+USB保留rpy_md并改为独立total_yaw_md；移除total_rpy_md/total_kind。HTML数字/曲线使用(rpy.roll,rpy.pitch,total_yaw)，q模型保留；旧版日志恢复普通三轴Euler显示，明确提示Yaw未展开，不拿旧body累计量当姿态。native CSV只保留total_yaw_deg与total_epoch，两个汇总工具同步。
+
+常规小倾角姿态反馈可使用Roll/Pitch；普通定向yaw误差按最短角差计算，明确多圈目标则应与total_yaw属于同一参考段。使用反馈前需检查有效性/新鲜度及段号，重新对齐不能当作连续航向。六轴yaw没有绝对航向，会漂移；跨竖直或翻滚控制使用四元数姿态误差，角速度环使用body_rate_rad_s。当前尚无PID/混控控制器，本轮没有接入控制输出。可参考 [PX4控制框图](https://docs.px4.io/main/en/flight_stack/controller_diagrams#multicopter-attitude-controller)。
+
+验证：host Debug/Release各37/37（1.25s/1.02s）；Python姿态集成各6/6、原始回放4/4；HTML20/20。覆盖yaw正负4圈、±180°展开、反转、实际800/1200us时间、无效/重复/倒退保持、缺样恢复；倾斜body Z旋转时total_yaw与四元数Euler航向一致且与body积分不同；Roll/Pitch恢复当前值、旧字段忽略与旧日志回退。两种MCU编译链接通过：Debug Flash105,988B/RAM_D1 69,456B，Release Flash67,676B/RAM_D1 69,408B。
+
+同一native核心生成build/p3/yaw-feedback-host.csv/.log/-report.json：保持roll12°/pitch-8°并绕导航Z转720°，2001/2001有效，末帧roll=12.000005°, pitch=-7.999994°, total_yaw=719.988098°。该记录为主机合成，不是板上测量；日志run/lat是占位值。Debug HEX SHA-256：99aef09f5049bb45ea9dc129c531af9d0ca3c48840851d6b437f8ec084717a4b。
+
+新版尚未烧录，新增atan2/展开耗时和实机姿态输出待测；未打开串口或输出电机信号。仍使用main，未提交/推送。

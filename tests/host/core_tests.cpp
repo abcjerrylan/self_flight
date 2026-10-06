@@ -190,8 +190,7 @@ void data_contracts() {
     CHECK(!is_usable(s, 200U, 100U));
     CHECK(!ImuSample{}.gyro.metadata.valid && !ImuSample{}.accel.metadata.valid);
     CHECK(!AttitudeState{}.metadata.valid && !AttitudeState{}.absolute_yaw_valid);
-    CHECK(AttitudeState{}.total_roll_rad==0 && AttitudeState{}.total_pitch_rad==0 &&
-          AttitudeState{}.total_yaw_rad==0 && AttitudeState{}.total_epoch==0);
+    CHECK(AttitudeState{}.total_yaw_rad==0 && AttitudeState{}.total_epoch==0);
     CHECK(!PilotCommand{}.metadata.valid && PilotCommand{}.receiver_failsafe);
     CHECK(!PilotCommand{}.arm_request);
     CHECK(Calibration{}.quality == CalibrationQuality::Unknown);

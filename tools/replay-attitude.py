@@ -42,11 +42,11 @@ def summarize(text):
     usable = [row for row in rows if row["valid"] == "1"]
     if not usable:
         raise ValueError("no valid attitude frames; check calibration, gravity and timing")
-    if any(row.get("total_kind") != "body" for row in usable):
-        raise ValueError("native replay lacks total_kind=body; rebuild the matching C++ executable")
+    if any("total_yaw_deg" not in row or "total_roll_deg" in row for row in usable):
+        raise ValueError("native replay lacks yaw-only output; rebuild the matching C++ executable")
     norms = [math.sqrt(sum(float(row[k])**2 for k in ("qw", "qx", "qy", "qz"))) for row in usable]
     angles = [[float(row[key]) for row in usable] for key in ("roll_deg", "pitch_deg", "yaw_deg")]
-    totals = [[float(row[key]) for row in usable] for key in ("total_roll_deg", "total_pitch_deg", "total_yaw_deg")]
+    yaw = [float(row["total_yaw_deg"]) for row in usable]
     yaw_change = sum((after-before+180)%360-180 for before, after in zip(angles[2], angles[2][1:]))
     return dict(rows=len(rows), valid=len(usable), invalid=len(rows)-len(usable),
                 error_counts={error: sum(row["error"] == error for row in rows) for error in sorted({r["error"] for r in rows})},
@@ -55,8 +55,7 @@ def summarize(text):
                 roll_pitch_stddev_deg=[statistics.pstdev(v) for v in angles[:2]],
                 first_rpy_deg=[v[0] for v in angles], last_rpy_deg=[v[-1] for v in angles],
                 relative_yaw_change_deg=yaw_change, absolute_yaw_valid=False,
-                first_total_rpy_deg=[v[0] for v in totals], last_total_rpy_deg=[v[-1] for v in totals],
-                total_kind="body",
+                first_total_yaw_deg=yaw[0], last_total_yaw_deg=yaw[-1],
                 total_epochs=sorted({int(row["total_epoch"]) for row in usable}),
                 final_residual_bias_rad_s=[float(usable[-1][k]) for k in ("bx", "by", "bz")],
                 accel_weight_mean=statistics.mean(float(r["weight"]) for r in usable))

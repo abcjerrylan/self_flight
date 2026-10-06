@@ -4,7 +4,7 @@
 
 ## 算法与坐标
 
-机体FRD、导航NED，Hamilton WXYZ的q_nb把body向量转到navigation。正横滚为右侧压低，正俯仰为抬机头，正偏航为水平从上方看顺时针。Euler为ZYX，仅用于诊断；pitch接近±90°时roll/yaw有表示奇异性，判断姿态应使用四元数/重力方向。
+机体FRD、导航NED，Hamilton WXYZ的q_nb把body向量转到navigation。正横滚为右侧压低，正俯仰为抬机头，正偏航为水平从上方看顺时针。提供ZYX欧拉姿态转换，常规倾角可用于姿态反馈；pitch接近±90°时roll/yaw有表示奇异性，判断姿态应使用四元数/重力方向。
 
 四元数传播为normalize(q_nb * [1,omega*dt/2])，每步归一化，不把Euler角直接累加。采用一阶离散传播，默认陀螺时间间隔上界3000us，序号缺口也拒绝传播；不是跨丢样的固定1ms积分。
 
@@ -27,11 +27,11 @@
 - 每消费者一个ImuCursor：重复/倒退gyro不消费，未来accel暂时不用，已用加计可在新gyro时保持最近观测。gyro/accel两种标定均成功才进入姿态链。
 - gyro序号缺口或过大正向时间间隔使姿态无效；下一可信加计重新初始化tilt/yaw及残余bias。重初始化会把相对yaw设0，必须由以后P4健康状态机处理，不能在飞行中当成连续航向。
 - NaN/无效gyro不更新姿态与bias；重复/倒退时间不传播。姿态可用时间记录解算完成时刻；gyro测量到完成达到1000us时服务将其标记无效并统计late，快照年龄超过5000us也无效。
-- 机体轴累计转角在快速姿态线程按实际dt逐帧积分，普通范围Euler仅在日志线程计算；快照发布四元数、body rate、bias和total。新增开销尚未在板上测量。四路电机仍是低电平GPIO。
+- 连续yaw在快速姿态线程由四元数逐帧提取/展开，Roll/Pitch仅在需要时由attitude_euler计算；快照发布四元数、body rate、bias和total_yaw。新增开销尚未在板上测量。四路电机仍是低电平GPIO。
 
 ## USB记录
 
-约50Hz的ATT包含seq/t、q_u（WXYZ×1e6）、rpy_md（度×1000）、total_rpy_md（绕机体X/Y/Z轴累计转角，度×1000）、total_epoch（累计段编号）、total_kind=body（积分语义标记）、bias_u（body rad/s×1e6）、aw_m（可信度×1000）、dt_us、run_us（算法耗时）、lat_us（gyro测量到解算完成）、valid、yaw_abs、err。每秒AHRS包含updates/reject/timing/missed/timeout/late及累计maxrun/maxlat。错误None=0、WaitingForAccel=1、InvalidSample=2、Timing=3、Config=4、Numerical=5。
+约50Hz的ATT包含seq/t、q_u（WXYZ×1e6）、rpy_md（度×1000）、total_yaw_md（四元数偏航展开，度×1000）、total_epoch（偏航参考段编号）、bias_u（body rad/s×1e6）、aw_m（可信度×1000）、dt_us、run_us（算法耗时）、lat_us（gyro测量到解算完成）、valid、yaw_abs、err。每秒AHRS包含updates/reject/timing/missed/timeout/late及累计maxrun/maxlat。错误None=0、WaitingForAccel=1、InvalidSample=2、Timing=3、Config=4、Numerical=5。
 
 STATS、CAL、TEMP、PIPE和原始IMU CSV保留。USB未打开时logdrop增长表示日志丢弃，不等于采样或姿态丢样；验收看采集窗口的计数增量。启动外设初始化期间的AHRS timeout会计数，正常连续采样时不得继续增长。
 
@@ -64,9 +64,9 @@ Debug/Release各34/34：保留原26组，新增低通实际dt、三轴传播/组
 
 ## 本地实时姿态查看
 
-新增 [单文件 HTML](../tools/attitude-viewer.html)，模型可读取原P3日志；累计数字/曲线需要本轮含total_rpy_md及total_kind=body的新版固件。连接和显示边界见 [使用说明](attitude-viewer.md)。
+新增 [单文件 HTML](../tools/attitude-viewer.html)，模型可读取原P3日志；Roll/Pitch显示当前姿态，连续Yaw需要含total_yaw_md的新版固件；旧日志恢复普通Euler显示并提示。连接和显示边界见 [使用说明](attitude-viewer.md)。
 
-## 机体轴累计转角（2026-10-04，替换先前欧拉展开）
+## 机体轴累计转角（2026-10-04，历史实现；已由10月6日姿态反馈版本替换）
 
 用户实测模型正确，但pitch越过90°时数值折返、roll/yaw跳变。先前的最近ZYX等价分支只能展开欧拉表示，不能保证带初始倾斜的局部轴旋转独立累计。初始roll偏0.5°，持续绕body Y旋转即可在同一C++ Mahony中复现；旧测试的固定roll/yaw欧拉合成路径未覆盖这条实际运动轨迹。旧 continuous_euler 已删除。
 
@@ -88,3 +88,19 @@ USB ATT保留total_rpy_md与total_epoch，新增total_kind=body。HTML只将此�
 - MCU Debug/Release编译链接通过。Debug Flash105,644B/RAM_D1 69,464B，Release Flash67,276B/RAM_D1 69,416B。Debug HEX SHA-256：2a937b48c3b832a8738b1b7116e4e4dfd523c6a78af0b4d600480f6e5c38b05e。
 
 本轮没有烧录、打开串口或输出电机信号，代码仍在main且未提交/推送；新版实机total/漂移和算法耗时需要用户烧录后验证。
+
+## 恢复当前姿态，单独保留连续yaw（2026-10-06）
+
+用户明确需要姿态反馈，因此删除total_roll_rad/total_pitch_rad和三轴body积分。保持原来的四元数Mahony传播/滤波/重力修正；Roll/Pitch通过attitude_euler(state.q_nb,out)取得当前ZYX姿态，倾斜启动直接反映摆放倾角。
+
+total_yaw_rad每个成功帧从同一q_nb提取yaw，执行total_yaw += remainder(yaw-previous_yaw,2*pi)，跨179°→-179°时继续181°，反转减小。首帧以当前yaw初始化；失效帧不提交新值，缺样后重新对齐重设参考并令total_epoch加一。它与Euler航向一致，倾斜时不等于body Z角速度积分；展开只有同参考段且相邻姿态可跟踪时有效。pitch±90°仍是yaw/roll欧拉奇异点，不承诺翻滚时连续独立航向。
+
+USB保留rpy_md并改为独立total_yaw_md；移除total_rpy_md/total_kind。HTML数字/曲线使用(rpy.roll,rpy.pitch,total_yaw)，q模型保留；旧版日志恢复普通三轴Euler显示，明确提示Yaw未展开，不拿旧body累计量当姿态。native CSV只保留total_yaw_deg与total_epoch，两个汇总工具同步。
+
+常规小倾角姿态反馈可使用Roll/Pitch；普通定向yaw误差按最短角差计算，明确多圈目标则应与total_yaw属于同一参考段。使用反馈前需检查有效性/新鲜度及段号，重新对齐不能当作连续航向。六轴yaw没有绝对航向，会漂移；跨竖直或翻滚控制使用四元数姿态误差，角速度环使用body_rate_rad_s。当前尚无PID/混控控制器，本轮没有接入控制输出。可参考 [PX4控制框图](https://docs.px4.io/main/en/flight_stack/controller_diagrams#multicopter-attitude-controller)。
+
+验证：host Debug/Release各37/37（1.25s/1.02s）；Python姿态集成各6/6、原始回放4/4；HTML20/20。覆盖yaw正负4圈、±180°展开、反转、实际800/1200us时间、无效/重复/倒退保持、缺样恢复；倾斜body Z旋转时total_yaw与四元数Euler航向一致且与body积分不同；Roll/Pitch恢复当前值、旧字段忽略与旧日志回退。两种MCU编译链接通过：Debug Flash105,988B/RAM_D1 69,456B，Release Flash67,676B/RAM_D1 69,408B。
+
+同一native核心生成build/p3/yaw-feedback-host.csv/.log/-report.json：保持roll12°/pitch-8°并绕导航Z转720°，2001/2001有效，末帧roll=12.000005°, pitch=-7.999994°, total_yaw=719.988098°。该记录为主机合成，不是板上测量；日志run/lat是占位值。Debug HEX SHA-256：99aef09f5049bb45ea9dc129c531af9d0ca3c48840851d6b437f8ec084717a4b。
+
+新版尚未烧录，新增atan2/展开耗时和实机姿态输出待测；未打开串口或输出电机信号。仍使用main，未提交/推送。

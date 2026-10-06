@@ -26,7 +26,7 @@ class ReplayTests(unittest.TestCase):
             replay.calibration_from_log(["# CAL gyro=0 accel=1 quality=0\n"])
 
     def test_old_native_totals_rejected(self):
-        with self.assertRaisesRegex(ValueError,"total_kind"):
+        with self.assertRaisesRegex(ValueError,"yaw-only"):
             replay.summarize("valid\n1\n")
 
     def test_native_tilt(self):
@@ -41,8 +41,7 @@ class ReplayTests(unittest.TestCase):
         self.assertAlmostEqual(report["last_rpy_deg"][0], 45, places=3)
         self.assertLess(report["quaternion_norm_error_max"], 1e-6)
         self.assertFalse(report["absolute_yaw_valid"])
-        self.assertTrue(all(abs(v)<1e-6 for v in report["last_total_rpy_deg"]))
-        self.assertEqual(report["total_kind"],"body")
+        self.assertAlmostEqual(report["last_total_yaw_deg"],0,places=6)
         self.assertEqual(report["total_epochs"],[1])
 
     def test_missing_gyro(self):
@@ -65,31 +64,26 @@ class ReplayTests(unittest.TestCase):
                     available_us=n*1000+30,valid=1,body_si=(0,0,-9.80665) if sensor=="A" else (0,0,2*math.pi)))
         report=replay.summarize(replay.native_replay(rows,args.native.resolve()))
         self.assertEqual(report["valid"],2001)
-        self.assertAlmostEqual(report["last_total_rpy_deg"][2],720,delta=.02)
+        self.assertAlmostEqual(report["last_total_yaw_deg"],720,delta=.02)
         self.assertEqual(report["total_epochs"],[1])
 
-    def test_native_banked_pitch_totals(self):
-        for sign in (-1,1):
-            rows=[]
-            bank=math.radians(.5)
-            for n in range(8001):
-                angle=sign*n*.001*math.pi/2
-                # q=Rx(bank)*Ry(angle); measured gravity in this moving body frame.
-                accel=(9.80665*math.cos(bank)*math.sin(angle),
-                       -9.80665*math.sin(bank),-9.80665*math.cos(bank)*math.cos(angle))
-                for sensor in ("A","G"):
-                    rows.append(dict(sensor=sensor,sequence=n,measured_us=n*1000,
-                        available_us=n*1000+30,valid=1,body_si=accel if sensor=="A" else (0,sign*math.pi/2,0)))
-            text=replay.native_replay(rows,args.native.resolve())
-            report=replay.summarize(text)
-            self.assertEqual(report["valid"],8001)
-            self.assertEqual(report["total_kind"],"body")
-            self.assertAlmostEqual(report["last_total_rpy_deg"][1],sign*720,delta=.05)
-            samples=list(csv.DictReader(io.StringIO(text)))
-            pitch=[float(row["total_pitch_deg"]) for row in samples]
-            self.assertTrue(all(0<=sign*(b-a)<.1 for a,b in zip(pitch,pitch[1:])))
-            self.assertTrue(all(row["total_kind"]=="body" and float(row["total_roll_deg"])==0 and
-                                float(row["total_yaw_deg"])==0 for row in samples))
+    def test_native_tilted_yaw_feedback(self):
+        rows=[]
+        tilt=.7
+        for n in range(1001):
+            angle=n*.001
+            accel=(9.80665*math.sin(tilt)*math.cos(angle),
+                   -9.80665*math.sin(tilt)*math.sin(angle),-9.80665*math.cos(tilt))
+            for sensor in ("A","G"):
+                rows.append(dict(sensor=sensor,sequence=n,measured_us=n*1000,
+                    available_us=n*1000+30,valid=1,body_si=accel if sensor=="A" else (0,0,1)))
+        text=replay.native_replay(rows,args.native.resolve())
+        samples=list(csv.DictReader(io.StringIO(text)))
+        self.assertEqual(len(samples),1001)
+        self.assertTrue(all(abs(float(row["total_yaw_deg"])-float(row["yaw_deg"]))<.001 for row in samples))
+        self.assertGreater(abs(float(samples[-1]["total_yaw_deg"])-math.degrees(1)),2)
+        self.assertNotIn("total_roll_deg",samples[-1])
+        self.assertNotIn("total_pitch_deg",samples[-1])
 
 
 if __name__ == "__main__":

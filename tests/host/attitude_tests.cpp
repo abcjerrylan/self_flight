@@ -90,9 +90,7 @@ void tilt() {
         CHECK(estimator.update(frame({},force(target),n*1000,n),n*1000+30)==AttitudeError::None);
     CHECK(agreement(estimator.state().q_nb,target)>0.99999F);
     Vec3 euler; CHECK(attitude_euler(estimator.state().q_nb,euler) && near(euler.x,0.5F,0.001F));
-    // Gravity feedback changes the attitude, but zero measured rate means no physical rotation.
-    CHECK(near(estimator.state().total_roll_rad,0) && near(estimator.state().total_pitch_rad,0) &&
-          near(estimator.state().total_yaw_rad,0));
+    CHECK(near(estimator.state().total_yaw_rad,0));
 }
 void bias() {
     Mahony estimator;
@@ -146,81 +144,59 @@ void timing() {
     future.accel=vector({0,0,-kGravity},14500,7);
     CHECK(estimator.update(future,14530)==AttitudeError::None && estimator.accel_weight()==0);
 }
-void totals() {
+void yaw_totals() {
     AttitudeConfig config; config.gyro_cutoff_hz=config.accel_cutoff_hz=config.kp=config.ki=0;
-    Mahony estimator(config);
-    const Vec3 rate{0.3F,-0.6F,0.9F};
-    CHECK(estimator.update(frame(rate,{0,0,-kGravity},0,0),30)==AttitudeError::None);
-    TimestampUs time=0;
-    for (unsigned n=1;n<=1000;++n) {
-        time+=n%2 ? 800 : 1200;
-        CHECK(estimator.update(frame(rate,{0,0,-kGravity},time,n),time+30)==AttitudeError::None);
+    for (const float sign : {-1.0F,1.0F}) {
+        Mahony estimator(config);
+        TimestampUs time=0;
+        float previous=0;
+        for (unsigned n=0;n<=4000;++n) {
+            if (n) time+=n%2 ? 800 : 1200;
+            CHECK(estimator.update(frame({0,0,sign*2*kPi},{0,0,-kGravity},time,n),time+30)==AttitudeError::None);
+            const auto& s=estimator.state();
+            CHECK(sign*(s.total_yaw_rad-previous)>=0 && std::fabs(s.total_yaw_rad-previous)<0.008F);
+            previous=s.total_yaw_rad;
+        }
+        CHECK(near(previous,sign*8*kPi,0.003F) && estimator.state().total_epoch==1);
     }
-    const auto& s=estimator.state();
-    CHECK(norm(Vec3{s.total_roll_rad,s.total_pitch_rad,s.total_yaw_rad}-rate)<0.00002F);
     Mahony reverse(config);
     reverse.update(frame({},{0,0,-kGravity},0,0),30);
     for (unsigned n=1;n<=1000;++n)
-        CHECK(reverse.update(frame({n<=500 ? 1.0F : -1.0F,0,0},{0,0,-kGravity},n*1000,n),n*1000+30)==AttitudeError::None);
-    CHECK(near(reverse.state().total_roll_rad,0));
+        CHECK(reverse.update(frame({0,0,n<=500 ? 1.0F : -1.0F},{0,0,-kGravity},n*1000,n),n*1000+30)==AttitudeError::None);
+    CHECK(near(reverse.state().total_yaw_rad,0));
 }
-void pitch_totals() {
-    // Small initial bank + rotation around local Y reproduces the user's Euler jumps.
-    for (const float bank : {-0.5F,0.5F}) {
-        for (const float sign : {-1.0F,1.0F}) {
-            Mahony estimator;
-            float previous=0;
-            for (unsigned n=0;n<=8000;++n) {
-                const auto target=multiply(axis({1,0,0},bank*kPi/180),axis({0,1,0},sign*n*0.001F*kPi/2));
-                auto accel=force(target);
-                accel.x+=0.002F*std::sin(n*0.17F);
-                accel.z+=0.002F*std::cos(n*0.13F);
-                CHECK(estimator.update(frame({0,sign*kPi/2,0},accel,n*1000,n),n*1000+30)==AttitudeError::None);
-                const auto& s=estimator.state();
-                CHECK(sign*(s.total_pitch_rad-previous)>=0 && std::fabs(s.total_pitch_rad-previous)<0.002F);
-                CHECK(near(s.total_roll_rad,0) && near(s.total_yaw_rad,0));
-                CHECK(agreement(s.q_nb,target)>0.999F);
-                previous=s.total_pitch_rad;
-            }
-            CHECK(near(previous,sign*4*kPi,0.002F));
-        }
-    }
-}
-void total_state() {
+void yaw_feedback() {
+    // Tilted body Z rotation is not equal to Euler heading: follow the quaternion.
     AttitudeConfig config; config.gyro_cutoff_hz=config.accel_cutoff_hz=config.kp=config.ki=0;
-    for (const auto direction : {Vec3{1,0,0},Vec3{0,1,0},Vec3{0,0,1}}) {
-        for (const float sign : {-1.0F,1.0F}) {
-            Mahony estimator(config);
-            for (unsigned n=0;n<=4000;++n) {
-                const auto target=axis(direction,sign*n*2*kPi*0.001F);
-                CHECK(estimator.update(frame(direction*(sign*2*kPi),force(target),n*1000,n),n*1000+30)==AttitudeError::None);
-            }
-            const auto& state=estimator.state();
-            CHECK(norm(Vec3{state.total_roll_rad,state.total_pitch_rad,state.total_yaw_rad}-direction*(sign*8*kPi))<0.003F);
-            CHECK(state.total_epoch==1);
-        }
+    Mahony estimator(config);
+    const auto initial=axis({0,1,0},0.7F);
+    for (unsigned n=0;n<=1000;++n) {
+        const auto target=multiply(initial,axis({0,0,1},n*0.001F));
+        CHECK(estimator.update(frame({0,0,1},force(target),n*1000,n),n*1000+30)==AttitudeError::None);
+        Vec3 euler; CHECK(attitude_euler(estimator.state().q_nb,euler));
+        CHECK(near(estimator.state().total_yaw_rad,euler.z,0.0002F));
+        CHECK(agreement(estimator.state().q_nb,target)>0.99999F);
     }
-    for (const float sign : {-1.0F,1.0F}) {
-        Mahony vertical(config);
-        CHECK(vertical.update(frame({},force(axis({0,1,0},sign*kPi/2)),0,0),30)==AttitudeError::None);
-        CHECK(near(vertical.state().total_pitch_rad,0));
-        CHECK(near(vertical.state().total_roll_rad,0) && near(vertical.state().total_yaw_rad,0));
-    }
+    CHECK(std::fabs(estimator.state().total_yaw_rad-1)>0.05F);
+}
+void yaw_state() {
+    AttitudeConfig config; config.gyro_cutoff_hz=config.accel_cutoff_hz=config.kp=config.ki=0;
     Mahony estimator(config);
     CHECK(estimator.update(frame({},force(axis({1,0,0},0.4F)),0,0),30)==AttitudeError::None);
-    CHECK(near(estimator.state().total_roll_rad,0));
-    CHECK(estimator.update(frame({1,0,0},{0,0,-kGravity},1000,1),1030)==AttitudeError::None);
-    CHECK(near(estimator.state().total_roll_rad,0.001F));
+    CHECK(near(estimator.state().total_yaw_rad,0));
+    CHECK(estimator.update(frame({0,0,1},{0,0,-kGravity},1000,1),1030)==AttitudeError::None);
+    const auto saved=estimator.state().total_yaw_rad;
+    CHECK(saved>0.0008F);
     CHECK(estimator.update(frame({NAN,0,0},{0,0,-kGravity},2000,2),2030)==AttitudeError::InvalidSample);
-    CHECK(near(estimator.state().total_roll_rad,0.001F) && estimator.state().total_epoch==1);
-    CHECK(estimator.update(frame({1,0,0},{0,0,-kGravity},1000,2),1030)==AttitudeError::Timing);
-    CHECK(near(estimator.state().total_roll_rad,0.001F));
-    CHECK(estimator.update(frame({1,0,0},{0,0,-kGravity},500,2),1030)==AttitudeError::Timing);
-    CHECK(near(estimator.state().total_roll_rad,0.001F));
+    CHECK(near(estimator.state().total_yaw_rad,saved) && estimator.state().total_epoch==1);
+    CHECK(estimator.update(frame({0,0,1},{0,0,-kGravity},1000,2),1030)==AttitudeError::Timing);
+    CHECK(near(estimator.state().total_yaw_rad,saved));
+    CHECK(estimator.update(frame({0,0,1},{0,0,-kGravity},500,2),1030)==AttitudeError::Timing);
+    CHECK(near(estimator.state().total_yaw_rad,saved));
     CHECK(estimator.update(frame({},{0,0,-kGravity},10000,2),10030)==AttitudeError::Timing);
-    CHECK(near(estimator.state().total_roll_rad,0.001F) && !estimator.state().metadata.valid);
+    CHECK(near(estimator.state().total_yaw_rad,saved) && !estimator.state().metadata.valid);
     CHECK(estimator.update(frame({},{0,0,-kGravity},11000,3),11030)==AttitudeError::None);
-    CHECK(near(estimator.state().total_roll_rad,0) && estimator.state().total_epoch==2);
+    CHECK(near(estimator.state().total_yaw_rad,0) && estimator.state().total_epoch==2);
 }
 void failures_test() {
     AttitudeConfig config; config.kp=NAN;
@@ -245,9 +221,9 @@ int main(int argc,char** argv) {
     else if (test=="bias") bias();
     else if (test=="acceleration") acceleration();
     else if (test=="timing") timing();
-    else if (test=="totals") totals();
-    else if (test=="total_state") total_state();
-    else if (test=="pitch_totals") pitch_totals();
+    else if (test=="yaw_totals") yaw_totals();
+    else if (test=="yaw_state") yaw_state();
+    else if (test=="yaw_feedback") yaw_feedback();
     else if (test=="failures") failures_test();
     else return 2;
     return failures ? 1 : 0;

@@ -53,12 +53,12 @@ void run(ULONG) {
             const auto degrees=[](float v) { return std::lround(v*180000.0F/core::kPi); };
             char line[512];
             std::snprintf(line,sizeof(line),
-                "# ATT seq=%lu t=%lu%06lu q_u=%ld/%ld/%ld/%ld rpy_md=%ld/%ld/%ld total_rpy_md=%ld/%ld/%ld total_epoch=%lu total_kind=body bias_u=%ld/%ld/%ld aw_m=%ld dt_us=%ld run_us=%lu lat_us=%lu valid=%u yaw_abs=%u err=%u\r\n",
+                "# ATT seq=%lu t=%lu%06lu q_u=%ld/%ld/%ld/%ld rpy_md=%ld/%ld/%ld total_yaw_md=%ld total_epoch=%lu bias_u=%ld/%ld/%ld aw_m=%ld dt_us=%ld run_us=%lu lat_us=%lu valid=%u yaw_abs=%u err=%u\r\n",
                 static_cast<unsigned long>(s.metadata.sequence),
                 static_cast<unsigned long>(s.metadata.measured_us/1000000),static_cast<unsigned long>(s.metadata.measured_us%1000000),
                 micro(s.q_nb.w),micro(s.q_nb.x),micro(s.q_nb.y),micro(s.q_nb.z),
                 degrees(euler.x),degrees(euler.y),degrees(euler.z),
-                degrees(s.total_roll_rad),degrees(s.total_pitch_rad),degrees(s.total_yaw_rad),
+                degrees(s.total_yaw_rad),
                 static_cast<unsigned long>(s.total_epoch),
                 micro(s.gyro_bias_rad_s.x),micro(s.gyro_bias_rad_s.y),micro(s.gyro_bias_rad_s.z),
                 std::lround(status.accel_weight*1000),micro(status.dt_s),

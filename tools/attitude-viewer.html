@@ -13,7 +13,7 @@
 </head>
 <body>
 <main>
-<header><div><div class="eyebrow">SELF_FLIGHT / P3</div><h1>实时姿态</h1><p>USB 直连 · 四元数姿态与机体轴累计转角</p></div><span id="status" class="badge">未连接</span></header>
+<header><div><div class="eyebrow">SELF_FLIGHT / P3</div><h1>实时姿态</h1><p>USB 直连 · 四元数姿态与三轴角度</p></div><span id="status" class="badge">未连接</span></header>
 <div class="toolbar">
   <button id="connect" class="primary">连接 USB</button>
   <button id="demo">演示</button>
@@ -23,9 +23,9 @@
 <div id="hint" class="hint" role="status">先关闭占用串口的工具，点击「连接 USB」，选择飞控的 COM 端口（当前通常为 COM51）。</div>
 <div id="dashboard" class="dim">
 <div class="angles">
- <div class="panel angle"><label>X 轴累计转角 / Roll</label><strong id="roll" class="roll">—</strong><small>正方向：右侧压低</small></div>
- <div class="panel angle"><label>Y 轴累计转角 / Pitch</label><strong id="pitch" class="pitch">—</strong><small>正方向：机头抬起</small></div>
- <div class="panel angle"><label>Z 轴累计转角 / Yaw</label><strong id="yaw" class="yaw">—</strong><small>正方向：上方看顺时针</small></div>
+ <div class="panel angle"><label>Roll / 横滚</label><strong id="roll" class="roll">—</strong><small>正方向：右侧压低</small></div>
+ <div class="panel angle"><label>Pitch / 俯仰</label><strong id="pitch" class="pitch">—</strong><small>正方向：机头抬起</small></div>
+ <div class="panel angle"><label>Yaw / 连续偏航</label><strong id="yaw" class="yaw">—</strong><small>正方向：上方看顺时针</small></div>
 </div>
 <div class="grid">
  <section class="panel"><div class="panel-head"><h2>板卡姿态</h2><button id="resetView" class="secondary">恢复视角</button></div><div class="scene"><canvas id="scene" aria-label="由飞控四元数驱动的板卡三维姿态"></canvas><div class="scene-note">箭头为机头 · X 前 / Y 右 / Z 下 · 拖动调整观察视角</div></div></section>
@@ -33,9 +33,9 @@
  <dt>姿态有效</dt><dd id="valid">—</dd><dt>最后接收</dt><dd id="age">—</dd><dt>姿态日志频率</dt><dd id="rate">—</dd><dt>解算更新频率</dt><dd id="solveRate">—</dd><dt>解算耗时 / 延迟</dt><dd id="timing">—</dd><dt>加速度可信度</dt><dd id="weight">—</dd><dt>IMU 温度</dt><dd id="temperature">—</dd><dt>启动标定</dt><dd id="calibration">—</dd><dt>已接收姿态帧</dt><dd id="frames">0</dd>
  </dl></div><p id="raw">尚未收到 # ATT 日志</p></section>
 </div>
-<section class="panel" style="margin-top:18px"><div class="panel-head"><h2>机体轴累计转角 · 最近 20 秒</h2><div class="legend"><span class="roll">X 轴累计</span><span class="pitch">Y 轴累计</span><span class="yaw">Z 轴累计</span></div></div><div class="chart"><canvas id="chart" aria-label="三个姿态角随时间变化的曲线"></canvas></div><div id="replayControls" hidden><input id="replayBar" type="range" min="0" max="1" step="0.01" value="0" aria-label="日志回放进度"><button id="play" class="secondary">暂停回放</button> <small id="replayTime"></small></div></section>
+<section class="panel" style="margin-top:18px"><div class="panel-head"><h2>姿态角度 · 最近 20 秒</h2><div class="legend"><span class="roll">Roll</span><span class="pitch">Pitch</span><span class="yaw">Total yaw</span></div></div><div class="chart"><canvas id="chart" aria-label="三个姿态角随时间变化的曲线"></canvas></div><div id="replayControls" hidden><input id="replayBar" type="range" min="0" max="1" step="0.01" value="0" aria-label="日志回放进度"><button id="play" class="secondary">暂停回放</button> <small id="replayTime"></small></div></section>
 </div>
-<footer>模型使用 WXYZ 四元数；数值和曲线是校正后机体三轴角速度的有符号积分，转过 90°/360° 继续累计，反转会减小。累计量会漂移，不是对地欧拉姿态，也不用于飞行控制。上电及解算重初始化时从零开始新的累计记录。断流或无效数据时保留最后有效模型，并明确标记状态。所有数据只在本页处理。</footer>
+<footer>模型使用 WXYZ 四元数；Roll / Pitch 是当前 ZYX 欧拉姿态角，Yaw 是同一姿态的连续偏航，跨 ±180° 展开。六轴偏航会漂移，没有绝对航向；俯仰接近 ±90° 时欧拉表示仍有奇异性，跨竖直的姿态反馈应使用四元数。重新上电或解算重新对齐会重设偏航参考。断流或无效数据时保留最后有效模型，并明确标记状态。所有数据只在本页处理。</footer>
 </main>
 <script id="viewer-core">
 // ATT 的 seq 是陀螺样本序号；不能用相邻 ATT 序号差判断丢帧。
@@ -54,14 +54,13 @@ function parseAttitude(line) {
   };
   const q = vector('q_u', 4, 1e6), rpy = vector('rpy_md', 3, 1000);
   if (!q || !rpy || ![...q,...rpy].every(Number.isFinite)) return null;
-  const values = f.total_rpy_md === undefined ? null : vector('total_rpy_md', 3, 1000);
-  const total = f.total_kind === 'body' ? values : null;
+  const totalYaw = f.total_yaw_md === undefined ? null : Number(f.total_yaw_md)/1000;
   const epoch = f.total_epoch === undefined ? null : Number(f.total_epoch);
-  if (f.total_rpy_md !== undefined && (!values || !values.every(Number.isFinite))) return null;
+  if (totalYaw !== null && (!/^-?\d+$/.test(f.total_yaw_md) || !Number.isSafeInteger(Number(f.total_yaw_md)))) return null;
   if (epoch !== null && (!Number.isSafeInteger(epoch) || epoch < 0)) return null;
   const norm = Math.hypot(...q);
   if (numbers.valid && (norm < .5 || norm > 1.5)) return null;
-  return {...numbers, q: norm > 0 ? q.map(v => v / norm) : q, rpy, total, epoch, line};
+  return {...numbers, q: norm > 0 ? q.map(v => v / norm) : q, rpy, totalYaw, epoch, line};
 }
 class LineReader {
   constructor(onLine) { this.onLine = onLine; this.tail = ''; this.discard = false; }
@@ -113,12 +112,12 @@ function accept(frame, now = performance.now()) {
   latest = frame; lastReceived = now; count++; arrivals.push(now);
   if (frame.valid) {
     good = frame;
-    if (frame.total) history.push({time: frame.t / 1e6, angles: frame.total});
+    history.push({time: frame.t / 1e6, angles: [frame.rpy[0],frame.rpy[1],frame.totalYaw ?? frame.rpy[2]]});
     const cutoff = frame.t / 1e6 - 20;
     while (history.length && (history[0].time < cutoff || history.length > 2000)) history.shift();
   }
   $('raw').textContent = frame.line || '演示姿态 · 合成数据';
-  if (!frame.total) $('hint').textContent = '此固件或日志缺少机体轴累计转角（total_kind=body）：请烧录新版固件。模型仍可显示，累计数值和曲线暂不显示。';
+  if (frame.totalYaw === null) $('hint').textContent = '旧固件或日志没有 total_yaw_md：当前显示普通 Roll/Pitch/Yaw，Yaw 跨 ±180° 可能跳变。请烧录新版固件使用连续偏航。';
 }
 function consume(line) {
   const att = parseAttitude(line);
@@ -298,8 +297,8 @@ function render(now) {
   if (now-rendered >= 30) {
     rendered = now;
     if (mode === 'demo') {
-      const t=(now-demoStart)/1000, r=0, p=t*30, y=0;
-      accept({seq:count+1,t:Math.round(t*1e6),q:quaternion(r,p,y),rpy:[r,p,y],total:[r,p,y],epoch:1,valid:1,yaw_abs:0,err:0,dt_us:1000,run_us:75,lat_us:210,aw_m:1000},now);
+      const t=(now-demoStart)/1000, r=25*Math.sin(t*.8), p=18*Math.sin(t*.55), y=t*30;
+      accept({seq:count+1,t:Math.round(t*1e6),q:quaternion(r,p,y),rpy:[r,p,(y+180)%360-180],totalYaw:y,epoch:1,valid:1,yaw_abs:0,err:0,dt_us:1000,run_us:75,lat_us:210,aw_m:1000},now);
     } else if (mode === 'replay' && playing) {
       const position=replayOffset+(now-replayBase)/1000, target=replay[0].t+position*1e6;
       while (cursor<replay.length && replay[cursor].t<=target) accept(replay[cursor++],now);
@@ -315,7 +314,8 @@ function render(now) {
     } else if (mode==='demo') status('演示 · 合成数据','warn');
     else if (mode==='replay') status(playing ? '日志回放' : (cursor>=replay.length ? '回放结束' : '回放暂停'),'warn');
     $('source').textContent=mode==='serial' ? 'USB / P3' : mode==='demo' ? '合成数据' : mode==='replay' ? '本地文件' : '串口已关闭';
-    for (const [i,id] of ['roll','pitch','yaw'].entries()) $(id).textContent=good && good.total ? good.total[i].toFixed(1)+'°' : '—';
+    const angles=good ? [good.rpy[0],good.rpy[1],good.totalYaw ?? good.rpy[2]] : null;
+    for (const [i,id] of ['roll','pitch','yaw'].entries()) $(id).textContent=angles ? angles[i].toFixed(1)+'°' : '—';
     $('valid').textContent=latest ? (!latest.valid ? '否 · '+(errors[latest.err] || '错误 '+latest.err) : mode==='idle' ? '已断开' : mode==='replay' ? '回放帧有效' : fresh ? '是' : '数据已过期') : '—';
     $('age').textContent=latest ? (mode==='replay' ? '记录时间 '+(latest.t/1e6).toFixed(2)+' s' : (age/1000).toFixed(2)+' s 前') : '—';
     while (arrivals.length && arrivals[0]<now-2000) arrivals.shift();
